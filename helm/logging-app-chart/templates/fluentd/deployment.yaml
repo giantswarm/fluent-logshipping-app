@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.fluentd.name }}
+  namespace: monitoring
+  labels:
+    app: {{ .Values.fluentd.name }}
+spec:
+  replicas: {{ .Values.fluentd.replicas }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: {{ .Values.fluentd.name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        releasetime: {{ $.Release.Time }}
+      labels:
+        app: {{ .Values.fluentd.name }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: NotIn
+                values:
+                - master
+      serviceAccountName: {{ .Values.fluentd.name }}
+      containers:
+      - name: {{ .Values.fluentd.name }}
+        image: quay.io/giantswarm/fluentd-cloudwatch-azure:777d0f7104189b6b639d612366602dd7f366b2ff
+        command:
+        - /bin/sh
+        - -c
+        - /etc/fluent/install-plugins.sh
+        env:
+        - name: FLUENTD_ARGS
+          value: --no-supervisor -q
+        - name: AWS_REGION
+          value: "{{ .Values.fluentd.cloudWatch.region }}"
+        resources:
+          limits:
+            cpu: 200m
+            memory: 450Mi
+          requests:
+            cpu: 200m
+            memory: 450Mi        
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/fluent/
+      volumes:
+      - name: config-volume
+        configMap:
+          defaultMode: 511
+          name: fluentd-config
