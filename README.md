@@ -16,6 +16,8 @@ Parameter | Description | Default
 `fluentbit.protocol` | fluentbit protocol | `TCP`
 `fluentbit.userID` | fluentbit user ID | `1000`
 `fluentbit.groupID` | fluentbit group ID | `1000`
+`fluentbit.inituserID` | fluentbit user ID  for init container| `0`
+`fluentbit.initgroupID` | fluentbit group ID for init container | `0`
 `fluentd.name` | fluentd deployment name | `fluentd`
 `fluentd.replicas` | fluentd replicas | `2`
 `fluentd.port` | fluentd port | `24224`

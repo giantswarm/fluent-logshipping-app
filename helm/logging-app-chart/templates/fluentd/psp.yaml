@@ -3,29 +3,18 @@ kind: PodSecurityPolicy
 metadata:
   name: {{ .Values.fluentd.name }}-psp
 spec:
-  privileged: false
+  allowPrivilegeEscalation: false
   fsGroup:
-    rule: MustRunAs
-    ranges:
-      - min: 1
-        max: 65535
-  runAsUser:
-    rule: MustRunAs
-    ranges:
-      - min: 1
-        max: 65535
+    rule: RunAsAny
   runAsGroup:
-    rule: MustRunAs
-    ranges:
-      - min: 1
-        max: 65525
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
   seLinux:
     rule: RunAsAny
   supplementalGroups:
     rule: RunAsAny
   volumes:
-    - 'configMap'
-  allowPrivilegeEscalation: false
-  hostNetwork: false
-  hostIPC: false
-  hostPID: false
+  - secret
+  - configMap
+  - hostPath
