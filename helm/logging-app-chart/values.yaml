@@ -1,21 +1,25 @@
+namespace: monitoring
+
 fluentbit:
-  enabled: true
   name: fluentbit
   port: 2020
   protocol: TCP
+  userID: 1000
+  groupID: 1000
 
 fluentd:
-  enabled: true
   replicas: 2
   name: fluentd
   port: 24224
   protocol: TCP
+
   cloudWatch:
     enabled: true
     region: "eu-central-1"
     logGroupName: "my-cluster"
     logStreamName: "example-stream"
   S3:
+    enabled: true
     bucketName: "my-cluster-logs"
     bucketRegion: "eu-central-1"
     bucketPathPrefix: "gs-"

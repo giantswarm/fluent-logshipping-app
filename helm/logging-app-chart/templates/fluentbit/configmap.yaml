@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: fluentbit-config
-  namespace: monitoring
+  name: {{ .Values.fluentbit.name }}-config
+  namespace: {{ .Values.namespace }}
   labels:
-    app: fluentbit
+    app: {{ .Values.fluentbit.name }}
 data:
   # Configuration files: server, input, filters and output
   # ======================================================
@@ -65,21 +65,10 @@ data:
         K8S-Logging.Parser  On
 
     [OUTPUT]
-        Name            es
-        Match           *
-        Host            ${FLUENT_ELASTICSEARCH_HOST}
-        Port            ${FLUENT_ELASTICSEARCH_PORT}
-        Logstash_Format On
-        Logstash_Prefix ${FLUENT_ELASTICSEARCH_PREFIX}
-        Retry_Limit     False
-
-{{- if .Values.fluentbit.enabled }}
-    [OUTPUT]
         Name            forward
         Match           *
         Host            ${FLUENTD_HOST}
         Port            ${FLUENTD_PORT}
-{{- end }}
 
   parsers.conf: |
     [PARSER]

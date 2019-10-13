@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
-  name: fluentbit-read
+  name: {{ .Values.fluentbit.name }}-read
 rules:
 - apiGroups: [""]
   resources:
@@ -12,20 +12,20 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: fluentbit-read
+  name: {{ .Values.fluentbit.name }}-read
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: fluentbit-read
+  name: {{ .Values.fluentbit.name }}-read
 subjects:
 - kind: ServiceAccount
-  name: fluentbit
-  namespace: monitoring
+  name: {{ .Values.fluentbit.name }}
+  namespace: {{ .Values.namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
-  name: fluentbit-psp
+  name: {{ .Values.fluentbit.name }}-psp
 rules:
   - apiGroups:
       - extensions
@@ -34,17 +34,17 @@ rules:
     verbs:
       - use
     resourceNames:
-      - fluentbit-psp
+      - {{ .Values.fluentbit.name }}-psp
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: fluentbit-psp
+  name: {{ .Values.fluentbit.name }}-psp
 subjects:
   - kind: ServiceAccount
-    name: fluentbit
-    namespace: monitoring
+    name: {{ .Values.fluentbit.name }}
+    namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
-  name: fluentbit-psp
+  name: {{ .Values.fluentbit.name }}-psp
   apiGroup: rbac.authorization.k8s.io 

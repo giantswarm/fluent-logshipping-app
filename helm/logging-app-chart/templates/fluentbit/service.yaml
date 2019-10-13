@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fluentbit
-  namespace: monitoring
+  name: {{ .Values.fluentbit.name }}
+  namespace: {{ .Values.namespace }}
   labels:
-    app: fluentbit
+    app: {{ .Values.fluentbit.name }}
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/path: "/api/v1/metrics/prometheus"
@@ -14,4 +14,4 @@ spec:
       port: 2020
       targetPort: 2020
   selector:
-    app: fluentbit
+    app: {{ .Values.fluentbit.name }}

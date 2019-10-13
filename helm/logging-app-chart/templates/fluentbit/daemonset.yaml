@@ -31,14 +31,8 @@ spec:
         command: ["/fluent-bit/bin/fluent-bit"]
         args: ["--config=/fluentbit/etc/fluentbit.conf"]
         env:
-        - name: FLUENT_ELASTICSEARCH_HOST
-          value: "elasticsearch.monitoring.svc"
-        - name: FLUENT_ELASTICSEARCH_PORT
-          value: "9200"
-        - name: FLUENT_ELASTICSEARCH_PREFIX
-          value: "gslogs"
         - name: FLUENTD_HOST
-          value: "fluentd.monitoring.svc"
+          value: "{{ .Values.fluentd.name }}.{{ .Values.namespace }}.svc"
         - name: FLUENTD_PORT
           value: "24224"
         resources:
@@ -100,7 +94,7 @@ spec:
           path: /var/lib/docker/containers
       - name: fluentbit-config-vol
         configMap:
-          name: fluentbit-config
+          name: {{ .Values.fluentbit.name }}-config
       - name: runlogjournal
         hostPath:
           path: /run/log/journal

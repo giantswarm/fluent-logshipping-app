@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.fluentd.name }}
-  namespace: monitoring
+  namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.fluentd.name }}
 spec:
@@ -56,4 +56,4 @@ spec:
       - name: config-volume
         configMap:
           defaultMode: 511
-          name: fluentd-config
+          name: {{ .Values.fluentd.name }}-config

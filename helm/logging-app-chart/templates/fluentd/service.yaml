@@ -1,14 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fluentd
-  namespace: monitoring
+  name: {{ .Values.fluentd.name }}
+  namespace: {{ .Values.namespace }}
   labels:
-    app: fluentd
+    app: {{ .Values.fluentd.name }}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/api/v1/metrics/prometheus"
 spec:
   ports:
     - name: fluentd
       port: 24224
       targetPort: 24224
   selector:
-    app: fluentd
+    app: {{ .Values.fluentd.name }}
