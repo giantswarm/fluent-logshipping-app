@@ -20,7 +20,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ .Values.fluentbit.name }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
@@ -43,7 +43,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ .Values.fluentbit.name }}
-    namespace: {{ .Values.namespace }}
+    namespace: {{ .Release.namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ .Values.fluentbit.name }}-psp
