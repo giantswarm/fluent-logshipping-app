@@ -6,6 +6,8 @@ fluentbit:
   protocol: TCP
   userID: 1000
   groupID: 1000
+  inituserID: 0
+  initgroupID: 0
 
 fluentd:
   replicas: 2
