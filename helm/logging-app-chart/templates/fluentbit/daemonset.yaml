@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Values.fluentbit.name }}
+  namespace: {{ .Release.namespace }}
+  labels:
+    app: {{ .Values.fluentbit.name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.fluentbit.name }}
+  template:
+    metadata:
+      annotations:
+        releasetime: {{ $.Release.Time }}
+      labels:
+        app: {{ .Values.fluentbit.name }}
+    spec:
+      tolerations:
+      # Tolerate master taint
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      serviceAccountName: {{ .Values.fluentbit.name }}
+      securityContext:
+        runAsUser: {{ .Values.fluentbit.userID }}
+        runAsGroup: {{ .Values.fluentbit.groupID }}
+      containers:
+      - name: {{ .Values.fluentbit.name }}
+        image: {{ .Values.image.registry }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag }}
+        command: ["/fluent-bit/bin/fluent-bit"]
+        args: ["--config=/fluentbit/etc/fluentbit.conf"]
+        env:
+        - name: FLUENTD_HOST
+          value: "{{ .Values.fluentd.name }}.{{ .Release.namespace }}.svc"
+        - name: FLUENTD_PORT
+          value: "24224"
+        resources:
+          limits:
+            cpu: 40m
+            memory: 150Mi
+          requests:
+            cpu: 40m
+            memory: 150Mi
+        livenessProbe:
+          tcpSocket:
+            port: 2020
+          initialDelaySeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 2020
+          initialDelaySeconds: 10
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: fluentbit-config-vol
+          mountPath: /fluentbit/etc/
+        - name: varlogfluentbitdb
+          mountPath: /var/log/fluentbit_db
+        - name: runlogjournal
+          mountPath: /run/log/journal
+          readOnly: true
+        - name: etcmachineid
+          mountPath: /etc/machine-id
+          readOnly: true
+        - name: mnt
+          mountPath: /mnt
+          readOnly: true
+      initContainers:
+      - name: init-fluentbit
+        image: {{ .Values.image.registry }}/{{ .Values.fluentbit.init_image.name }}:{{ .Values.fluentbit.init_image.tag }}
+        command: ["sh", "-c", "chown -R 1000:1000 /var/log/fluentbit_db"]
+        securityContext:
+          runAsUser: {{ .Values.fluentbit.inituserID }}
+          runAsGroup: {{ .Values.fluentbit.initgroupID }}
+          privileged: true
+        volumeMounts:
+        - name: varlogfluentbitdb
+          mountPath: /var/log/fluentbit_db
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlogfluentbitdb
+        hostPath:
+          path: /var/log/fluentbit_db
+          type: DirectoryOrCreate
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: fluentbit-config-vol
+        configMap:
+          name: {{ .Values.fluentbit.name }}-config
+      - name: runlogjournal
+        hostPath:
+          path: /run/log/journal
+      - name: etcmachineid
+        hostPath:
+          path: /etc/machine-id
+      - name: mnt
+        hostPath:
+          path: /mnt
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate

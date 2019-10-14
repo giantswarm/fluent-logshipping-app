@@ -1,0 +1,50 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: {{ .Values.fluentbit.name }}-read
+rules:
+- apiGroups: [""]
+  resources:
+  - namespaces
+  - pods
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.fluentbit.name }}-read
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .Values.fluentbit.name }}-read
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.fluentbit.name }}
+  namespace: {{ .Release.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: {{ .Values.fluentbit.name }}-psp
+rules:
+  - apiGroups:
+      - extensions
+    resources:
+      - podsecuritypolicies
+    verbs:
+      - use
+    resourceNames:
+      - {{ .Values.fluentbit.name }}-psp
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.fluentbit.name }}-psp
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.fluentbit.name }}
+    namespace: {{ .Release.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Values.fluentbit.name }}-psp
+  apiGroup: rbac.authorization.k8s.io 

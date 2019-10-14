@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: {{ .Values.fluentbit.name }}-psp
+spec:
+  privileged: true
+  fsGroup:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  runAsGroup:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+    - 'secret'
+    - 'configMap'
+    - 'hostPath'
+  allowPrivilegeEscalation: true
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false

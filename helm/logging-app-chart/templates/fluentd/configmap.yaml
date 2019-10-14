@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.fluentd.name }}-config
+  namespace: {{ .Release.namespace }}
+  labels:
+    app: {{ .Values.fluentd.name }}
+data:
+  install-plugins.sh: |-
+    #!/bin/sh
+    fluent-gem install fluent-plugin-s3
+    exec /usr/local/bin/fluentd $FLUENTD_ARGS
+  fluent.conf: |-
+    # listen for logs from fluentbit
+    <source>
+      @type forward
+      bind 0.0.0.0
+      port 24224
+    </source>
+    {{- if .Values.fluentd.cloudWatch.enabled }}
+    <match audit.k8s.**>
+      @type cloudwatch_logs
+      log_group_name {{ .Values.fluentd.cloudWatch.logGroupName }}
+      log_stream_name {{ .Values.fluentd.cloudWatch.logStreamName }}-k8s-audit
+      auto_create_stream true
+    </match>
+    <match kube.**>
+      @type cloudwatch_logs
+      log_group_name {{ .Values.fluentd.cloudWatch.logGroupName }}
+      log_stream_name {{ .Values.fluentd.cloudWatch.logStreamName }}-containers
+      auto_create_stream true
+    </match>
+    <match audit.ssh.**>
+      @type cloudwatch_logs
+      log_group_name {{ .Values.fluentd.cloudWatch.logGroupName }}
+      log_stream_name {{ .Values.fluentd.cloudWatch.logStreamName }}-ssh
+      auto_create_stream true
+    </match>
+    {{- end}}
+    {{- if .Values.fluentd.S3.enabled }}
+    <match audit.k8s.**>
+      @type s3
+      s3_bucket {{ .Values.fluentd.S3.bucketName }}
+      s3_region {{ .Values.fluentd.S3.bucketRegion }}
+      path {{ .Values.fluentd.S3.bucketPathPrefix }}-k8s-audit/
+      s3_object_key_format %{path}%{time_slice}_%{index}.%{file_extension}
+      check_bucket false
+      check_object false
+      check_apikey_on_start false
+      <assume_role_credentials>
+        role_arn          arn:aws:iam::{{ .Values.fluentd.S3.account }}:role/{{ .Values.fluentd.S3.role }}
+        role_session_name fluentd
+      </assume_role_credentials>
+      <buffer tag,time>
+        @type file
+        path /var/log/fluent/s3-k8s-audit
+        timekey 3600 # 1 hour partition
+        timekey_wait 10m
+        timekey_use_utc true
+        chunk_limit_size 256m
+      </buffer>
+    </match>
+    <match kube.**>
+      @type s3
+      s3_bucket {{ .Values.fluentd.S3.bucketName }}
+      s3_region {{ .Values.fluentd.S3.bucketRegion }}
+      path {{ .Values.fluentd.S3.bucketPathPrefix }}-containers/
+      s3_object_key_format %{path}%{time_slice}_%{index}.%{file_extension}
+      check_bucket false
+      check_object false
+      check_apikey_on_start false
+      <assume_role_credentials>
+        role_arn          arn:aws:iam::{{ .Values.fluentd.S3.account }}:role/{{ .Values.fluentd.S3.role }}
+        role_session_name fluentd
+      </assume_role_credentials>
+      <buffer tag,time>
+        @type file
+        path /var/log/fluent/s3-containers
+        timekey 3600 # 1 hour partition
+        timekey_wait 10m
+        timekey_use_utc true
+        chunk_limit_size 256m
+      </buffer>
+    </match>
+    <match audit.ssh.**>
+      @type s3
+      s3_bucket {{ .Values.fluentd.S3.bucketName }}
+      s3_region {{ .Values.fluentd.S3.bucketRegion }}
+      path {{ .Values.fluentd.S3.bucketPathPrefix }}-ssh/
+      s3_object_key_format %{path}%{time_slice}_%{index}.%{file_extension}
+      check_bucket false
+      check_object false
+      check_apikey_on_start false
+      <assume_role_credentials>
+        role_arn          arn:aws:iam::{{ .Values.fluentd.S3.account }}:role/{{ .Values.fluentd.S3.role }}
+        role_session_name fluentd
+      </assume_role_credentials>
+      <buffer tag,time>
+        @type file
+        path /var/log/fluent/s3-ssh
+        timekey 3600 # 1 hour partition
+        timekey_wait 10m
+        timekey_use_utc true
+        chunk_limit_size 256m
+      </buffer>
+    </match>
+    {{- end}}
