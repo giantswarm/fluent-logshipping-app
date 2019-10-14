@@ -3,7 +3,7 @@
 
 # Logging App
 
-Logging app is a proposal managed app to help customer to forward logs to AWS CLoudWatch or S3. It contains two parts: fluentbit as a small collector running as daemonset in the clusters and forwarding the logs to fluentd which actually takes care of persisting this log in a third party service like S3 or CloudWatch.
+Logging app is a proposed managed app to help customers forward logs to AWS CloudWatch or S3. It contains two parts: fluentbit is a small collector running as daemonset in the clusters and forwarding the logs to fluentd which actually takes care of persisting the logs to a third party service like S3 or CloudWatch.
 
 ## Configuration
 
