@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ .Values.fluentbit.name }}
-  namespace: {{ .Release.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Values.fluentbit.name }}
 spec:
@@ -32,7 +32,7 @@ spec:
         args: ["--config=/fluentbit/etc/fluentbit.conf"]
         env:
         - name: FLUENTD_HOST
-          value: "{{ .Values.fluentd.name }}.{{ .Release.namespace }}.svc"
+          value: "{{ .Values.fluentd.name }}.{{ .Release.Namespace }}.svc"
         - name: FLUENTD_PORT
           value: "24224"
         resources:

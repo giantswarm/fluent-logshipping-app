@@ -19,7 +19,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ .Values.fluentd.name }}
-    namespace: {{ .Release.namespace }}
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ .Values.fluentd.name }}-psp
