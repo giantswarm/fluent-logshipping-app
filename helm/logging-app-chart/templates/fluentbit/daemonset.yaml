@@ -27,7 +27,7 @@ spec:
         runAsGroup: {{ .Values.fluentbit.groupID }}
       containers:
       - name: {{ .Values.fluentbit.name }}
-        image: {{ .Values.fluentbit.image.registry }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag }}
+        image: {{ .Values.image.registry }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag }}
         command: ["/fluent-bit/bin/fluent-bit"]
         args: ["--config=/fluentbit/etc/fluentbit.conf"]
         env:
