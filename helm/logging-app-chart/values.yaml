@@ -2,16 +2,32 @@ fluentbit:
   name: fluentbit
   port: 2020
   protocol: TCP
+
   userID: 1000
   groupID: 1000
   inituserID: 0
   initgroupID: 0
+
+  image:
+    registry: quay.io
+    name: giantswarm/fluent-bit
+    tag: 0.14.6
+
+  init_image:
+    registry: quay.io
+    name: giantswarm/busybox
+    tag: 1.28.3
 
 fluentd:
   replicas: 2
   name: fluentd
   port: 24224
   protocol: TCP
+
+  image:
+    registry: quay.io
+    name: giantswarm/fluentd-cloudwatch-azure
+    tag: 777d0f7104189b6b639d612366602dd7f366b2ff
 
   cloudWatch:
     enabled: true

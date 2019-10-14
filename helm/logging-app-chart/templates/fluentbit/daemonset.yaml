@@ -27,7 +27,7 @@ spec:
         runAsGroup: {{ .Values.fluentbit.groupID }}
       containers:
       - name: {{ .Values.fluentbit.name }}
-        image: quay.io/giantswarm/fluent-bit:0.14.6
+        image: {{ .Values.fluentbit.image.registry }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag }}
         command: ["/fluent-bit/bin/fluent-bit"]
         args: ["--config=/fluentbit/etc/fluentbit.conf"]
         env:
@@ -71,7 +71,7 @@ spec:
           readOnly: true
       initContainers:
       - name: init-fluentbit
-        image: quay.io/giantswarm/busybox:1.28.3
+        image: {{ .Values.fluentbit.init_image.registry }}/{{ .Values.fluentbit.init_image.name }}:{{ .Values.fluentbit.init_image.tag }}
         command: ["sh", "-c", "chown -R 1000:1000 /var/log/fluentbit_db"]
         securityContext:
           runAsUser: {{ .Values.fluentbit.inituserID }}

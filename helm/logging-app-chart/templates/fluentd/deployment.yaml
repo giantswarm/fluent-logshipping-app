@@ -32,7 +32,7 @@ spec:
       serviceAccountName: {{ .Values.fluentd.name }}
       containers:
       - name: {{ .Values.fluentd.name }}
-        image: quay.io/giantswarm/fluentd-cloudwatch-azure:777d0f7104189b6b639d612366602dd7f366b2ff
+        image: {{ .Values.fluentd.image.registry }}/{{ .Values.fluentd.image.name }}:{{ .Values.fluentd.image.tag }}
         command:
         - /bin/sh
         - -c
