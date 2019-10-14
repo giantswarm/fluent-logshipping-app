@@ -6,10 +6,10 @@ workflows:
   package-and-push-chart-on-tag:
     jobs:
       - architect/push-to-app-catalog:
-          name: "package and push logging-app chart"
+          name: "package and push fluent-logshipping-app chart"
           app_catalog: "giantswarm-incubator-catalog"
           app_catalog_test: "giantswarm-incubator-test-catalog"
-          chart: "logging-app-chart"
+          chart: "fluent-logshipping-app-chart"
           # Trigger job on git tag.
           filters:
             tags:

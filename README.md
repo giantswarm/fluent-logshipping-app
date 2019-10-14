@@ -1,9 +1,9 @@
 
-[![CircleCI](https://circleci.com/gh/giantswarm/logging-app.svg?style=svg)](https://circleci.com/gh/giantswarm/logging-app)
+[![CircleCI](https://circleci.com/gh/giantswarm/fluent-logshipping-app.svg?style=svg)](https://circleci.com/gh/giantswarm/fluent-logshipping-app)
 
-# Logging App
+# Fluent log shipping app
 
-Logging app is a proposed managed app to help customers forward logs to AWS CloudWatch or S3. It contains two parts: fluentbit is a small collector running as daemonset in the clusters and forwarding the logs to fluentd which actually takes care of persisting the logs to a third party service like S3 or CloudWatch.
+Fluentd log shipping app is a proposed managed app to help customers forward logs to AWS CloudWatch or S3. It contains two parts: fluentbit is a small collector running as daemonset in the clusters and forwarding the logs to fluentd which actually takes care of persisting the logs to a third party service like S3 or CloudWatch.
 
 ## Configuration
 
