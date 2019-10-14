@@ -32,7 +32,7 @@ spec:
       serviceAccountName: {{ .Values.fluentd.name }}
       containers:
       - name: {{ .Values.fluentd.name }}
-        image: {{ .Values.fluentd.image.registry }}/{{ .Values.fluentd.image.name }}:{{ .Values.fluentd.image.tag }}
+        image: {{ .Values.image.registry }}/{{ .Values.fluentd.image.name }}:{{ .Values.fluentd.image.tag }}
         command:
         - /bin/sh
         - -c
