@@ -62,6 +62,9 @@ data:
         timekey_use_utc true
         chunk_limit_size 256m
       </buffer>
+      <format>
+        @type json
+      </format>
     </match>
     <match kube.**>
       @type s3
@@ -87,6 +90,9 @@ data:
         timekey_use_utc true
         chunk_limit_size 256m
       </buffer>
+      <format>
+        @type json
+      </format>
     </match>
     <match audit.ssh.**>
       @type s3
@@ -112,5 +118,8 @@ data:
         timekey_use_utc true
         chunk_limit_size 256m
       </buffer>
+      <format>
+        @type json
+      </format>
     </match>
     {{- end}}
