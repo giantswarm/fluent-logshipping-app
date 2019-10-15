@@ -7,4 +7,4 @@ icon: https://raw.githubusercontent.com/fluent/fluentd-docs/master/public/logo/F
 name: fluent-logshipping-app-chart
 sources:
 - https://github.com/giantswarm/fluent-logshipping-app
-version: 1
+version: [[ .Version ]]
