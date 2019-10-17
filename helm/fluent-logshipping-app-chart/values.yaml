@@ -7,8 +7,8 @@ fluentbit:
   port: 2020
   protocol: TCP
 
-  userID: 1000
-  groupID: 1000
+  userID: 0 #For systemd sshd losg it needs root
+  groupID: 0 #For systemd sshd losg it needs root
   inituserID: 0
   initgroupID: 0
 
