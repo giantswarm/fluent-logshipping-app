@@ -43,7 +43,10 @@ data:
       s3_bucket {{ .Values.fluentd.S3.bucketName }}
       s3_region {{ .Values.fluentd.S3.bucketRegion }}
       path {{ .Values.fluentd.S3.bucketPathPrefix }}-k8s-audit/
-      s3_object_key_format %{path}%{time_slice}_%{index}.%{file_extension}
+      s3_object_key_format {{ .Values.fluentd.S3.s3_object_key_format }}
+      {{- if .Values.fluentd.S3.grant_full_control }}
+      grant_full_control {{ .Values.fluentd.S3.grant_full_control }}
+      {{- end }}
       check_bucket false
       check_object false
       check_apikey_on_start false
@@ -59,13 +62,19 @@ data:
         timekey_use_utc true
         chunk_limit_size 256m
       </buffer>
+      <format>
+        @type json
+      </format>
     </match>
     <match kube.**>
       @type s3
       s3_bucket {{ .Values.fluentd.S3.bucketName }}
       s3_region {{ .Values.fluentd.S3.bucketRegion }}
       path {{ .Values.fluentd.S3.bucketPathPrefix }}-containers/
-      s3_object_key_format %{path}%{time_slice}_%{index}.%{file_extension}
+      s3_object_key_format {{ .Values.fluentd.S3.s3_object_key_format }}
+      {{- if .Values.fluentd.S3.grant_full_control }}
+      grant_full_control {{ .Values.fluentd.S3.grant_full_control }}
+      {{- end }}
       check_bucket false
       check_object false
       check_apikey_on_start false
@@ -81,13 +90,19 @@ data:
         timekey_use_utc true
         chunk_limit_size 256m
       </buffer>
+      <format>
+        @type json
+      </format>
     </match>
     <match audit.ssh.**>
       @type s3
       s3_bucket {{ .Values.fluentd.S3.bucketName }}
       s3_region {{ .Values.fluentd.S3.bucketRegion }}
       path {{ .Values.fluentd.S3.bucketPathPrefix }}-ssh/
-      s3_object_key_format %{path}%{time_slice}_%{index}.%{file_extension}
+      s3_object_key_format {{ .Values.fluentd.S3.s3_object_key_format }}
+      {{- if .Values.fluentd.S3.grant_full_control }}
+      grant_full_control {{ .Values.fluentd.S3.grant_full_control }}
+      {{- end }}
       check_bucket false
       check_object false
       check_apikey_on_start false
@@ -103,5 +118,8 @@ data:
         timekey_use_utc true
         chunk_limit_size 256m
       </buffer>
+      <format>
+        @type json
+      </format>
     </match>
     {{- end}}

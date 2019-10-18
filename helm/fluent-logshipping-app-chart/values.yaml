@@ -7,8 +7,8 @@ fluentbit:
   port: 2020
   protocol: TCP
 
-  userID: 1000
-  groupID: 1000
+  userID: 0 #For systemd sshd losg it needs root
+  groupID: 0 #For systemd sshd losg it needs root
   inituserID: 0
   initgroupID: 0
 
@@ -42,3 +42,6 @@ fluentd:
     bucketPathPrefix: "gs-"
     account: "00000000000" 
     role: "my-role"
+    grant_full_control: ""
+    s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
+    
