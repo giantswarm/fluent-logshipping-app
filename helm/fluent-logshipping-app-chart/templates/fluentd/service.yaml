@@ -6,6 +6,11 @@ metadata:
   labels:
     app: {{ .Values.fluentd.name }}
   annotations:
+    {{- if .Values.giantswarm_supporting }}
+    giantswarm.io/monitoring: "true"
+    giantswarm.io/monitoring-path: "api/v1/metrics/prometheus"
+    giantswarm.io/monitoring-port: "24224"
+    {{- end }}
     prometheus.io/scrape: "true"
     prometheus.io/path: "/api/v1/metrics/prometheus"
 spec:
