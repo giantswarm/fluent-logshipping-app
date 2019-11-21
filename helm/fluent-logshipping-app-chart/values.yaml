@@ -45,4 +45,5 @@ fluentd:
     grant_full_control: ""
     s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
 
-giantswarm_supporting: true
+giantswarm:
+  supporting: true
