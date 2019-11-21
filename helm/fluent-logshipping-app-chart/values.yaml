@@ -46,4 +46,5 @@ fluentd:
     s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
 
 giantswarm:
-  supporting: true
+  monitoring:
+    enabled: true
