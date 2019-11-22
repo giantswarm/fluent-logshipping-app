@@ -44,4 +44,7 @@ fluentd:
     role: "my-role"
     grant_full_control: ""
     s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
-    
+
+giantswarm:
+  monitoring:
+    enabled: true
