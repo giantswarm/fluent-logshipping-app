@@ -9,7 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Added
 
-- Add giantswarm supporting option
+- Add giantswarm monitoring option
 
 ## [v0.1.2] 
 

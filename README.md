@@ -32,3 +32,4 @@ Parameter | Description | Default
 `fluentd.S3.bucketPathPrefix` | fluentd S3 plugin prefix | `gs-`
 `fluentd.S3.account` | fluentd S3 plugin default account of the S3 bucket | `0000000000`
 `fluentd.S3.role` | fluentd S3 plugin default role name to assume | `my-role`
+`giantswarm.monitoring.enabled` | giantswarm monitoring support | `true`
