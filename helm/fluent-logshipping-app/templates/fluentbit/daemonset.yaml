@@ -34,7 +34,7 @@ spec:
         - name: FLUENTD_HOST
           value: "{{ .Values.fluentd.name }}.{{ .Release.Namespace }}.svc"
         - name: FLUENTD_PORT
-          value: "24224"
+          value: "{{ .Values.fluentd.port }}"
         resources:
           limits:
             cpu: 40m
@@ -44,11 +44,11 @@ spec:
             memory: 150Mi
         livenessProbe:
           tcpSocket:
-            port: 2020
+            port: {{ .Values.fluentbit.port }}
           initialDelaySeconds: 10
         readinessProbe:
           tcpSocket:
-            port: 2020
+            port: {{ .Values.fluentbit.port }}
           initialDelaySeconds: 10
         volumeMounts:
         - name: varlog
@@ -74,8 +74,8 @@ spec:
         image: {{ .Values.image.registry }}/{{ .Values.fluentbit.init_image.name }}:{{ .Values.fluentbit.init_image.tag }}
         command: ["sh", "-c", "chown -R 1000:1000 /var/log/fluentbit_db"]
         securityContext:
-          runAsUser: {{ .Values.fluentbit.inituserID }}
-          runAsGroup: {{ .Values.fluentbit.initgroupID }}
+          runAsUser: {{ .Values.fluentbit.initUserID }}
+          runAsGroup: {{ .Values.fluentbit.initGroupID }}
           privileged: true
         volumeMounts:
         - name: varlogfluentbitdb

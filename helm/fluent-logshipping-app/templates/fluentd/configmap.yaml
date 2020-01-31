@@ -1,0 +1,169 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.fluentd.name }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.fluentd.name }}
+data:
+  install-plugins.sh: |-
+    #!/bin/sh
+    fluent-gem install fluent-plugin-record-modifier \
+    && fluent-gem install fluent-plugin-array-spin \
+    && fluent-gem install fluent-plugin-rewrite-tag-filter
+    {{- if .Values.fluentd.aws.S3.enabled }}
+    fluent-gem install fluent-plugin-s3
+    {{- end}}
+    {{- if .Values.fluentd.aws.cloudWatch.enabled }}
+    fluent-gem install fluent-plugin-cloudwatch-logs
+    {{- end}}
+    {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+    fluent-gem install fluent-plugin-azure-loganalytics
+    {{- end}}
+    exec /usr/local/bin/fluentd $FLUENTD_ARGS
+
+  fluent.conf: |-
+    # listen for logs from fluentbit
+    <source>
+      @type forward
+      bind 0.0.0.0
+      port {{ .Values.fluentd.port }}
+    </source>
+
+    {{- if .Values.fluentd.aws.cloudWatch.enabled }}
+    <match kubernetes.**>
+      @type              cloudwatch_logs
+      log_group_name     {{ .Values.fluentd.aws.cloudWatch.logGroupName }}
+      log_stream_name    {{ .Values.fluentd.aws.cloudWatch.logStreamName }}-containers
+      auto_create_stream true
+    </match>
+
+    <match audit.kubernetes.**>
+      @type              cloudwatch_logs
+      log_group_name     {{ .Values.fluentd.aws.cloudWatch.logGroupName }}
+      log_stream_name    {{ .Values.fluentd.aws.cloudWatch.logStreamName }}-kubernetes-audit
+      auto_create_stream true
+    </match>
+
+    <match audit.ssh.**>
+      @type              cloudwatch_logs
+      log_group_name     {{ .Values.fluentd.aws.cloudWatch.logGroupName }}
+      log_stream_name    {{ .Values.fluentd.aws.cloudWatch.logStreamName }}-ssh-audit
+      auto_create_stream true
+    </match>
+    {{- end}}
+
+    {{- if .Values.fluentd.aws.S3.enabled }}
+    <match kubernetes.**>
+      @type                 s3
+      s3_bucket             {{ .Values.fluentd.aws.S3.bucketName }}
+      s3_region             {{ .Values.fluentd.aws.S3.bucketRegion }}
+      path                  {{ .Values.fluentd.aws.S3.bucketPathPrefix }}-containers/
+      s3_object_key_format  {{ .Values.fluentd.aws.S3.s3_object_key_format }}
+      {{- if .Values.fluentd.aws.S3.grant_full_control }}
+      grant_full_control    {{ .Values.fluentd.aws.S3.grant_full_control }}
+      {{- end }}
+      check_bucket          false
+      check_object          false
+      check_apikey_on_start false
+      <assume_role_credentials>
+        role_arn          arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
+        role_session_name fluentd
+      </assume_role_credentials>
+      <buffer tag,time>
+        @type            file
+        path             /var/log/fluent/s3-containers
+        timekey          3600 # 1 hour partition
+        timekey_wait     10m
+        timekey_use_utc  true
+        chunk_limit_size 256m
+      </buffer>
+      <format>
+        @type json
+      </format>
+    </match>
+
+    <match audit.kubernetes.**>
+      @type                 s3
+      s3_bucket             {{ .Values.fluentd.aws.S3.bucketName }}
+      s3_region             {{ .Values.fluentd.aws.S3.bucketRegion }}
+      path                  {{ .Values.fluentd.aws.S3.bucketPathPrefix }}-k8s-audit/
+      s3_object_key_format  {{ .Values.fluentd.aws.S3.s3_object_key_format }}
+      {{- if .Values.fluentd.aws.S3.grant_full_control }}
+      grant_full_control    {{ .Values.fluentd.aws.S3.grant_full_control }}
+      {{- end }}
+      check_bucket          false
+      check_object          false
+      check_apikey_on_start false
+      <assume_role_credentials>
+        role_arn          arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
+        role_session_name fluentd
+      </assume_role_credentials>
+      <buffer tag,time>
+        @type            file
+        path             /var/log/fluent/s3-k8s-audit
+        timekey          3600 # 1 hour partition
+        timekey_wait     10m
+        timekey_use_utc  true
+        chunk_limit_size 256m
+      </buffer>
+      <format>
+        @type json
+      </format>
+    </match>
+
+    <match audit.ssh.**>
+      @type                 s3
+      s3_bucket             {{ .Values.fluentd.aws.S3.bucketName }}
+      s3_region             {{ .Values.fluentd.aws.S3.bucketRegion }}
+      path                  {{ .Values.fluentd.aws.S3.bucketPathPrefix }}-ssh/
+      s3_object_key_format  {{ .Values.fluentd.aws.S3.s3_object_key_format }}
+      {{- if .Values.fluentd.aws.S3.grant_full_control }}
+      grant_full_control    {{ .Values.fluentd.aws.S3.grant_full_control }}
+      {{- end }}
+      check_bucket          false
+      check_object          false
+      check_apikey_on_start false
+      <assume_role_credentials>
+        role_arn          arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
+        role_session_name fluentd
+      </assume_role_credentials>
+      <buffer tag,time>
+        @type            file
+        path             /var/log/fluent/s3-ssh
+        timekey          3600 # 1 hour partition
+        timekey_wait     10m
+        timekey_use_utc  true
+        chunk_limit_size 256m
+      </buffer>
+      <format>
+        @type json
+      </format>
+    </match>
+    {{- end}}
+
+    {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+    <match kubernetes.**>
+      @type           azure-loganalytics
+      customer_id     "#{ENV['WORKSPACE_ID']}"
+      shared_key      "#{ENV['SHARED_KEY']}"
+      log_type        Kubernetes
+      add_time_field  true
+    </match>
+
+    <match audit.kubernetes.**>
+      @type           azure-loganalytics
+      customer_id     "#{ENV['WORKSPACE_ID']}"
+      shared_key      "#{ENV['SHARED_KEY']}"
+      log_type        AuditKubernetes
+      add_time_field  true
+    </match>
+
+    <match audit.ssh.**>
+      @type           azure-loganalytics
+      customer_id     "#{ENV['WORKSPACE_ID']}"
+      shared_key      "#{ENV['SHARED_KEY']}"
+      log_type        AuditSSH
+      add_time_field  true
+    </match>
+    {{- end}}

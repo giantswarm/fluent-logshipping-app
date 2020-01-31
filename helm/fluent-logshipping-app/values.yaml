@@ -1,0 +1,68 @@
+# Default values for fluent-logshipping-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+namespace: kube-system
+
+# clusterID is dynamic environment value, calculated after cluster creation
+# applies only to Giant Swarm clusters
+clusterID: clusterID
+
+image:
+  registry: quay.io
+
+fluentbit:
+  name: fluent-bit
+  port: 5170
+  protocol: TCP
+
+  userID: 0 # For systemd sshd losg it needs root
+  groupID: 0 # For systemd sshd losg it needs root
+  initUserID: 0
+  initGroupID: 0
+
+  image:
+    name: giantswarm/fluent-bit
+    tag: 0.14.6
+
+  init_image:
+    name: giantswarm/busybox
+    tag: 1.28.3
+
+  logLevel: info
+
+fluentd:
+  replicas: 2
+  name: fluentd
+  port: 24224
+  protocol: TCP
+
+  image:
+    name: giantswarm/fluentd-cloudwatch-azure
+    tag: 777d0f7104189b6b639d612366602dd7f366b2ff
+
+  aws:  
+    cloudWatch:
+      enabled: false
+      region: "eu-central-1"
+      logGroupName: "my-cluster"
+      logStreamName: "example-stream"
+    S3:
+      enabled: false
+      bucketName: "my-cluster-logs"
+      bucketRegion: "eu-central-1"
+      bucketPathPrefix: "gs-"
+      account: "00000000000" 
+      role: "my-role"
+      grant_full_control: ""
+      s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
+  azure:
+    logAnalytics: 
+      enabled: false
+      workspaceId: ""
+      sharedKey: ""
+
+
+giantswarm:
+  monitoring:
+    enabled: true

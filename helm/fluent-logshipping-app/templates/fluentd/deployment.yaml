@@ -40,8 +40,22 @@ spec:
         env:
         - name: FLUENTD_ARGS
           value: --no-supervisor -q
+        {{- if .Values.fluentd.aws.cloudWatch.enabled }}
         - name: AWS_REGION
-          value: "{{ .Values.fluentd.cloudWatch.region }}"
+          value: "{{ .Values.fluentd.aws.cloudWatch.region }}"
+        {{- end}} 
+        {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+        - name: WORKSPACE_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.fluentd.name }}-secret
+              key: workspaceID
+        - name: SHARED_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.fluentd.name }}-secret
+              key: sharedKey
+        {{- end}}  
         resources:
           limits:
             cpu: 200m

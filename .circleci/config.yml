@@ -1,16 +1,16 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@0.4.2
+  architect: giantswarm/architect@0.4.5
 
 workflows:
-  package-and-push-chart-on-tag:
+  push-to-app-catalog:
     jobs:
-      - architect/push-to-app-catalog:
-          name: "package and push fluent-logshipping-app chart"
-          app_catalog: "giantswarm-incubator-catalog"
-          app_catalog_test: "giantswarm-incubator-test-catalog"
-          chart: "fluent-logshipping-app-chart"
-          # Trigger job on git tag.
-          filters:
-            tags:
-              only: /^v.*/
+    - architect/push-to-app-catalog:
+        name: "package and push chart to app catalog"
+        app_catalog: "giantswarm-playground-catalog"
+        app_catalog_test: "giantswarm-playground-test-catalog"
+        chart: "fluent-logshipping-app"
+        # Trigger job on git tag.
+        filters:
+          tags:
+            only: /^v.*/              

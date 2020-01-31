@@ -9,14 +9,14 @@ metadata:
     {{- if .Values.giantswarm.monitoring.enabled }}
     giantswarm.io/monitoring: "true"
     giantswarm.io/monitoring-path: "api/v1/metrics/prometheus"
-    giantswarm.io/monitoring-port: "2020"
+    giantswarm.io/monitoring-port: "{{ .Values.fluentbit.port }}"
     {{- end }}
     prometheus.io/scrape: "true"
     prometheus.io/path: "/api/v1/metrics/prometheus"
 spec:
   ports:
     - name: fluentbit
-      port: 2020
-      targetPort: 2020
+      port: {{ .Values.fluentbit.port }}
+      targetPort: {{ .Values.fluentbit.port }}
   selector:
     app: {{ .Values.fluentbit.name }}
