@@ -8,9 +8,22 @@ It contains two parts:
 - A fluentbit daemonset: Small collector running on every node collecting containers and audit logs and for forwarding them to fluentd.
 - A fluentd deployment: Takes care of persisting the logs to any data sink
 
+## Requirements
+
+- You can install only one release of this chart per kubernetes cluster
+- By default any forwarded is active so make sure you check [configuration document](helm/fluent-logshipping-app/Configuration.md) before deploy it in your cluster.
+
+## Installation
+
+The logging forwarding app is built to be installed in AWS or Azure. For AWS support to send the logs to S3 and/or Cloudwatch. For Azure it uses Log Analytics:
+
+```text
+helm install --namespace logging giantswarm-playground-catalog/fluent-logshipping-app --set fluentd.aws.cloudWatch.enabled=true 
+```
+
 ## Currently supported sinks
 
-AWS: 
+AWS:
 - CloudWatch
 - S3
 
