@@ -1,9 +1,4 @@
-# nginx-ingress-controller
-
-This chart installs a fluentd deployment and a fluentbit daemonset as a managed application. 
-The fluentbit daemonset collects logs from all the nodes and forwards the logs to fluentd. Fluentd then forwards logs to your desired location
-
-## Configuration
+# Configuration
 
 The following table lists the configurable parameters of the fluent-logshipping-controller chart, its dependencies and default values.
 
