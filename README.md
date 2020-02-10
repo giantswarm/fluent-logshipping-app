@@ -20,3 +20,7 @@ Azure:
 ## Configuration
 
 Configuration options are documented in [Configuration.md](helm/fluent-logshipping-app/Configuration.md) document.
+
+## Compatibility
+
+Tested on Giant Swarm release 11.0.0 on `AWS` and `Azure` (Kubernetes 1.16.3).
