@@ -11,7 +11,7 @@ It contains two parts:
 ## Requirements
 
 - You can install only one release of this chart per kubernetes cluster
-- By default any forwarded is active so make sure you check [configuration document](helm/fluent-logshipping-app/Configuration.md) before deploy it in your cluster.
+- By default any forward is active so make sure you check [configuration document](helm/fluent-logshipping-app/Configuration.md) before deploy it in your cluster.
 
 ## Installation
 
