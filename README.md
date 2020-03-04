@@ -11,11 +11,13 @@ It contains two parts:
 ## Requirements
 
 - You can install only one release of this chart per kubernetes cluster
-- By default any forward is active so make sure you check [configuration document](helm/fluent-logshipping-app/Configuration.md) before deploy it in your cluster.
+- By default any forward is active so make sure you check [configuration document](helm/fluent-logshipping-app/Configuration.md) before deploying it in your cluster.
 
 ## Installation
 
-The logging forwarding app is built to be installed in AWS or Azure. For AWS support to send the logs to S3 and/or Cloudwatch. For Azure it uses Log Analytics:
+The logging forwarding app is built to be installed in AWS or Azure. On AWS the app can send logs to S3 and/or Cloudwatch. On Azure it uses Log Analytics.
+
+Sample command for installing it on AWS with cloudwatch enabled:
 
 ```text
 helm install --namespace logging giantswarm-playground-catalog/fluent-logshipping-app --set fluentd.aws.cloudWatch.enabled=true 
