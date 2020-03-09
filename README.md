@@ -3,19 +3,31 @@
 
 # Fluent log shipping app
 
-Fluent log shipping app is a managed app proposed to help customers forward logs to any supported [data sinks](#Currently_supported_sinks). 
-It contains two parts: 
-- A fluentbit daemonset: Small collector running on every node collecting containers and audit logs and for forwarding them to fluentd.
-- A fluentd deployment: Takes care of persisting the logs to any data sink
+Fluent log shipping app is a managed app used to help customers forward their logs to any supported [storage backends](#Currently_supported_storage_backends).
+
+It is made of two components: 
+- A [fluent-bit](https://github.com/fluent/fluent-bit) DaemonSet: Lightweight log collector used to collect and forward containers and audit logs to the fluentd Deployment.
+- A [fluentd](https://github.com/fluent/fluentd) Deployment: Takes care of persisting the logs to any of the configured storage backends.
 
 ## Requirements
 
 - You can install only one release of this chart per kubernetes cluster
-- By default any forward is active so make sure you check [configuration document](helm/fluent-logshipping-app/Configuration.md) before deploying it in your cluster.
+- By default, no forwarding is active so make sure you check [configuration document](helm/fluent-logshipping-app/Configuration.md) before deploying it in your cluster.
+
+## Currently supported storage backends
+
+### AWS 
+
+- [CloudWatch](https://aws.amazon.com/cloudwatch/)
+- [S3](https://aws.amazon.com/s3/)
+
+### Azure
+
+- [Log Analytics](https://azure.microsoft.com/en-us/services/monitor)
 
 ## Installation
 
-The logging forwarding app is built to be installed in AWS or Azure. On AWS the app can send logs to S3 and/or Cloudwatch. On Azure it uses Log Analytics.
+The log shipping app is built to be installed in AWS or Azure.
 
 Sample command for installing it on AWS with cloudwatch enabled:
 
@@ -23,14 +35,15 @@ Sample command for installing it on AWS with cloudwatch enabled:
 helm install --namespace logging giantswarm-playground-catalog/fluent-logshipping-app --set fluentd.aws.cloudWatch.enabled=true 
 ```
 
-## Currently supported sinks
+## Exported logs
 
-AWS:
-- CloudWatch
-- S3
+The app currently exports the following logs:
 
-Azure:
-- Log Analytics
+| Log type              | Location                       | Format            |
+| --------------------- | -------------------------------| ----------------- |
+| Container Logs        | `/var/log/containers/*.log`    | `json`            |
+| Kubernetes Audit Log  | `/var/log/apiserver/audit.log` | `json`            |
+| SSH Access Logs       | `syslog`                       | `^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$` |
 
 ## Configuration
 

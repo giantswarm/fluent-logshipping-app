@@ -9,13 +9,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Added
 
-- Add azure Log Analytics support
+- Add Azure Log Analytics support
 
 ## v0.1.3 
 
 ### Added
 
-- Add giantswarm monitoring option
+- Add Giant Swarm monitoring option
 
 ## [v0.1.2] 
 
