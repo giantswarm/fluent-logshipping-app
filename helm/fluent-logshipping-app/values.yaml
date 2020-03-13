@@ -61,7 +61,14 @@ fluentd:
       enabled: false
       workspaceId: ""
       sharedKey: ""
-
+  elasticsearch:
+    enabled: false
+    hosts: ""
+    scheme: "https"
+    path: "/"
+    secured: false
+    user: ""
+    password: ""
 
 giantswarm:
   monitoring:

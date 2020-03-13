@@ -56,6 +56,18 @@ spec:
               name: {{ .Values.fluentd.name }}-secret
               key: sharedKey
         {{- end}}  
+        {{- if and .Values.fluentd.elasticsearch.enabled .Values.fluentd.elasticsearch.secured }}
+        - name: ELASTICSEARCH_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.fluentd.name }}-secret
+              key: elasticsearchUser
+        - name: ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.fluentd.name }}-secret
+              key: elasticsearchPassword
+        {{- end}}  
         resources:
           limits:
             cpu: 200m
