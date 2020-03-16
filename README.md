@@ -25,6 +25,10 @@ It is made of two components:
 
 - [Log Analytics](https://azure.microsoft.com/en-us/services/monitor)
 
+### Others
+
+- [Elasticsearch](https://www.elastic.co/elasticsearch/)
+
 ## Installation
 
 The log shipping app is built to be installed in AWS or Azure.

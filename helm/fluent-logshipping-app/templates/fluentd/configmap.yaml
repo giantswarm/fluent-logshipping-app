@@ -11,15 +11,23 @@ data:
     fluent-gem install fluent-plugin-record-modifier \
     && fluent-gem install fluent-plugin-array-spin \
     && fluent-gem install fluent-plugin-rewrite-tag-filter
+
     {{- if .Values.fluentd.aws.S3.enabled }}
     fluent-gem install fluent-plugin-s3
     {{- end}}
+
     {{- if .Values.fluentd.aws.cloudWatch.enabled }}
     fluent-gem install fluent-plugin-cloudwatch-logs
     {{- end}}
+
     {{- if .Values.fluentd.azure.logAnalytics.enabled }}
     fluent-gem install fluent-plugin-azure-loganalytics
     {{- end}}
+
+    {{- if .Values.fluentd.elasticsearch.enabled }}
+    fluent-gem install fluent-plugin-elasticsearch
+    {{- end}}
+
     exec /usr/local/bin/fluentd $FLUENTD_ARGS
 
   fluent.conf: |-
@@ -165,5 +173,64 @@ data:
       shared_key      "#{ENV['SHARED_KEY']}"
       log_type        AuditSSH
       add_time_field  true
+    </match>
+    {{- end}}
+
+    {{- if .Values.fluentd.elasticsearch.enabled }}
+    <match kubernetes.**>
+      @type           elasticsearch
+      hosts           {{ .Values.fluentd.elasticsearch.hosts }}
+      scheme          {{ .Values.fluentd.elasticsearch.scheme }}
+      ssl_verify      {{ .Values.fluentd.elasticsearch.sslVerify }}
+      path            {{ .Values.fluentd.elasticsearch.path }}
+      {{- if .Values.fluentd.elasticsearch.secured }}
+      user            "#{ENV['ELASTICSEARCH_USER']}"
+      password        "#{ENV['ELASTICSEARCH_PASSWORD']}"
+      {{- end}}
+      logstash_format true
+      logstash_prefix kubernetes
+      include_timestamp true
+      <buffer tag, time>
+        @type memory
+        timekey 3600
+      </buffer>
+    </match>
+
+    <match audit.kubernetes.**>
+      @type           elasticsearch
+      hosts           {{ .Values.fluentd.elasticsearch.hosts }}
+      scheme          {{ .Values.fluentd.elasticsearch.scheme }}
+      ssl_verify      {{ .Values.fluentd.elasticsearch.sslVerify }}
+      path            {{ .Values.fluentd.elasticsearch.path }}
+      {{- if .Values.fluentd.elasticsearch.secured }}
+      user            "#{ENV['ELASTICSEARCH_USER']}"
+      password        "#{ENV['ELASTICSEARCH_PASSWORD']}"
+      {{- end}}
+      logstash_format true
+      logstash_prefix audit-kubernetes
+      include_timestamp true
+      <buffer tag, time>
+        @type memory
+        timekey 3600
+      </buffer>
+    </match>
+
+    <match audit.ssh.**>
+      @type           elasticsearch
+      hosts           {{ .Values.fluentd.elasticsearch.hosts }}
+      scheme          {{ .Values.fluentd.elasticsearch.scheme }}
+      ssl_verify      {{ .Values.fluentd.elasticsearch.sslVerify }}
+      path            {{ .Values.fluentd.elasticsearch.path }}
+      {{- if .Values.fluentd.elasticsearch.secured }}
+      user            "#{ENV['ELASTICSEARCH_USER']}"
+      password        "#{ENV['ELASTICSEARCH_PASSWORD']}"
+      {{- end}}
+      logstash_format true
+      logstash_prefix audit-ssh
+      include_timestamp true
+      <buffer tag, time>
+        @type memory
+        timekey 3600
+      </buffer>
     </match>
     {{- end}}
