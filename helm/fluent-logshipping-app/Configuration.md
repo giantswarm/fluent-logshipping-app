@@ -33,6 +33,7 @@ The following table lists the configurable parameters of the fluent-logshipping-
 | `fluentd.elasticsearch.hosts`            | List of Elasticsearch hosts (host1:port,host2:port)                               | ``                |
 | `fluentd.elasticsearch.scheme`           | Elasticsearch connection scheme                                                   | `https`           |
 | `fluentd.elasticsearch.path`             | Elasticsearch path                                                                | `/`               |
+| `fluentd.elasticsearch.sslVerify`        | Elasticsearch verify SSL                                                          | `true`            |
 | `fluentd.elasticsearch.secured`          | Enable Elasticsearch login                                                        | `false`           |
 | `fluentd.elasticsearch.user`             | Enable Elasticsearch login                                                        | ``                |
 | `fluentd.elasticsearch.password`         | Enable Elasticsearch login                                                        | ``                |
