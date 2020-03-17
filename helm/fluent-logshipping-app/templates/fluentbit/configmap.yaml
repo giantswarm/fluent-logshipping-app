@@ -69,6 +69,12 @@ data:
         Match *
         Record cluster {{ .Values.clusterID }}
 
+    [FILTER]
+        Name modify
+        Match *
+        Add_if_not_present app.kubernetes.io/name giantswarm
+        Rename app app.kubernetes.io/name
+
     [OUTPUT]
         Name            forward
         Match           *

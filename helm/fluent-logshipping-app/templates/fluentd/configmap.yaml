@@ -190,9 +190,23 @@ data:
       logstash_format true
       logstash_prefix kubernetes
       include_timestamp true
-      <buffer tag, time>
-        @type memory
-        timekey 3600
+      <buffer>
+        @file
+        path /fluentd/log/buffer
+        total_limit_size 1024MB
+    
+        # chunck + enqueue 
+        chunk_limit_size 16MB
+        flush_mode interval
+        flush_interval 5s
+   
+        # flush thread
+        flush_thread_count 8
+
+        retry_type exponential_backoff
+        retry_timeout 1h
+        retry_max_interval 30
+        overflow_action drop_oldest_chunk
       </buffer>
     </match>
 
@@ -209,9 +223,23 @@ data:
       logstash_format true
       logstash_prefix audit-kubernetes
       include_timestamp true
-      <buffer tag, time>
-        @type memory
-        timekey 3600
+      <buffer>
+        @file
+        path /fluentd/log/buffer
+        total_limit_size 1024MB
+    
+        # chunck + enqueue 
+        chunk_limit_size 16MB
+        flush_mode interval
+        flush_interval 5s
+   
+        # flush thread
+        flush_thread_count 8
+
+        retry_type exponential_backoff
+        retry_timeout 1h
+        retry_max_interval 30
+        overflow_action drop_oldest_chunk
       </buffer>
     </match>
 
@@ -228,9 +256,23 @@ data:
       logstash_format true
       logstash_prefix audit-ssh
       include_timestamp true
-      <buffer tag, time>
-        @type memory
-        timekey 3600
+      <buffer>
+        @file
+        path /fluentd/log/buffer
+        total_limit_size 1024MB
+    
+        # chunck + enqueue 
+        chunk_limit_size 16MB
+        flush_mode interval
+        flush_interval 5s
+   
+        # flush thread
+        flush_thread_count 8
+
+        retry_type exponential_backoff
+        retry_timeout 1h
+        retry_max_interval 30
+        overflow_action drop_oldest_chunk
       </buffer>
     </match>
     {{- end}}
