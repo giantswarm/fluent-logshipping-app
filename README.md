@@ -3,7 +3,7 @@
 
 # Fluent log shipping app
 
-Fluent log shipping app is a managed app used to help customers forward their logs to any supported [storage backends](#Currently_supported_storage_backends).
+Fluent log shipping app is a managed app used to help customers forward their logs to any supported [storage backends](#currently-supported-storage-backends).
 
 It is made of two components: 
 - A [fluent-bit](https://github.com/fluent/fluent-bit) DaemonSet: Lightweight log collector used to collect and forward containers and audit logs to the fluentd Deployment.
