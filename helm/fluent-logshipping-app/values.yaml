@@ -16,20 +16,17 @@ fluentbit:
   port: 5170
   protocol: TCP
 
-  userID: 0 # For systemd sshd losg it needs root
-  groupID: 0 # For systemd sshd losg it needs root
-  initUserID: 0
-  initGroupID: 0
+  # For systemd sshd logs it needs root
+  userID: 0
+  # For systemd sshd logs it needs root
+  groupID: 0
 
   image:
     name: giantswarm/fluent-bit
-    tag: 0.14.6
-
-  init_image:
-    name: giantswarm/busybox
-    tag: 1.28.3
+    tag: 1.4.2
 
   logLevel: info
+  flushFrequencyInSeconds: 5
 
 fluentd:
   replicas: 2
@@ -38,27 +35,27 @@ fluentd:
   protocol: TCP
 
   image:
-    name: giantswarm/fluentd-cloudwatch-azure
-    tag: 777d0f7104189b6b639d612366602dd7f366b2ff
+    name: giantswarm/fluentd
+    tag: 1.10.1
 
-  aws:  
+  aws:
     cloudWatch:
       enabled: false
-      region: "eu-central-1"
+      region: ""
       logGroupName: "my-cluster"
       logStreamName: "example-stream"
     S3:
       enabled: false
       bucketName: "my-cluster-logs"
-      bucketRegion: "eu-central-1"
+      bucketRegion: ""
       bucketPathPrefix: "gs-"
-      account: "00000000000" 
+      account: "00000000000"
       role: "my-role"
       grant_full_control: ""
       s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
   azure:
-    logAnalytics: 
-      enabled: false
+    logAnalytics:
+      enabled: true
       workspaceId: ""
       sharedKey: ""
   elasticsearch:

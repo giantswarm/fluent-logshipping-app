@@ -8,33 +8,38 @@ metadata:
 data:
   # Configuration files: server, input, filters and output
   # ======================================================
-  fluentbit.conf: |
+  fluent-bit.conf: |
     [SERVICE]
-        Flush         5
-        Log_Level     {{ .Values.fluentbit.logLevel }}
-        Daemon        off
-        Parsers_File  parsers.conf
-        HTTP_Server   On
-        HTTP_Listen   0.0.0.0
-        HTTP_Port     {{ .Values.fluentbit.port }}
+        Flush             {{ .Values.fluentbit.flushFrequencyInSeconds }}
+        Log_Level         {{ .Values.fluentbit.logLevel }}
+        Daemon            off
+        Parsers_File      parsers.conf
+        HTTP_Server       On
+        HTTP_Listen       0.0.0.0
+        HTTP_Port         {{ .Values.fluentbit.port }}
 
+    @INCLUDE inputs.conf
+    @INCLUDE filters.conf
+    @INCLUDE outputs.conf
+
+  inputs.conf: |  
     [INPUT]
         Name              tail
         Tag               kubernetes.*
         Path              /var/log/containers/*.log
         Parser            docker
-        DB                /var/log/fluentbit_db/flb_kube.db
+        DB                /var/log/flb_kube.db
         Buffer_Max_Size   128k
         Mem_Buf_Limit     10MB
         Skip_Long_Lines   On
         Refresh_Interval  10
-    
+
     [INPUT]
         Name              tail
         Tag               audit.kubernetes.*
         Path              /var/log/apiserver/audit.log
         Parser            json
-        DB                /var/log/fluentbit_db/flb_kube_audit.db
+        DB                /var/log/flb_kube_audit.db
         Buffer_Max_Size   128k
         Mem_Buf_Limit     10MB
         Skip_Long_Lines   On
@@ -44,25 +49,25 @@ data:
         Name              systemd
         Tag               audit.ssh.*
         Parser            syslog
+        DB                /var/log/flb_ssh.db
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
         Buffer_Max_Size   128k
         Mem_Buf_Limit     10MB
-        DB                /var/log/fluentbit_db/flb_ssh.db
         Skip_Long_Lines   On
         Refresh_Interval  10
 
-    [FILTER]
-        # Remove garbage log entries from fluent-bit (https://github.com/fluent/fluent-bit/issues/429)
-        Name   grep
-        Match  *
-        Exclude  log \"took\"\"errors\"\"took\"\"errors\"
-
+  filters.conf: |      
     [FILTER]
         Name                kubernetes
         Match               kubernetes.*
         Kube_URL            https://kubernetes.default.svc:443
-        Merge_Log           Off
+        Kube_CA_File        /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
+        Kube_Tag_Prefix     kubernetes.var.log.containers.
+        Merge_Log           On
+        Merge_Log_Key       log_processed
         K8S-Logging.Parser  On
+        K8S-Logging.Exclude Off
 
     [FILTER]
         Name record_modifier
@@ -72,9 +77,10 @@ data:
     [FILTER]
         Name modify
         Match *
-        Add_if_not_present app.kubernetes.io/name giantswarm
+        Add app.kubernetes.io/name giantswarm
         Rename app app.kubernetes.io/name
 
+  outputs.conf: |
     [OUTPUT]
         Name            forward
         Match           *
@@ -82,6 +88,42 @@ data:
         Port            ${FLUENTD_PORT}
 
   parsers.conf: |
+    [PARSER]
+        Name        docker
+        Format      json
+        Time_Key    time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L
+        Time_Keep   On
+        # Command      |  Decoder | Field | Optional Action
+        # =============|==================|=================
+        Decode_Field_As   escaped    log
+    
+    [PARSER]
+        Name   apache
+        Format regex
+        Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name   apache2
+        Format regex
+        Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +\S*)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name   apache_error
+        Format regex
+        Regex  ^\[[^ ]* (?<time>[^\]]*)\] \[(?<level>[^\]]*)\](?: \[pid (?<pid>[^\]]*)\])?( \[client (?<client>[^\]]*)\])? (?<message>.*)$
+
+    [PARSER]
+        Name   nginx
+        Format regex
+        Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
     [PARSER]
         Name   json
         Format json
@@ -94,9 +136,6 @@ data:
         Time_Key    time
         Time_Format %Y-%m-%dT%H:%M:%S.%L
         Time_Keep   On
-        # Command      |  Decoder | Field | Optional Action
-        # =============|==================|=================
-        Decode_Field_As   escaped    log
 
     [PARSER]
         Name        syslog
