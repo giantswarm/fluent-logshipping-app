@@ -33,13 +33,9 @@ spec:
       containers:
       - name: {{ .Values.fluentd.name }}
         image: {{ .Values.image.registry }}/{{ .Values.fluentd.image.name }}:{{ .Values.fluentd.image.tag }}
-        command:
-        - /bin/sh
-        - -c
-        - /etc/fluent/install-plugins.sh
         env:
-        - name: FLUENTD_ARGS
-          value: --no-supervisor -q
+        - name: FLUENTD_OPT
+          value: --no-supervisor -q 
         {{- if .Values.fluentd.aws.cloudWatch.enabled }}
         - name: AWS_REGION
           value: "{{ .Values.fluentd.aws.cloudWatch.region }}"
@@ -70,14 +66,14 @@ spec:
         {{- end}}  
         resources:
           limits:
-            cpu: 200m
-            memory: 450Mi
+            cpu: 30m
+            memory: 300Mi
           requests:
-            cpu: 200m
-            memory: 450Mi        
+            cpu: 30m
+            memory: 300Mi        
         volumeMounts:
         - name: config-volume
-          mountPath: /etc/fluent/
+          mountPath: /fluentd/etc/
       volumes:
       - name: config-volume
         configMap:
