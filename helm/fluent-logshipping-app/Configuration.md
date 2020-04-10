@@ -9,9 +9,8 @@ The following table lists the configurable parameters of the fluent-logshipping-
 | `fluentbit.protocol`                     | fluentbit protocol                                                                | `TCP`             |
 | `fluentbit.userID`                       | fluentbit user ID                                                                 | `1000`            |
 | `fluentbit.groupID`                      | fluentbit group ID                                                                | `1000`            |
-| `fluentbit.initUserID`                   | fluentbit user ID for init container                                              | `0`               |
-| `fluentbit.initGroupID`                  | fluentbit group ID for init container                                             | `0`               |
 | `fluentbit.logLevel`                     | log level collected by fluentbit                                                  | `info`            |
+| `fluentbit.flushFrequencyInSeconds`      | Number of seconds between flushes to the forwards                                 | `5`               |
 | `fluentd.name`                           | fluentd deployment name                                                           | `fluentd`         |
 | `fluentd.replicas`                       | fluentd replicas                                                                  | `2`               |
 | `fluentd.port`                           | fluentd port                                                                      | `24224`           |
