@@ -67,6 +67,14 @@ fluentd:
     secured: false
     user: ""
     password: ""
+    indices:
+      audit:
+        ssh: audit-ssh
+        kubernetes: kubernetes-ssh
+      containers:
+        name: kubernetes
+      syslog: syslog
+      
 
 giantswarm:
   monitoring:

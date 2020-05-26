@@ -45,7 +45,7 @@ data:
         </assume_role_credentials>
         <buffer tag,time>
           @type               file
-          path                /var/log/fluent/s3-containers
+          path                /var/run/fluentd/buffer/s3/containers
           timekey             3600 # 1 hour partition
           timekey_wait        10m
           timekey_use_utc     true
@@ -69,12 +69,12 @@ data:
         password            "#{ENV['ELASTICSEARCH_PASSWORD']}"
         {{- end}}
         logstash_format      true
-        logstash_prefix      kubernetes
+        logstash_prefix      {{ .Values.fluentd.elasticsearch.indices.kubernetes.name }}
         include_timestamp    true
         type_name            _doc
         <buffer>
           @type              file
-          path               /fluentd/log/buffer/kubernetes
+          path               /var/run/fluentd/buffer/elasticsearch/containers
           total_limit_size   1024MB
       
           # chunck + enqueue 
@@ -135,7 +135,7 @@ data:
         </assume_role_credentials>
         <buffer tag,time>
           @type               file
-          path                /var/log/fluent/s3-syslog
+          path                /var/run/fluentd/buffer/s3/syslog
           timekey             3600 # 1 hour partition
           timekey_wait        10m
           timekey_use_utc     true
@@ -159,12 +159,12 @@ data:
         password             "#{ENV['ELASTICSEARCH_PASSWORD']}"
         {{- end}}
         logstash_format      true
-        logstash_prefix      kubernetes-syslog
+        logstash_prefix      {{ .Values.fluentd.elasticsearch.indices.syslog.name }}
         include_timestamp    true
         type_name            _doc
         <buffer>
           @type              file
-          path               /fluentd/log/buffer/syslog
+          path               /var/run/fluentd/buffer/elasticsearch/syslog
           total_limit_size   1024MB
     
           # chunck + enqueue 
@@ -225,7 +225,7 @@ data:
         </assume_role_credentials>
         <buffer tag,time>
           @type               file
-          path                /var/log/fluent/s3-k8s-audit
+          path                /var/run/fluentd/buffer/s3/audit_kubernetes
           timekey             3600 # 1 hour partition
           timekey_wait        10m
           timekey_use_utc     true
@@ -249,12 +249,12 @@ data:
         password            "#{ENV['ELASTICSEARCH_PASSWORD']}"
         {{- end}}
         logstash_format      true
-        logstash_prefix      audit-kubernetes
+        logstash_prefix      {{ .Values.fluentd.elasticsearch.indices.audit.kubernetes.name }}
         include_timestamp    true
         type_name            _doc
         <buffer>
           @type              file
-          path               /fluentd/log/buffer/audit_kubernetes
+          path               /var/run/fluentd/buffer/elasticsearch/audit_kubernetes
           total_limit_size   1024MB
       
           # chunck + enqueue 
@@ -315,7 +315,7 @@ data:
         </assume_role_credentials>
         <buffer tag,time>
           @type               file
-          path                /var/log/fluent/s3-ssh
+          path                /var/run/fluentd/buffer/elasticsearch/ssh
           timekey             3600 # 1 hour partition
           timekey_wait        10m
           timekey_use_utc     true
@@ -339,12 +339,12 @@ data:
         password             "#{ENV['ELASTICSEARCH_PASSWORD']}"
         {{- end}}
         logstash_format      true
-        logstash_prefix      system-sshd
+        logstash_prefix      {{ .Values.fluentd.elasticsearch.indices.audit.ssh.name }}
         include_timestamp    true
         type_name            _doc
         <buffer>
           @type              file
-          path               /fluentd/log/buffer/system_sshd
+          path               /var/run/fluentd/buffer/elasticsearch/ssh
           total_limit_size   1024MB
       
           # chunck + enqueue 
