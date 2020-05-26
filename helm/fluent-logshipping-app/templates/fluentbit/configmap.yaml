@@ -9,6 +9,13 @@ data:
   # Configuration files: server, input, filters and output
   # ======================================================
   fluent-bit.conf: |
+    # Setting the memory buffer limit for all the input plugins to handle backpressure (cf. https://docs.fluentbit.io/manual/v/0.12/configuration/backpressure)
+    @SET input_memory_buffer_limit=10MB
+    @SET input_refresh_interval_in_seconds=10
+    @SET input_skip_long_lines=on
+
+    @SET input_buffer_max_size=1MB
+
     [SERVICE]
         Flush             {{ .Values.fluentbit.flushFrequencyInSeconds }}
         Log_Level         {{ .Values.fluentbit.logLevel }}
@@ -18,66 +25,101 @@ data:
         HTTP_Listen       0.0.0.0
         HTTP_Port         {{ .Values.fluentbit.port }}
 
+        # Configure optional buffer on the filesystem
+        storage.path              /var/log/flb-storage/
+        storage.sync              normal
+        storage.checksum          off
+        storage.backlog.mem_limit 5M
+
     @INCLUDE inputs.conf
     @INCLUDE filters.conf
     @INCLUDE outputs.conf
 
-  inputs.conf: |  
+  inputs.conf: |
+    @INCLUDE inputs-kubernetes.conf
+    @INCLUDE inputs-syslog.conf
+    @INCLUDE inputs-auditing.conf
+
+  inputs-kubernetes.conf: |
+    # Get all the container logs
     [INPUT]
         Name              tail
         Tag               kubernetes.*
-        Path              /var/log/containers/*.log
+        Alias             kubernetes
         Parser            docker
-        DB                /var/log/flb_kube.db
-        Buffer_Max_Size   128k
-        Mem_Buf_Limit     10MB
-        Skip_Long_Lines   On
-        Refresh_Interval  10
+        Path              /var/log/containers/*.log
+        DB                /var/log/flb_kubernetes.db
+        Docker_Mode       on
 
+        # Buffering options
+        Mem_Buf_Limit     ${input_memory_buffer_limit}
+        Buffer_Max_Size   ${input_buffer_max_size}
+
+        # The interval of refreshing the list of watched files in seconds
+        Refresh_Interval  ${input_refresh_interval_in_seconds}
+        Skip_Long_Lines   ${input_skip_long_lines}
+ 
+    # Get the api server audit logs
     [INPUT]
         Name              tail
         Tag               audit.kubernetes.*
         Path              /var/log/apiserver/audit.log
         Parser            json
-        DB                /var/log/flb_kube_audit.db
-        Buffer_Max_Size   128k
-        Mem_Buf_Limit     10MB
-        Skip_Long_Lines   On
-        Refresh_Interval  10
+        DB                /var/log/flb_audit_kubernetes.db
 
+        # Buffering options
+        Buffer_Max_Size   ${input_buffer_max_size}
+        Mem_Buf_Limit     ${input_memory_buffer_limit}
+
+        # The interval of refreshing the list of watched files in seconds
+        Refresh_Interval  ${input_refresh_interval_in_seconds}
+        Skip_Long_Lines   ${input_skip_long_lines}
+        
+  inputs-syslog.conf: |
+    [INPUT]
+        Name              systemd
+        Tag               syslog.*
+        Parser            syslog
+        DB                /var/log/flb_syslog.db
+
+        Mem_Buf_Limit     ${input_memory_buffer_limit}
+        Strip_Underscores on
+
+  inputs-auditing.conf: |
+    # Get the sshd audit logs
     [INPUT]
         Name              systemd
         Tag               audit.ssh.*
+        Alias             system_sshd_audit
         Parser            syslog
         DB                /var/log/flb_ssh.db
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
-        Buffer_Max_Size   128k
-        Mem_Buf_Limit     10MB
-        Skip_Long_Lines   On
-        Refresh_Interval  10
+        Mem_Buf_Limit     ${input_memory_buffer_limit}
+        Strip_Underscores on
 
   filters.conf: |      
     [FILTER]
         Name                kubernetes
         Match               kubernetes.*
+        Kube_Tag_Prefix     kubernetes.var.log.containers.
         Kube_URL            https://kubernetes.default.svc:443
         Kube_CA_File        /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
-        Kube_Tag_Prefix     kubernetes.var.log.containers.
         Merge_Log           On
         Merge_Log_Key       log_processed
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
 
     [FILTER]
-        Name record_modifier
-        Match *
+        Name   record_modifier
+        Match  *
         Record cluster {{ .Values.clusterID }}
 
+    ## Add this filter to avoid conflicts with customer existing apps
     [FILTER]
-        Name modify
-        Match *
-        Add app.kubernetes.io/name giantswarm
+        Name   modify
+        Match  *
+        Add    app.kubernetes.io/name giantswarm
         Rename app app.kubernetes.io/name
 
   outputs.conf: |
@@ -86,17 +128,48 @@ data:
         Match           *
         Host            ${FLUENTD_HOST}
         Port            ${FLUENTD_PORT}
+        Retry_Limit     false              # Retry
+
+  outputs-azure-loganalytics.conf: |
+    [OUTPUT]
+        Name         azure
+        Match        audit.ssh
+        Customer_ID  ${WORKSPACE_ID}
+        Shared_Key   ${SHARED_KEY}
+        Log_Type     SSHAuditLogs
+        Retry_Limit  false
+    
+    [OUTPUT]
+        Name         azure
+        Match        syslog
+        Customer_ID  ${WORKSPACE_ID}
+        Shared_Key   ${SHARED_KEY}
+        Log_Type     KubernetesSyslog
+        Retry_Limit  false
+
+    [OUTPUT]
+        Name         azure
+        Match        kubernetes.**
+        Customer_ID  ${WORKSPACE_ID}
+        Shared_Key   ${SHARED_KEY}
+        Log_Type     KubernetesContainerLogs
+        Retry_Limit  false
+
+    [OUTPUT]
+        Name         azure
+        Match        audit.kubernetes.**
+        Customer_ID  ${WORKSPACE_ID}
+        Shared_Key   ${SHARED_KEY}
+        Log_Type     KubernetesAuditLogs
+        Retry_Limit  false
 
   parsers.conf: |
     [PARSER]
-        Name        docker
-        Format      json
-        Time_Key    time
-        Time_Format %Y-%m-%dT%H:%M:%S.%L
-        Time_Keep   On
-        # Command      |  Decoder | Field | Optional Action
-        # =============|==================|=================
-        Decode_Field_As   escaped    log
+        Name         docker
+        Format       json
+        Time_Key     time
+        Time_Format  %Y-%m-%dT%H:%M:%S.%L
+        Time_Keep    On
     
     [PARSER]
         Name   apache
@@ -129,13 +202,6 @@ data:
         Format json
         Time_Key time
         Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name        docker
-        Format      json
-        Time_Key    time
-        Time_Format %Y-%m-%dT%H:%M:%S.%L
-        Time_Keep   On
 
     [PARSER]
         Name        syslog

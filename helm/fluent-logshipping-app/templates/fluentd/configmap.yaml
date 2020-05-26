@@ -14,241 +14,362 @@ data:
       port {{ .Values.fluentd.port }}
     </source>
 
-    {{- if .Values.fluentd.aws.cloudWatch.enabled }}
     <match kubernetes.**>
-      @type              cloudwatch_logs
-      log_group_name     {{ .Values.fluentd.aws.cloudWatch.logGroupName }}
-      log_stream_name    {{ .Values.fluentd.aws.cloudWatch.logStreamName }}-containers
-      auto_create_stream true
-    </match>
-
-    <match audit.kubernetes.**>
-      @type              cloudwatch_logs
-      log_group_name     {{ .Values.fluentd.aws.cloudWatch.logGroupName }}
-      log_stream_name    {{ .Values.fluentd.aws.cloudWatch.logStreamName }}-kubernetes-audit
-      auto_create_stream true
-    </match>
-
-    <match audit.ssh.**>
-      @type              cloudwatch_logs
-      log_group_name     {{ .Values.fluentd.aws.cloudWatch.logGroupName }}
-      log_stream_name    {{ .Values.fluentd.aws.cloudWatch.logStreamName }}-ssh-audit
-      auto_create_stream true
-    </match>
-    {{- end}}
-
-    {{- if .Values.fluentd.aws.S3.enabled }}
-    <match kubernetes.**>
-      @type                 s3
-      s3_bucket             {{ .Values.fluentd.aws.S3.bucketName }}
-      s3_region             {{ .Values.fluentd.aws.S3.bucketRegion }}
-      path                  {{ .Values.fluentd.aws.S3.bucketPathPrefix }}-containers/
-      s3_object_key_format  {{ .Values.fluentd.aws.S3.s3_object_key_format }}
-      {{- if .Values.fluentd.aws.S3.grant_full_control }}
-      grant_full_control    {{ .Values.fluentd.aws.S3.grant_full_control }}
-      {{- end }}
-      check_bucket          false
-      check_object          false
-      check_apikey_on_start false
-      <assume_role_credentials>
-        role_arn          arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
-        role_session_name fluentd
-      </assume_role_credentials>
-      <buffer tag,time>
-        @type            file
-        path             /var/log/fluent/s3-containers
-        timekey          3600 # 1 hour partition
-        timekey_wait     10m
-        timekey_use_utc  true
-        chunk_limit_size 256m
-      </buffer>
-      <format>
-        @type json
-      </format>
-    </match>
-
-    <match audit.kubernetes.**>
-      @type                 s3
-      s3_bucket             {{ .Values.fluentd.aws.S3.bucketName }}
-      s3_region             {{ .Values.fluentd.aws.S3.bucketRegion }}
-      path                  {{ .Values.fluentd.aws.S3.bucketPathPrefix }}-k8s-audit/
-      s3_object_key_format  {{ .Values.fluentd.aws.S3.s3_object_key_format }}
-      {{- if .Values.fluentd.aws.S3.grant_full_control }}
-      grant_full_control    {{ .Values.fluentd.aws.S3.grant_full_control }}
-      {{- end }}
-      check_bucket          false
-      check_object          false
-      check_apikey_on_start false
-      <assume_role_credentials>
-        role_arn          arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
-        role_session_name fluentd
-      </assume_role_credentials>
-      <buffer tag,time>
-        @type            file
-        path             /var/log/fluent/s3-k8s-audit
-        timekey          3600 # 1 hour partition
-        timekey_wait     10m
-        timekey_use_utc  true
-        chunk_limit_size 256m
-      </buffer>
-      <format>
-        @type json
-      </format>
-    </match>
-
-    <match audit.ssh.**>
-      @type                 s3
-      s3_bucket             {{ .Values.fluentd.aws.S3.bucketName }}
-      s3_region             {{ .Values.fluentd.aws.S3.bucketRegion }}
-      path                  {{ .Values.fluentd.aws.S3.bucketPathPrefix }}-ssh/
-      s3_object_key_format  {{ .Values.fluentd.aws.S3.s3_object_key_format }}
-      {{- if .Values.fluentd.aws.S3.grant_full_control }}
-      grant_full_control    {{ .Values.fluentd.aws.S3.grant_full_control }}
-      {{- end }}
-      check_bucket          false
-      check_object          false
-      check_apikey_on_start false
-      <assume_role_credentials>
-        role_arn          arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
-        role_session_name fluentd
-      </assume_role_credentials>
-      <buffer tag,time>
-        @type            file
-        path             /var/log/fluent/s3-ssh
-        timekey          3600 # 1 hour partition
-        timekey_wait     10m
-        timekey_use_utc  true
-        chunk_limit_size 256m
-      </buffer>
-      <format>
-        @type json
-      </format>
-    </match>
-    {{- end}}
-
-    {{- if .Values.fluentd.azure.logAnalytics.enabled }}
-    <match kubernetes.**>
-      @type           azure-loganalytics
-      customer_id     "#{ENV['WORKSPACE_ID']}"
-      shared_key      "#{ENV['SHARED_KEY']}"
-      log_type        KubernetesContainerLogs
-      add_time_field  true
-    </match>
-
-    <match audit.kubernetes.**>
-      @type           azure-loganalytics
-      customer_id     "#{ENV['WORKSPACE_ID']}"
-      shared_key      "#{ENV['SHARED_KEY']}"
-      log_type        KubernetesAuditLogs
-      add_time_field  true
-    </match>
-
-    <match audit.ssh.**>
-      @type           azure-loganalytics
-      customer_id     "#{ENV['WORKSPACE_ID']}"
-      shared_key      "#{ENV['SHARED_KEY']}"
-      log_type        SSHAuditLogs
-      add_time_field  true
-    </match>
-    {{- end}}
-
-    {{- if .Values.fluentd.elasticsearch.enabled }}
-    <match kubernetes.**>
-      @type           elasticsearch
-      hosts           {{ .Values.fluentd.elasticsearch.hosts }}
-      scheme          {{ .Values.fluentd.elasticsearch.scheme }}
-      ssl_verify      {{ .Values.fluentd.elasticsearch.sslVerify }}
-      path            {{ .Values.fluentd.elasticsearch.path }}
-      {{- if .Values.fluentd.elasticsearch.secured }}
-      user            "#{ENV['ELASTICSEARCH_USER']}"
-      password        "#{ENV['ELASTICSEARCH_PASSWORD']}"
+      @type copy
+      
+      {{- if .Values.fluentd.aws.cloudWatch.enabled }}
+      <store>
+        @type              cloudwatch_logs
+        log_group_name     {{ .Values.fluentd.aws.cloudWatch.logGroupName }}
+        log_stream_name    {{ .Values.fluentd.aws.cloudWatch.logStreamName }}-containers
+        auto_create_stream true
+      </store>
       {{- end}}
-      logstash_format true
-      logstash_prefix kubernetes
-      include_timestamp true
-      <buffer>
-        @file
-        path /fluentd/log/buffer
-        total_limit_size 1024MB
-    
-        # chunck + enqueue 
-        chunk_limit_size 16MB
-        flush_mode interval
-        flush_interval 5s
-   
-        # flush thread
-        flush_thread_count 8
 
-        retry_type exponential_backoff
-        retry_timeout 1h
-        retry_max_interval 30
-        overflow_action drop_oldest_chunk
-      </buffer>
+      {{- if .Values.fluentd.aws.S3.enabled }}
+      <store>
+        @type                 s3
+        s3_bucket             {{ .Values.fluentd.aws.S3.bucketName }}
+        s3_region             {{ .Values.fluentd.aws.S3.bucketRegion }}
+        path                  {{ .Values.fluentd.aws.S3.bucketPathPrefix }}-containers/
+        s3_object_key_format  {{ .Values.fluentd.aws.S3.s3_object_key_format }}
+        {{- if .Values.fluentd.aws.S3.grant_full_control }}
+        grant_full_control    {{ .Values.fluentd.aws.S3.grant_full_control }}
+        {{- end }}
+        check_bucket          false
+        check_object          false
+        check_apikey_on_start false
+        <assume_role_credentials>
+          role_arn            arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
+          role_session_name   fluentd
+        </assume_role_credentials>
+        <buffer tag,time>
+          @type               file
+          path                /var/log/fluent/s3-containers
+          timekey             3600 # 1 hour partition
+          timekey_wait        10m
+          timekey_use_utc     true
+          chunk_limit_size    256m
+        </buffer>
+        <format>
+          @type               json
+        </format>
+      </store>
+      {{- end}}
+
+      {{- if .Values.fluentd.elasticsearch.enabled }}
+      <store>
+        @type               elasticsearch
+        hosts               {{ .Values.fluentd.elasticsearch.hosts }}
+        scheme              {{ .Values.fluentd.elasticsearch.scheme }}
+        ssl_verify          {{ .Values.fluentd.elasticsearch.sslVerify }}
+        path                {{ .Values.fluentd.elasticsearch.path }}
+        {{- if .Values.fluentd.elasticsearch.secured }}
+        user                "#{ENV['ELASTICSEARCH_USER']}"
+        password            "#{ENV['ELASTICSEARCH_PASSWORD']}"
+        {{- end}}
+        logstash_format      true
+        logstash_prefix      kubernetes
+        include_timestamp    true
+        type_name            _doc
+        <buffer>
+          @type              file
+          path               /fluentd/log/buffer/kubernetes
+          total_limit_size   1024MB
+      
+          # chunck + enqueue 
+          chunk_limit_size   16MB
+          flush_mode         interval
+          flush_interval     5s
+    
+          # flush thread
+          flush_thread_count 8
+
+          retry_type         exponential_backoff
+          retry_timeout      1h
+          retry_max_interval 30
+          overflow_action    drop_oldest_chunk
+        </buffer>
+      </store>
+      {{- end}}
+
+      {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+      <store>
+        @type           azure-loganalytics
+        customer_id     "#{ENV['WORKSPACE_ID']}"
+        shared_key      "#{ENV['SHARED_KEY']}"
+        log_type        KubernetesContainerLogs
+        add_time_field  true
+      </store>
+      {{- end}}
+    </match>
+
+    <match syslog.**>
+      @type copy
+      
+      {{- if .Values.fluentd.aws.cloudWatch.enabled }}
+      <store>
+        @type              cloudwatch_logs
+        log_group_name     {{ .Values.fluentd.aws.cloudWatch.logGroupName }}
+        log_stream_name    {{ .Values.fluentd.aws.cloudWatch.logStreamName }}-syslog
+        auto_create_stream true
+      </store>
+      {{- end}}
+
+      {{- if .Values.fluentd.aws.S3.enabled }}
+      <store>
+        @type                 s3
+        s3_bucket             {{ .Values.fluentd.aws.S3.bucketName }}
+        s3_region             {{ .Values.fluentd.aws.S3.bucketRegion }}
+        path                  {{ .Values.fluentd.aws.S3.bucketPathPrefix }}-syslog/
+        s3_object_key_format  {{ .Values.fluentd.aws.S3.s3_object_key_format }}
+        {{- if .Values.fluentd.aws.S3.grant_full_control }}
+        grant_full_control    {{ .Values.fluentd.aws.S3.grant_full_control }}
+        {{- end }}
+        check_bucket          false
+        check_object          false
+        check_apikey_on_start false
+        <assume_role_credentials>
+          role_arn            arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
+          role_session_name   fluentd
+        </assume_role_credentials>
+        <buffer tag,time>
+          @type               file
+          path                /var/log/fluent/s3-syslog
+          timekey             3600 # 1 hour partition
+          timekey_wait        10m
+          timekey_use_utc     true
+          chunk_limit_size    256m
+        </buffer>
+        <format>
+          @type               json
+        </format>
+      </store>
+      {{- end}}
+
+      {{- if .Values.fluentd.elasticsearch.enabled }}
+      <store>
+        @type                elasticsearch
+        hosts                {{ .Values.fluentd.elasticsearch.hosts }}
+        scheme               {{ .Values.fluentd.elasticsearch.scheme }}
+        ssl_verify           {{ .Values.fluentd.elasticsearch.sslVerify }}
+        path                 {{ .Values.fluentd.elasticsearch.path }}
+        {{- if .Values.fluentd.elasticsearch.secured }}
+        user                 "#{ENV['ELASTICSEARCH_USER']}"
+        password             "#{ENV['ELASTICSEARCH_PASSWORD']}"
+        {{- end}}
+        logstash_format      true
+        logstash_prefix      kubernetes-syslog
+        include_timestamp    true
+        type_name            _doc
+        <buffer>
+          @type              file
+          path               /fluentd/log/buffer/syslog
+          total_limit_size   1024MB
+    
+          # chunck + enqueue 
+          chunk_limit_size   16MB
+          flush_mode         interval
+          flush_interval     5s
+   
+          # flush thread
+          flush_thread_count 8
+
+          retry_type         exponential_backoff
+          retry_timeout      1h
+          retry_max_interval 30
+          overflow_action    drop_oldest_chunk
+        </buffer>
+      </store>
+      {{- end}}
+
+      {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+      <store>
+        @type           azure-loganalytics
+        customer_id     "#{ENV['WORKSPACE_ID']}"
+        shared_key      "#{ENV['SHARED_KEY']}"
+        log_type        KubernetesSyslog
+        add_time_field  true
+      </store>
+      {{- end}}
     </match>
 
     <match audit.kubernetes.**>
-      @type           elasticsearch
-      hosts           {{ .Values.fluentd.elasticsearch.hosts }}
-      scheme          {{ .Values.fluentd.elasticsearch.scheme }}
-      ssl_verify      {{ .Values.fluentd.elasticsearch.sslVerify }}
-      path            {{ .Values.fluentd.elasticsearch.path }}
-      {{- if .Values.fluentd.elasticsearch.secured }}
-      user            "#{ENV['ELASTICSEARCH_USER']}"
-      password        "#{ENV['ELASTICSEARCH_PASSWORD']}"
+      @type copy
+      
+      {{- if .Values.fluentd.aws.cloudWatch.enabled }}
+      <store>
+        @type              cloudwatch_logs
+        log_group_name     {{ .Values.fluentd.aws.cloudWatch.logGroupName }}
+        log_stream_name    {{ .Values.fluentd.aws.cloudWatch.logStreamName }}-kubernetes-audit
+        auto_create_stream true
+      </store>
       {{- end}}
-      logstash_format true
-      logstash_prefix audit-kubernetes
-      include_timestamp true
-      <buffer>
-        @file
-        path /fluentd/log/buffer
-        total_limit_size 1024MB
-    
-        # chunck + enqueue 
-        chunk_limit_size 16MB
-        flush_mode interval
-        flush_interval 5s
-   
-        # flush thread
-        flush_thread_count 8
 
-        retry_type exponential_backoff
-        retry_timeout 1h
-        retry_max_interval 30
-        overflow_action drop_oldest_chunk
-      </buffer>
+      {{- if .Values.fluentd.aws.S3.enabled }}
+      <store>
+        @type                 s3
+        s3_bucket             {{ .Values.fluentd.aws.S3.bucketName }}
+        s3_region             {{ .Values.fluentd.aws.S3.bucketRegion }}
+        path                  {{ .Values.fluentd.aws.S3.bucketPathPrefix }}-kubernetes-audit/
+        s3_object_key_format  {{ .Values.fluentd.aws.S3.s3_object_key_format }}
+        {{- if .Values.fluentd.aws.S3.grant_full_control }}
+        grant_full_control    {{ .Values.fluentd.aws.S3.grant_full_control }}
+        {{- end }}
+        check_bucket          false
+        check_object          false
+        check_apikey_on_start false
+        <assume_role_credentials>
+          role_arn            arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
+          role_session_name   fluentd
+        </assume_role_credentials>
+        <buffer tag,time>
+          @type               file
+          path                /var/log/fluent/s3-k8s-audit
+          timekey             3600 # 1 hour partition
+          timekey_wait        10m
+          timekey_use_utc     true
+          chunk_limit_size    256m
+        </buffer>
+        <format>
+          @type               json
+        </format>
+      </store>
+      {{- end}}
+
+      {{- if .Values.fluentd.elasticsearch.enabled }}
+      <store>
+        @type               elasticsearch
+        hosts               {{ .Values.fluentd.elasticsearch.hosts }}
+        scheme              {{ .Values.fluentd.elasticsearch.scheme }}
+        ssl_verify          {{ .Values.fluentd.elasticsearch.sslVerify }}
+        path                {{ .Values.fluentd.elasticsearch.path }}
+        {{- if .Values.fluentd.elasticsearch.secured }}
+        user                "#{ENV['ELASTICSEARCH_USER']}"
+        password            "#{ENV['ELASTICSEARCH_PASSWORD']}"
+        {{- end}}
+        logstash_format      true
+        logstash_prefix      audit-kubernetes
+        include_timestamp    true
+        type_name            _doc
+        <buffer>
+          @type              file
+          path               /fluentd/log/buffer/audit_kubernetes
+          total_limit_size   1024MB
+      
+          # chunck + enqueue 
+          chunk_limit_size   16MB
+          flush_mode         interval
+          flush_interval     5s
+    
+          # flush thread
+          flush_thread_count 8
+
+          retry_type         exponential_backoff
+          retry_timeout      1h
+          retry_max_interval 30
+          overflow_action    drop_oldest_chunk
+        </buffer>
+      </store>
+      {{- end}}
+
+      {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+      <store>
+        @type           azure-loganalytics
+        customer_id     "#{ENV['WORKSPACE_ID']}"
+        shared_key      "#{ENV['SHARED_KEY']}"
+        log_type        KubernetesAuditLogs
+        add_time_field  true
+      </store>
+      {{- end}}
     </match>
 
     <match audit.ssh.**>
-      @type           elasticsearch
-      hosts           {{ .Values.fluentd.elasticsearch.hosts }}
-      scheme          {{ .Values.fluentd.elasticsearch.scheme }}
-      ssl_verify      {{ .Values.fluentd.elasticsearch.sslVerify }}
-      path            {{ .Values.fluentd.elasticsearch.path }}
-      {{- if .Values.fluentd.elasticsearch.secured }}
-      user            "#{ENV['ELASTICSEARCH_USER']}"
-      password        "#{ENV['ELASTICSEARCH_PASSWORD']}"
+      @type copy
+      
+      {{- if .Values.fluentd.aws.cloudWatch.enabled }}
+      <store>
+        @type              cloudwatch_logs
+        log_group_name     {{ .Values.fluentd.aws.cloudWatch.logGroupName }}
+        log_stream_name    {{ .Values.fluentd.aws.cloudWatch.logStreamName }}-ssh-audit
+        auto_create_stream true
+      </store>
       {{- end}}
-      logstash_format true
-      logstash_prefix audit-ssh
-      include_timestamp true
-      <buffer>
-        @file
-        path /fluentd/log/buffer
-        total_limit_size 1024MB
-    
-        # chunck + enqueue 
-        chunk_limit_size 16MB
-        flush_mode interval
-        flush_interval 5s
-   
-        # flush thread
-        flush_thread_count 8
 
-        retry_type exponential_backoff
-        retry_timeout 1h
-        retry_max_interval 30
-        overflow_action drop_oldest_chunk
-      </buffer>
+      {{- if .Values.fluentd.aws.S3.enabled }}
+      <store>
+        @type                 s3
+        s3_bucket             {{ .Values.fluentd.aws.S3.bucketName }}
+        s3_region             {{ .Values.fluentd.aws.S3.bucketRegion }}
+        path                  {{ .Values.fluentd.aws.S3.bucketPathPrefix }}-ssh/
+        s3_object_key_format  {{ .Values.fluentd.aws.S3.s3_object_key_format }}
+        {{- if .Values.fluentd.aws.S3.grant_full_control }}
+        grant_full_control    {{ .Values.fluentd.aws.S3.grant_full_control }}
+        {{- end }}
+        check_bucket          false
+        check_object          false
+        check_apikey_on_start false
+        <assume_role_credentials>
+          role_arn            arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
+          role_session_name   fluentd
+        </assume_role_credentials>
+        <buffer tag,time>
+          @type               file
+          path                /var/log/fluent/s3-ssh
+          timekey             3600 # 1 hour partition
+          timekey_wait        10m
+          timekey_use_utc     true
+          chunk_limit_size    256m
+        </buffer>
+        <format>
+          @type               json
+        </format>
+      </store>
+      {{- end}}
+
+      {{- if .Values.fluentd.elasticsearch.enabled }}
+      <store>
+        @type                elasticsearch
+        hosts                {{ .Values.fluentd.elasticsearch.hosts }}
+        scheme               {{ .Values.fluentd.elasticsearch.scheme }}
+        ssl_verify           {{ .Values.fluentd.elasticsearch.sslVerify }}
+        path                 {{ .Values.fluentd.elasticsearch.path }}
+        {{- if .Values.fluentd.elasticsearch.secured }}
+        user                 "#{ENV['ELASTICSEARCH_USER']}"
+        password             "#{ENV['ELASTICSEARCH_PASSWORD']}"
+        {{- end}}
+        logstash_format      true
+        logstash_prefix      system-sshd
+        include_timestamp    true
+        type_name            _doc
+        <buffer>
+          @type              file
+          path               /fluentd/log/buffer/system_sshd
+          total_limit_size   1024MB
+      
+          # chunck + enqueue 
+          chunk_limit_size   16MB
+          flush_mode         interval
+          flush_interval     5s
+    
+          # flush thread
+          flush_thread_count 8
+
+          retry_type         exponential_backoff
+          retry_timeout      1h
+          retry_max_interval 30
+          overflow_action    drop_oldest_chunk
+        </buffer>
+      </store>
+      {{- end}}
+
+      {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+      <store>
+        @type           azure-loganalytics
+        customer_id     "#{ENV['WORKSPACE_ID']}"
+        shared_key      "#{ENV['SHARED_KEY']}"
+        log_type        SshAuditLogs
+        add_time_field  true
+      </store>
+      {{- end}}
     </match>
-    {{- end}}

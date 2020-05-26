@@ -35,10 +35,10 @@ spec:
           value: "{{ .Values.fluentd.port }}"
         resources:
           limits:
-            cpu: 30m
+            cpu: 100m
             memory: 100Mi
           requests:
-            cpu: 30m
+            cpu: 100m
             memory: 100Mi
         livenessProbe:
           tcpSocket:
