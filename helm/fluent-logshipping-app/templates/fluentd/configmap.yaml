@@ -98,7 +98,7 @@ data:
         @type           azure-loganalytics
         customer_id     "#{ENV['WORKSPACE_ID']}"
         shared_key      "#{ENV['SHARED_KEY']}"
-        log_type        KubernetesContainerLogs
+        log_type        {{ .Values.fluentd.azure.logAnalytics.customLogs.containers.name }}
         add_time_field  true
       </store>
       {{- end}}
@@ -188,7 +188,7 @@ data:
         @type           azure-loganalytics
         customer_id     "#{ENV['WORKSPACE_ID']}"
         shared_key      "#{ENV['SHARED_KEY']}"
-        log_type        KubernetesSyslog
+        log_type        {{ .Values.fluentd.azure.logAnalytics.customLogs.syslog.name }}
         add_time_field  true
       </store>
       {{- end}}
@@ -278,7 +278,7 @@ data:
         @type           azure-loganalytics
         customer_id     "#{ENV['WORKSPACE_ID']}"
         shared_key      "#{ENV['SHARED_KEY']}"
-        log_type        KubernetesAuditLogs
+        log_type        {{ .Values.fluentd.azure.logAnalytics.customLogs.audit.kubernetes.name }}
         add_time_field  true
       </store>
       {{- end}}
@@ -368,7 +368,7 @@ data:
         @type           azure-loganalytics
         customer_id     "#{ENV['WORKSPACE_ID']}"
         shared_key      "#{ENV['SHARED_KEY']}"
-        log_type        SshAuditLogs
+        log_type        {{ .Values.fluentd.azure.logAnalytics.customLogs.audit.ssh.name }}
         add_time_field  true
       </store>
       {{- end}}
