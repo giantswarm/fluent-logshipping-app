@@ -16,6 +16,8 @@ data:
 
     @SET input_buffer_max_size=1MB
 
+    @SET input_database_path=/var/run/fluent-bit
+
     [SERVICE]
         Flush             {{ .Values.fluentbit.flushFrequencyInSeconds }}
         Log_Level         {{ .Values.fluentbit.logLevel }}
@@ -26,7 +28,7 @@ data:
         HTTP_Port         {{ .Values.fluentbit.port }}
 
         # Configure optional buffer on the filesystem
-        storage.path              /var/log/flb-storage/
+        storage.path              /var/log/fluent-bit-storage/
         storage.sync              normal
         storage.checksum          off
         storage.backlog.mem_limit 5M
@@ -48,7 +50,7 @@ data:
         Alias             kubernetes
         Parser            docker
         Path              /var/log/containers/*.log
-        DB                /var/log/flb_kubernetes.db
+        DB                ${input_database_path}/kubernetes.db
         Docker_Mode       on
 
         # Buffering options
@@ -59,28 +61,12 @@ data:
         Refresh_Interval  ${input_refresh_interval_in_seconds}
         Skip_Long_Lines   ${input_skip_long_lines}
  
-    # Get the api server audit logs
-    [INPUT]
-        Name              tail
-        Tag               audit.kubernetes.*
-        Path              /var/log/apiserver/audit.log
-        Parser            json
-        DB                /var/log/flb_audit_kubernetes.db
-
-        # Buffering options
-        Buffer_Max_Size   ${input_buffer_max_size}
-        Mem_Buf_Limit     ${input_memory_buffer_limit}
-
-        # The interval of refreshing the list of watched files in seconds
-        Refresh_Interval  ${input_refresh_interval_in_seconds}
-        Skip_Long_Lines   ${input_skip_long_lines}
-        
   inputs-syslog.conf: |
     [INPUT]
         Name              systemd
         Tag               syslog.*
         Parser            syslog
-        DB                /var/log/flb_syslog.db
+        DB                ${input_database_path}/syslog.db
 
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
@@ -90,13 +76,28 @@ data:
     [INPUT]
         Name              systemd
         Tag               audit.ssh.*
-        Alias             system_sshd_audit
         Parser            syslog
-        DB                /var/log/flb_ssh.db
+        DB                ${input_database_path}/audit_ssh.db
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
 
+    # Get the kubernetes api server audit logs
+    [INPUT]
+        Name              tail
+        Tag               audit.kubernetes.*
+        Path              /var/log/apiserver/audit.log
+        Parser            json
+        DB                ${input_database_path}/audit_kubernetes.db
+
+        # Buffering options
+        Buffer_Max_Size   ${input_buffer_max_size}
+        Mem_Buf_Limit     ${input_memory_buffer_limit}
+
+        # The interval of refreshing the list of watched files in seconds
+        Refresh_Interval  ${input_refresh_interval_in_seconds}
+        Skip_Long_Lines   ${input_skip_long_lines}
+        
   filters.conf: |      
     [FILTER]
         Name                kubernetes
@@ -129,39 +130,6 @@ data:
         Host            ${FLUENTD_HOST}
         Port            ${FLUENTD_PORT}
         Retry_Limit     false              # Retry
-
-  outputs-azure-loganalytics.conf: |
-    [OUTPUT]
-        Name         azure
-        Match        audit.ssh
-        Customer_ID  ${WORKSPACE_ID}
-        Shared_Key   ${SHARED_KEY}
-        Log_Type     SSHAuditLogs
-        Retry_Limit  false
-    
-    [OUTPUT]
-        Name         azure
-        Match        syslog
-        Customer_ID  ${WORKSPACE_ID}
-        Shared_Key   ${SHARED_KEY}
-        Log_Type     KubernetesSyslog
-        Retry_Limit  false
-
-    [OUTPUT]
-        Name         azure
-        Match        kubernetes.**
-        Customer_ID  ${WORKSPACE_ID}
-        Shared_Key   ${SHARED_KEY}
-        Log_Type     KubernetesContainerLogs
-        Retry_Limit  false
-
-    [OUTPUT]
-        Name         azure
-        Match        audit.kubernetes.**
-        Customer_ID  ${WORKSPACE_ID}
-        Shared_Key   ${SHARED_KEY}
-        Log_Type     KubernetesAuditLogs
-        Retry_Limit  false
 
   parsers.conf: |
     [PARSER]
