@@ -28,10 +28,10 @@ data:
         HTTP_Port         {{ .Values.fluentbit.port }}
 
         # Configure optional buffer on the filesystem
-        storage.path              /var/log/fluent-bit-storage/
+        storage.path              /var/run/fluent-bit/storage
         storage.sync              normal
         storage.checksum          off
-        storage.backlog.mem_limit 5M
+        storage.backlog.mem_limit 50M
 
     @INCLUDE inputs.conf
     @INCLUDE filters.conf
@@ -67,7 +67,6 @@ data:
         Tag               syslog.*
         Parser            syslog
         DB                ${input_database_path}/syslog.db
-
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
 
@@ -116,20 +115,146 @@ data:
         Match  *
         Record cluster {{ .Values.clusterID }}
 
-    ## Add this filter to avoid conflicts with customer existing apps
-    [FILTER]
-        Name   modify
-        Match  *
-        Add    app.kubernetes.io/name giantswarm
-        Rename app app.kubernetes.io/name
-
   outputs.conf: |
+    {{- if .Values.fluentd.elasticsearch.enabled }}
+    @INCLUDE outputs-elastisearch.conf
+    {{- else if .Values.fluentd.azure.logAnalytics.enabled }}
+    @INCLUDE outputs-azure-loganalytics.conf
+    {{- else if or .Values.fluentd.aws.cloudWatch.enabled .Values.fluentd.aws.S3.enabled }}
     [OUTPUT]
         Name            forward
         Match           *
         Host            ${FLUENTD_HOST}
         Port            ${FLUENTD_PORT}
         Retry_Limit     false              # Retry
+    {{- else }}
+    [OUTPUT]
+        Name   stdout
+        Match  *
+        Format json
+    {{- end }}
+
+  outputs-elasticsearch.conf: |
+    [OUTPUT]
+        Name               es
+        Match              audit.ssh.**
+        Retry_Limit        False
+        Host               {{ .Values.fluentd.elasticsearch.host }}
+        scheme             {{ .Values.fluentd.elasticsearch.scheme }}
+        tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
+        tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
+        Port               {{ .Values.fluentd.elasticsearch.port }}
+        {{- if .Values.fluentd.elasticsearch.secured }}
+        HTTP_User          ${FLUENT_ELASTICSEARCH_USER}
+        HTTP_Passwd        ${FLUENT_ELASTICSEARCH_PASSWORD}
+        {{- end}}
+        Path               {{ .Values.fluentd.elasticsearch.path }}
+        Type               _doc
+        Logstash_Format    True
+        Logstash_Prefix    {{ .Values.fluentd.elasticsearch.indices.audit.ssh.name }}
+        Include_Tag_Key    False
+        Replace_Dots       True
+        Trace_Output       False
+        Current_Time_Index False
+
+    [OUTPUT]
+        Name               es
+        Match              syslog.**
+        Retry_Limit        False
+        Host               {{ .Values.fluentd.elasticsearch.host }}
+        scheme             {{ .Values.fluentd.elasticsearch.scheme }}
+        tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
+        tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
+        Port               {{ .Values.fluentd.elasticsearch.port }}
+        {{- if .Values.fluentd.elasticsearch.secured }}
+        HTTP_User          ${FLUENT_ELASTICSEARCH_USER}
+        HTTP_Passwd        ${FLUENT_ELASTICSEARCH_PASSWORD}
+        {{- end}}
+        Path               {{ .Values.fluentd.elasticsearch.path }}
+        Type               _doc
+        Logstash_Format    True
+        Logstash_Prefix    {{ .Values.fluentd.elasticsearch.indices.syslog.name }}
+        Include_Tag_Key    False
+        Replace_Dots       True
+        Trace_Output       False
+        Current_Time_Index False
+
+    [OUTPUT]
+        Name               es
+        Match              kubernetes.**
+        Retry_Limit        False
+        Host               {{ .Values.fluentd.elasticsearch.host }}
+        scheme             {{ .Values.fluentd.elasticsearch.scheme }}
+        tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
+        tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
+        Port               {{ .Values.fluentd.elasticsearch.port }}
+        {{- if .Values.fluentd.elasticsearch.secured }}
+        HTTP_User          ${FLUENT_ELASTICSEARCH_USER}
+        HTTP_Passwd        ${FLUENT_ELASTICSEARCH_PASSWORD}
+        {{- end}}
+        Path               {{ .Values.fluentd.elasticsearch.path }}
+        Type               _doc
+        Logstash_Format    True
+        Logstash_Prefix    {{ .Values.fluentd.elasticsearch.indices.containers.name }}
+        Include_Tag_Key    False
+        Replace_Dots       True
+        Trace_Output       False
+        Current_Time_Index False
+
+    [OUTPUT]
+        Name               es
+        Match              audit.kubernetes.**
+        Retry_Limit        False
+        Host               {{ .Values.fluentd.elasticsearch.host }}
+        scheme             {{ .Values.fluentd.elasticsearch.scheme }}
+        tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
+        tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
+        Port               {{ .Values.fluentd.elasticsearch.port }}
+        {{- if .Values.fluentd.elasticsearch.secured }}
+        HTTP_User          ${FLUENT_ELASTICSEARCH_USER}
+        HTTP_Passwd        ${FLUENT_ELASTICSEARCH_PASSWORD}
+        {{- end}}
+        Path               {{ .Values.fluentd.elasticsearch.path }}
+        Type               _doc
+        Logstash_Format    True
+        Logstash_Prefix    {{ .Values.fluentd.elasticsearch.indices.audit.kubernetes.name }}
+        Include_Tag_Key    False
+        Replace_Dots       True
+        Trace_Output       False
+        Current_Time_Index False
+
+  outputs-azure-loganalytics.conf: |
+    [OUTPUT]
+        Name         azure
+        Match        audit.ssh.**
+        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
+        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
+        Log_Type     {{ .Values.fluentd.azure.logAnalytics.customLogs.audit.ssh.name }}
+        Retry_Limit  false
+
+    [OUTPUT]
+        Name         azure
+        Match        syslog.**
+        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
+        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
+        Log_Type     {{ .Values.fluentd.azure.logAnalytics.customLogs.syslog.name }}
+        Retry_Limit  false
+
+    [OUTPUT]
+        Name         azure
+        Match        kubernetes.**
+        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
+        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
+        Log_Type     {{ .Values.fluentd.azure.logAnalytics.customLogs.containers.name }}
+        Retry_Limit  false
+
+    [OUTPUT]
+        Name         azure
+        Match        audit.kubernetes.**
+        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
+        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
+        Log_Type     {{ .Values.fluentd.azure.logAnalytics.customLogs.audit.kubernetes.name }}
+        Retry_Limit  false
 
   parsers.conf: |
     [PARSER]

@@ -1,8 +1,11 @@
+{{- if or .Values.fluentd.aws.cloudWatch.enabled .Values.fluentd.aws.S3.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.fluentd.name }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    releasetime: {{ $.Release.Time }}
   labels:
     app: {{ .Values.fluentd.name }}
 spec:
@@ -39,43 +42,26 @@ spec:
         {{- if .Values.fluentd.aws.cloudWatch.enabled }}
         - name: AWS_REGION
           value: "{{ .Values.fluentd.aws.cloudWatch.region }}"
-        {{- end}} 
-        {{- if .Values.fluentd.azure.logAnalytics.enabled }}
-        - name: WORKSPACE_ID
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.fluentd.name }}-secret
-              key: workspaceID
-        - name: SHARED_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.fluentd.name }}-secret
-              key: sharedKey
-        {{- end}}  
-        {{- if and .Values.fluentd.elasticsearch.enabled .Values.fluentd.elasticsearch.secured }}
-        - name: ELASTICSEARCH_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.fluentd.name }}-secret
-              key: elasticsearchUser
-        - name: ELASTICSEARCH_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.fluentd.name }}-secret
-              key: elasticsearchPassword
         {{- end}}  
         resources:
           limits:
             cpu: 30m
-            memory: 300Mi
+            memory: 400Mi
           requests:
             cpu: 30m
-            memory: 300Mi        
+            memory: 400Mi
         volumeMounts:
         - name: config-volume
           mountPath: /fluentd/etc/
+        - name: varrunfluentd
+          mountPath: /var/run/fluentd
       volumes:
       - name: config-volume
         configMap:
           defaultMode: 511
           name: {{ .Values.fluentd.name }}-config
+       - name: varrunfluentd
+        hostPath:
+          path: /var/run/fluentd
+          type: DirectoryOrCreate
+{{- end }}

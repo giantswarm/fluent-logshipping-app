@@ -7,13 +7,16 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
-## v0.3.1
+## v0.4.0
+
+### Added
+- Add syslog support
+- Multiple target support
+- Add more customization options
 
 ### Changed
 - Update fluentd to v1.10.2
-- Add syslog support
-- Can send logs to multiple targets using the copy plugin
-- Add nore customization options
+- Moved Azure Loganalytics and Elasticsearch to fluent-bit
 
 ## v0.3.0
 
@@ -66,8 +69,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 - Add CloudWatch and S3 plugin in Fluentd as storage backends. 
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.3.1...master
-[v0.3.1]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.3.1
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.4.0...master
+[v0.4.0]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.4.0
 [v0.3.0]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.3.0
 [v0.2.2]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.2.2
 [v0.2.1]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.2.1

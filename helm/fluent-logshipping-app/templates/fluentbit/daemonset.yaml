@@ -33,6 +33,30 @@ spec:
           value: "{{ .Values.fluentd.name }}.{{ .Release.Namespace }}.svc"
         - name: FLUENTD_PORT
           value: "{{ .Values.fluentd.port }}"
+        {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+        - name: FLUENT_AZURE_WORKSPACE_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.fluentbit.name }}-secret
+              key: WorkspaceID
+        - name: FLUENT_AZURE_WORKSPACE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.fluentbit.name }}-secret
+              key: WorkspaceKey
+        {{- end }}
+        {{- if and .Values.fluentd.elasticsearch.enabled .Values.fluentd.elasticsearch.secured }}
+        - name: FLUENT_ELASTICSEARCH_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.fluentbit.name }}-secret
+              key: ElasticsearchUser
+        - name: FLUENT_ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.fluentbit.name }}-secret
+              key: ElasticsearchPassword
+        {{- end }}
         resources:
           limits:
             cpu: 100m
@@ -51,22 +75,37 @@ spec:
         volumeMounts:
         - name: varlog
           mountPath: /var/log
+          readOnly: true
+        - name: varrunfluentbit
+          mountPath: /var/run/fluent-bit
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc/
+        ## Needed for syslog to work as the syslog plugins needs this id
+        - name: etcmachineid	
+          mountPath: /etc/machine-id	
+          readOnly: true	
       terminationGracePeriodSeconds: 10
       volumes:
       - name: varlog
         hostPath:
           path: /var/log
+      - name: varrunfluentbit
+        hostPath:
+          path: /var/run/fluent-bit
+          type: DirectoryOrCreate
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
       - name: fluent-bit-config
         configMap:
           name: {{ .Values.fluentbit.name }}-config
+      - name: etcmachineid
+        hostPath:
+          path: /etc/machine-id
+          type: File
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1

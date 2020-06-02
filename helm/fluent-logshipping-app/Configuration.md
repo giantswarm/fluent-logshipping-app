@@ -29,8 +29,9 @@ The following table lists the configurable parameters of the fluent-logshipping-
 | `fluentd.azure.logAnalytics.workspaceId`              | Azure Log Analytics plugin workspace id ([where do I find it?](Azure.md))         | ``                |
 | `fluentd.azure.logAnalytics.sharedKey`                | Azure Log Analytics plugin shared key ([where do I find it?](Azure.md))           | ``                |
 | `fluentd.elasticsearch.enabled`                       | Enable Elasticsearch plugin                                                       | `false`           |
-| `fluentd.elasticsearch.hosts`                         | List of Elasticsearch hosts (host1:port,host2:port)                               | ``                |
-| `fluentd.elasticsearch.scheme`                        | Elasticsearch connection scheme                                                   | `https`           |
+| `fluentd.elasticsearch.host`                          | List of Elasticsearch host (host1)                                                | ``                |
+| `fluentd.elasticsearch.port`                          | Elasticsearch port                                                                | `9200`            |
+| `fluentd.elasticsearch.tlsEnabled`                    | Elasticsearch tls enabled                                                         | `true`            |
 | `fluentd.elasticsearch.path`                          | Elasticsearch path                                                                | `/`               |
 | `fluentd.elasticsearch.sslVerify`                     | Elasticsearch verify SSL                                                          | `true`            |
 | `fluentd.elasticsearch.secured`                       | Enable Elasticsearch login                                                        | `false`           |

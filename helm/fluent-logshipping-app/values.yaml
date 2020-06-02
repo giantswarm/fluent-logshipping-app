@@ -34,6 +34,8 @@ fluentd:
   port: 24224
   protocol: TCP
 
+  logLevel: info
+
   image:
     name: giantswarm/fluentd
     tag: 1.10.2
@@ -68,11 +70,13 @@ fluentd:
           name: KubernetesContainerLogs
         syslog:
           name: KubernetesSyslog
+
   elasticsearch:
     enabled: false
-    hosts: ""
-    scheme: "https"
+    host: ""
+    port: 9200
     path: "/"
+    tls: true
     sslVerify: true
     secured: false
     user: ""
