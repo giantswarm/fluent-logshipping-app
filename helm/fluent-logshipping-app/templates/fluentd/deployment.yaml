@@ -19,6 +19,9 @@ spec:
   template:
     metadata:
       annotations:
+        {{- if .Values.fluentd.aws.kiam }}
+        iam.amazonaws.com/role: {{ .Values.fluentd.aws.S3.role }}
+        {{- end }}
         releasetime: {{ $.Release.Time }}
       labels:
         app: {{ .Values.fluentd.name }}

@@ -42,10 +42,12 @@ data:
         check_bucket          false
         check_object          false
         check_apikey_on_start false
+        {{- if not .Values.fluentd.aws.kiam }}
         <assume_role_credentials>
           role_arn            arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
           role_session_name   fluentd
         </assume_role_credentials>
+        {{- end }}
         <buffer tag,time>
           @type               file
           path                /var/run/fluentd/buffer/s3/containers
@@ -88,10 +90,12 @@ data:
         check_bucket          false
         check_object          false
         check_apikey_on_start false
+        {{- if not .Values.fluentd.aws.kiam }}
         <assume_role_credentials>
           role_arn            arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
           role_session_name   fluentd
         </assume_role_credentials>
+        {{- end }}
         <buffer tag,time>
           @type               file
           path                /var/run/fluentd/buffer/s3/syslog
@@ -134,10 +138,12 @@ data:
         check_bucket          false
         check_object          false
         check_apikey_on_start false
+        {{- if not .Values.fluentd.aws.kiam }}
         <assume_role_credentials>
           role_arn            arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
           role_session_name   fluentd
         </assume_role_credentials>
+        {{- end }}
         <buffer tag,time>
           @type               file
           path                /var/run/fluentd/buffer/s3/audit_kubernetes
@@ -180,10 +186,12 @@ data:
         check_bucket          false
         check_object          false
         check_apikey_on_start false
+        {{- if not .Values.fluentd.aws.kiam }}
         <assume_role_credentials>
           role_arn            arn:aws:iam::{{ .Values.fluentd.aws.S3.account }}:role/{{ .Values.fluentd.aws.S3.role }}
           role_session_name   fluentd
         </assume_role_credentials>
+        {{- end }}
         <buffer tag,time>
           @type               file
           path                /var/run/fluentd/buffer/elasticsearch/ssh

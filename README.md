@@ -53,6 +53,16 @@ The app currently exports the following logs:
 
 Configuration options are documented in [Configuration.md](helm/fluent-logshipping-app/Configuration.md) document.
 
+## AWS
+
+### Prerequisites 
+
+- When using Cloudwatch or S3 a new role has to be created upfront allowing push the logs to the backend(s). More info about permissions in official docs ([S3](https://github.com/fluent/fluent-plugin-s3#iam-policy), [CloudWatch](https://github.com/fluent-plugins-nursery/fluent-plugin-cloudwatch-logs#preparation)).
+
+### Configuration
+
+- For clusters running kiam you must enable the `values.aws.kiam` configuration option.
+
 ## Compatibility
 
 Tested on Giant Swarm release 11.0.0 on `AWS` and `Azure` (Kubernetes 1.16.3).

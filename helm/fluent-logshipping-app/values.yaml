@@ -41,6 +41,7 @@ fluentd:
     tag: 1.10.2
 
   aws:
+    kiam: false
     cloudWatch:
       enabled: false
       region: ""

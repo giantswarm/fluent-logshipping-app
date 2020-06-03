@@ -15,6 +15,7 @@ The following table lists the configurable parameters of the fluent-logshipping-
 | `fluentd.replicas`                                    | fluentd replicas                                                                  | `2`               |
 | `fluentd.port`                                        | fluentd port                                                                      | `24224`           |
 | `fluentd.protocol`                                    | fluentd protocol                                                                  | `TCP`             |
+| `fluentd.aws.kiam`                                    | Kiam support                                                                      | `false`           |
 | `fluentd.aws.cloudWatch.enabled`                      | Enable CloudWatch plugin                                                          | `false`           |
 | `fluentd.aws.cloudWatch.region`                       | fluentd CloudWatch plugin region                                                  | `eu-central-1`    |
 | `fluentd.aws.cloudWatch.logGroupName`                 | fluentd CloudWatch plugin log group name                                          | `my-cluster`      |
