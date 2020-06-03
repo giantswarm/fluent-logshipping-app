@@ -34,9 +34,11 @@ fluentd:
   port: 24224
   protocol: TCP
 
+  logLevel: info
+
   image:
     name: giantswarm/fluentd
-    tag: 1.10.1
+    tag: 1.10.2
 
   aws:
     cloudWatch:
@@ -58,15 +60,37 @@ fluentd:
       enabled: true
       workspaceId: ""
       sharedKey: ""
+      customLogs:
+        audit:
+          ssh:
+            name: SshAuditLogs
+          kubernetes:
+            name: KubernetesAuditLogs
+        containers:
+          name: KubernetesContainerLogs
+        syslog:
+          name: KubernetesSyslog
+
   elasticsearch:
     enabled: false
-    hosts: ""
-    scheme: "https"
+    host: ""
+    port: 9200
     path: "/"
+    tls: true
     sslVerify: true
     secured: false
     user: ""
     password: ""
+    indices:
+      audit:
+        ssh:
+          name: audit-ssh
+        kubernetes:
+          name: audit-kubernetes
+      containers:
+        name: kubernetes
+      syslog:
+        name: syslog
 
 giantswarm:
   monitoring:

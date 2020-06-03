@@ -1,3 +1,4 @@
+{{- if or .Values.fluentd.aws.cloudWatch.enabled .Values.fluentd.aws.S3.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -20,3 +21,4 @@ spec:
       targetPort: {{ .Values.fluentd.port }}
   selector:
     app: {{ .Values.fluentd.name }}
+{{- end }}
