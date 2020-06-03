@@ -57,7 +57,7 @@ Configuration options are documented in [Configuration.md](helm/fluent-logshippi
 
 ### Prerequisites 
 
-- When using Cloudwatch or S3 a new role has to be created upfront allowing push the logs to the backend(s). More info about permissions in official docs ([S3](https://github.com/fluent/fluent-plugin-s3#iam-policy), [CloudWatch](https://github.com/fluent-plugins-nursery/fluent-plugin-cloudwatch-logs#preparation)).
+- When using Cloudwatch or S3 a new role has to be created upfront which allows pushing of the logs to the backend(s). More info about permissions in official docs ([S3](https://github.com/fluent/fluent-plugin-s3#iam-policy), [CloudWatch](https://github.com/fluent-plugins-nursery/fluent-plugin-cloudwatch-logs#preparation)).
 
 ### Configuration
 
