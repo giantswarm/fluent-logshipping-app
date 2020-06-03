@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+## v0.5.0
+
+### Added
+- Add kiam support
+
 ## v0.4.0
 
 ### Added
@@ -69,7 +74,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 - Add CloudWatch and S3 plugin in Fluentd as storage backends. 
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.4.0...master
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.5.0...master
+[v0.5.0]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.5.0
 [v0.4.0]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.4.0
 [v0.3.0]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.3.0
 [v0.2.2]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.2.2
