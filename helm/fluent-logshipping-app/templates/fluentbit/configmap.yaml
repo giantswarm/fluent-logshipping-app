@@ -117,30 +117,33 @@ data:
 
   outputs.conf: |
     {{- if .Values.fluentd.elasticsearch.enabled }}
-    @INCLUDE outputs-elastisearch.conf
-    {{- else if .Values.fluentd.azure.logAnalytics.enabled }}
+    @INCLUDE outputs-elasticsearch.conf
+    {{- end }}
+    {{- if .Values.fluentd.azure.logAnalytics.enabled }}
     @INCLUDE outputs-azure-loganalytics.conf
-    {{- else if or .Values.fluentd.aws.cloudWatch.enabled .Values.fluentd.aws.S3.enabled }}
+    {{- end }}
+    {{- if or .Values.fluentd.aws.cloudWatch.enabled .Values.fluentd.aws.S3.enabled }}
     [OUTPUT]
         Name            forward
         Match           *
         Host            ${FLUENTD_HOST}
         Port            ${FLUENTD_PORT}
         Retry_Limit     false              # Retry
-    {{- else }}
+    {{- end }}
+    {{- if not (or .Values.fluentd.elasticsearch.enabled .Values.fluentd.azure.logAnalytics.enabled .Values.fluentd.aws.cloudWatch.enabled .Values.fluentd.aws.S3.enabled ) }}
     [OUTPUT]
         Name   stdout
         Match  *
         Format json
     {{- end }}
 
+  {{- if .Values.fluentd.elasticsearch.enabled }}
   outputs-elasticsearch.conf: |
     [OUTPUT]
         Name               es
         Match              audit.ssh.**
         Retry_Limit        False
         Host               {{ .Values.fluentd.elasticsearch.host }}
-        scheme             {{ .Values.fluentd.elasticsearch.scheme }}
         tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
         tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
         Port               {{ .Values.fluentd.elasticsearch.port }}
@@ -162,7 +165,6 @@ data:
         Match              syslog.**
         Retry_Limit        False
         Host               {{ .Values.fluentd.elasticsearch.host }}
-        scheme             {{ .Values.fluentd.elasticsearch.scheme }}
         tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
         tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
         Port               {{ .Values.fluentd.elasticsearch.port }}
@@ -184,7 +186,6 @@ data:
         Match              kubernetes.**
         Retry_Limit        False
         Host               {{ .Values.fluentd.elasticsearch.host }}
-        scheme             {{ .Values.fluentd.elasticsearch.scheme }}
         tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
         tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
         Port               {{ .Values.fluentd.elasticsearch.port }}
@@ -206,7 +207,6 @@ data:
         Match              audit.kubernetes.**
         Retry_Limit        False
         Host               {{ .Values.fluentd.elasticsearch.host }}
-        scheme             {{ .Values.fluentd.elasticsearch.scheme }}
         tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
         tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
         Port               {{ .Values.fluentd.elasticsearch.port }}
@@ -222,7 +222,9 @@ data:
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+  {{- end }}
 
+  {{- if .Values.fluentd.azure.logAnalytics.enabled }}  
   outputs-azure-loganalytics.conf: |
     [OUTPUT]
         Name         azure
@@ -255,6 +257,7 @@ data:
         Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
         Log_Type     {{ .Values.fluentd.azure.logAnalytics.customLogs.audit.kubernetes.name }}
         Retry_Limit  false
+  {{- end }}
 
   parsers.conf: |
     [PARSER]
