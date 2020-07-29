@@ -12,7 +12,8 @@ spec:
   template:
     metadata:
       annotations:
-        releasetime: {{ $.Release.Time }}
+        releasetime: {{ now | quote }}
+        releaseRevision: {{ .Release.Revision | quote }}
       labels:
         app: {{ .Values.fluentbit.name }}
     spec:

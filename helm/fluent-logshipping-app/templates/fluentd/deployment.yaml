@@ -5,7 +5,8 @@ metadata:
   name: {{ .Values.fluentd.name }}
   namespace: {{ .Release.Namespace }}
   annotations:
-    releasetime: {{ $.Release.Time }}
+    releasetime: {{ now | quote }}
+    releaseRevision: {{ .Release.Revision | quote }}
   labels:
     app: {{ .Values.fluentd.name }}
 spec:
@@ -22,7 +23,8 @@ spec:
         {{- if .Values.fluentd.aws.kiam }}
         iam.amazonaws.com/role: {{ .Values.fluentd.aws.S3.role }}
         {{- end }}
-        releasetime: {{ $.Release.Time }}
+        releasetime: {{ now | quote }}
+        releaseRevision: {{ .Release.Revision | quote }}
       labels:
         app: {{ .Values.fluentd.name }}
     spec:

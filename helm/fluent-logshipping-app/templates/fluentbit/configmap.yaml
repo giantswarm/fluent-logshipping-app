@@ -97,7 +97,7 @@ data:
         Refresh_Interval  ${input_refresh_interval_in_seconds}
         Skip_Long_Lines   ${input_skip_long_lines}
         
-  filters.conf: |      
+  filters.conf: |
     [FILTER]
         Name                kubernetes
         Match               kubernetes.*
@@ -224,7 +224,7 @@ data:
         Current_Time_Index False
   {{- end }}
 
-  {{- if .Values.fluentd.azure.logAnalytics.enabled }}  
+  {{- if .Values.fluentd.azure.logAnalytics.enabled }}
   outputs-azure-loganalytics.conf: |
     [OUTPUT]
         Name         azure
