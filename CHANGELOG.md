@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+### Added
+
+- Added a values.schema.json file to help with validating user values.
+
 ## v0.5.1
 
 ### Changed
@@ -49,37 +53,37 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 - Add Elasticsearch support
 
-## v0.2.0 
+## v0.2.0
 
 ### Changed
 
 - Add Azure Log Analytics support
 
-## v0.1.3 
+## v0.1.3
 
 ### Changed
 
 - Add Giant Swarm monitoring option
 
-## [v0.1.2] 
+## [v0.1.2]
 
 ### Changed
 
 - Add optional parameter `grant_full_control` to allow define permission for the object stored in S3 bucket.
 - Changed `s3_object_key_format` to let define the object key format via values file.
 
-## [v0.1.1] 
+## [v0.1.1]
 
 ### Changed
 
 - Update chart metadata to show useful data in our UI.
 
-## [v0.1.0] 
+## [v0.1.0]
 
 ### Changed
 
 - Add first version of the Fluent Logging App chart based on the community Fluentd and Fluentbit charts.
-- Add CloudWatch and S3 plugin in Fluentd as storage backends. 
+- Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
 [Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.5.1...master
