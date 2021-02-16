@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+## v0.5.4
+
 ### Fixed
 
 - Use the correct config path for fluentd
