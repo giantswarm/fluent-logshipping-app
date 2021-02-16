@@ -16,6 +16,7 @@ The following table lists the configurable parameters of the fluent-logshipping-
 | `fluentd.port`                                        | fluentd port                                                                      | `24224`           |
 | `fluentd.protocol`                                    | fluentd protocol                                                                  | `TCP`             |
 | `fluentd.aws.kiam`                                    | Kiam support                                                                      | `false`           |
+| `fluentd.aws.role`                                    | AWS role to assume                                                                | `""`              |
 | `fluentd.aws.cloudWatch.enabled`                      | Enable CloudWatch plugin                                                          | `false`           |
 | `fluentd.aws.cloudWatch.region`                       | fluentd CloudWatch plugin region                                                  | `eu-central-1`    |
 | `fluentd.aws.cloudWatch.logGroupName`                 | fluentd CloudWatch plugin log group name                                          | `my-cluster`      |
@@ -25,7 +26,7 @@ The following table lists the configurable parameters of the fluent-logshipping-
 | `fluentd.aws.S3.bucketRegion`                         | fluentd S3 plugin region                                                          | `eu-central-1`    |
 | `fluentd.aws.S3.bucketPathPrefix`                     | fluentd S3 plugin prefix                                                          | `gs-`             |
 | `fluentd.aws.S3.account`                              | fluentd S3 plugin default account of the S3 bucket                                | `0000000000`      |
-| `fluentd.aws.S3.role`                                 | fluentd S3 plugin default role name to assume                                     | `my-role`         |
+| `fluentd.aws.S3.role`                                 | fluentd S3 plugin default role name to assume                                     | `""`              |
 | `fluentd.azure.logAnalytics.enabled`                  | Enable Azure Log Analytics plugin                                                 | `false`           |
 | `fluentd.azure.logAnalytics.workspaceId`              | Azure Log Analytics plugin workspace id ([where do I find it?](Azure.md))         | ``                |
 | `fluentd.azure.logAnalytics.sharedKey`                | Azure Log Analytics plugin shared key ([where do I find it?](Azure.md))           | ``                |
