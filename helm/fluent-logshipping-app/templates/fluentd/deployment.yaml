@@ -1,4 +1,5 @@
 {{- if or .Values.fluentd.aws.cloudWatch.enabled .Values.fluentd.aws.S3.enabled }}
+{{ $awsRole := coalesce .Values.fluentd.aws.role .Values.fluentd.aws.S3.role "NO_ROLE_SET_CHECK_VALUES" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,7 +22,7 @@ spec:
     metadata:
       annotations:
         {{- if .Values.fluentd.aws.kiam }}
-        iam.amazonaws.com/role: {{ .Values.fluentd.aws.S3.role }}
+        iam.amazonaws.com/role: {{ $awsRole | quote }}
         {{- end }}
         releasetime: {{ now | quote }}
         releaseRevision: {{ .Release.Revision | quote }}
@@ -43,11 +44,11 @@ spec:
         image: {{ .Values.image.registry }}/{{ .Values.fluentd.image.name }}:{{ .Values.fluentd.image.tag }}
         env:
         - name: FLUENTD_OPT
-          value: --no-supervisor -q 
+          value: --no-supervisor -q
         {{- if .Values.fluentd.aws.cloudWatch.enabled }}
         - name: AWS_REGION
           value: "{{ .Values.fluentd.aws.cloudWatch.region }}"
-        {{- end}}  
+        {{- end}}
         resources:
           limits:
             cpu: 30m
@@ -65,8 +66,8 @@ spec:
         configMap:
           defaultMode: 511
           name: {{ .Values.fluentd.name }}-config
-       - name: varrunfluentd
+      - name: varrunfluentd
         hostPath:
-          path: /var/run/fluentd
-          type: DirectoryOrCreate
+         path: /var/run/fluentd
+         type: DirectoryOrCreate
 {{- end }}
