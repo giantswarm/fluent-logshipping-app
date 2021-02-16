@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+## v0.5.3
+
 ### Added
 
 - Added a values.schema.json file to help with validating user values.
@@ -15,6 +17,16 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Fixed
 
 - Fix whitespace and indententation in deployment
+
+## v0.5.2
+
+### Changed
+
+- Use release date
+
+### Fixed
+
+- Remove extraneous whitespaces
 
 ## v0.5.1
 
@@ -91,7 +103,9 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.5.1...master
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.5.3...master
+[v0.5.3]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.5.3
+[v0.5.2]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.5.2
 [v0.5.1]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.5.1
 [v0.5.0]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.5.0
 [v0.4.0]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.4.0
