@@ -44,11 +44,11 @@ spec:
         image: {{ .Values.image.registry }}/{{ .Values.fluentd.image.name }}:{{ .Values.fluentd.image.tag }}
         env:
         - name: FLUENTD_OPT
-          value: --no-supervisor -q 
+          value: --no-supervisor -q
         {{- if .Values.fluentd.aws.cloudWatch.enabled }}
         - name: AWS_REGION
           value: "{{ .Values.fluentd.aws.cloudWatch.region }}"
-        {{- end}}  
+        {{- end}}
         resources:
           limits:
             cpu: 30m
@@ -66,8 +66,8 @@ spec:
         configMap:
           defaultMode: 511
           name: {{ .Values.fluentd.name }}-config
-       - name: varrunfluentd
+      - name: varrunfluentd
         hostPath:
-          path: /var/run/fluentd
-          type: DirectoryOrCreate
+         path: /var/run/fluentd
+         type: DirectoryOrCreate
 {{- end }}
