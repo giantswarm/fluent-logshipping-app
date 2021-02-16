@@ -38,7 +38,7 @@ fluentd:
 
   image:
     name: giantswarm/fluentd
-    tag: 1.10.2
+    tag: v3.2.0
 
   aws:
     kiam: false
