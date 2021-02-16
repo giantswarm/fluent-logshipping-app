@@ -10,6 +10,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Added
 
 - Added a values.schema.json file to help with validating user values.
+- Support AWS role when using Cloudwatch
+
+### Fixed
+
+- Fix whitespace and indententation in deployment
 
 ## v0.5.1
 
