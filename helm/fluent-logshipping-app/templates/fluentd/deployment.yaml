@@ -1,4 +1,5 @@
 {{- if or .Values.fluentd.aws.cloudWatch.enabled .Values.fluentd.aws.S3.enabled }}
+{{ $awsRole := coalesce .Values.fluentd.aws.role .Values.fluentd.aws.S3.role "NO_ROLE_SET_CHECK_VALUES" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,7 +22,7 @@ spec:
     metadata:
       annotations:
         {{- if .Values.fluentd.aws.kiam }}
-        iam.amazonaws.com/role: {{ .Values.fluentd.aws.S3.role }}
+        iam.amazonaws.com/role: {{ $awsRole | quote }}
         {{- end }}
         releasetime: {{ now | quote }}
         releaseRevision: {{ .Release.Revision | quote }}

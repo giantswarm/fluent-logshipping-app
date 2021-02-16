@@ -42,6 +42,7 @@ fluentd:
 
   aws:
     kiam: false
+    role: ""
     cloudWatch:
       enabled: false
       region: ""
@@ -53,7 +54,7 @@ fluentd:
       bucketRegion: ""
       bucketPathPrefix: "gs-"
       account: "00000000000"
-      role: "my-role"
+      role: ""
       grant_full_control: ""
       s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
   azure:
