@@ -7,6 +7,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+## v0.5.5
+
+### Fixed
+
+- Use Docker image with all plugins
+- Revert the config path
+
 ## v0.5.4
 
 ### Fixed
