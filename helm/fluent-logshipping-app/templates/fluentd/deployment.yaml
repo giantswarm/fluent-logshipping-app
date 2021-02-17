@@ -58,7 +58,7 @@ spec:
             memory: 400Mi
         volumeMounts:
         - name: config-volume
-          mountPath: /etc/fluent/
+          mountPath: /fluentd/etc/
         - name: varrunfluentd
           mountPath: /var/run/fluentd
       volumes:
