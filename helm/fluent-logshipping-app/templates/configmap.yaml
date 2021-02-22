@@ -17,6 +17,7 @@ data:
     @SET input_buffer_max_size=1MB
 
     @SET input_database_path=/var/run/fluent-bit
+    @SET storage_path=/var/run/fluent-bit/storage
 
     [SERVICE]
         Flush             {{ .Values.fluentbit.flushFrequencyInSeconds }}
@@ -28,7 +29,7 @@ data:
         HTTP_Port         {{ .Values.fluentbit.port }}
 
         # Configure optional buffer on the filesystem
-        storage.path              /var/run/fluent-bit/storage
+        storage.path              ${storage_path}
         storage.sync              normal
         storage.checksum          off
         storage.backlog.mem_limit 50M
@@ -60,7 +61,7 @@ data:
         # The interval of refreshing the list of watched files in seconds
         Refresh_Interval  ${input_refresh_interval_in_seconds}
         Skip_Long_Lines   ${input_skip_long_lines}
- 
+
   inputs-syslog.conf: |
     [INPUT]
         Name              systemd
@@ -96,7 +97,7 @@ data:
         # The interval of refreshing the list of watched files in seconds
         Refresh_Interval  ${input_refresh_interval_in_seconds}
         Skip_Long_Lines   ${input_skip_long_lines}
-        
+
   filters.conf: |
     [FILTER]
         Name                kubernetes
@@ -116,45 +117,43 @@ data:
         Record cluster {{ .Values.clusterID }}
 
   outputs.conf: |
-    {{- if .Values.fluentd.elasticsearch.enabled }}
+    {{- if .Values.outputs.elasticsearch.enabled }}
     @INCLUDE outputs-elasticsearch.conf
     {{- end }}
-    {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+    {{- if .Values.outputs.azure.logAnalytics.enabled }}
     @INCLUDE outputs-azure-loganalytics.conf
     {{- end }}
-    {{- if or .Values.fluentd.aws.cloudWatch.enabled .Values.fluentd.aws.S3.enabled }}
-    [OUTPUT]
-        Name            forward
-        Match           *
-        Host            ${FLUENTD_HOST}
-        Port            ${FLUENTD_PORT}
-        Retry_Limit     false              # Retry
+    {{- if .Values.outputs.aws.cloudWatch.enabled }}
+    @INCLUDE outputs-aws-cloudwatch.conf
     {{- end }}
-    {{- if not (or .Values.fluentd.elasticsearch.enabled .Values.fluentd.azure.logAnalytics.enabled .Values.fluentd.aws.cloudWatch.enabled .Values.fluentd.aws.S3.enabled ) }}
+    {{- if .Values.outputs.aws.S3.enabled }}
+    @INCLUDE outputs-aws-s3.conf
+    {{- end }}
+    {{- if not (or .Values.outputs.elasticsearch.enabled .Values.outputs.azure.logAnalytics.enabled .Values.outputs.aws.cloudWatch.enabled .Values.outputs.aws.S3.enabled ) }}
     [OUTPUT]
         Name   stdout
         Match  *
         Format json
     {{- end }}
 
-  {{- if .Values.fluentd.elasticsearch.enabled }}
+  {{- if .Values.outputs.elasticsearch.enabled }}
   outputs-elasticsearch.conf: |
     [OUTPUT]
         Name               es
         Match              audit.ssh.**
         Retry_Limit        False
-        Host               {{ .Values.fluentd.elasticsearch.host }}
-        tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
-        tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
-        Port               {{ .Values.fluentd.elasticsearch.port }}
-        {{- if .Values.fluentd.elasticsearch.secured }}
+        Host               {{ .Values.outputs.elasticsearch.host }}
+        tls                {{ .Values.outputs.elasticsearch.tlsEnabled }}
+        tls.verify         {{ .Values.outputs.elasticsearch.sslVerify }}
+        Port               {{ .Values.outputs.elasticsearch.port }}
+        {{- if .Values.outputs.elasticsearch.secured }}
         HTTP_User          ${FLUENT_ELASTICSEARCH_USER}
         HTTP_Passwd        ${FLUENT_ELASTICSEARCH_PASSWORD}
         {{- end}}
-        Path               {{ .Values.fluentd.elasticsearch.path }}
+        Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.fluentd.elasticsearch.indices.audit.ssh.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.audit.ssh.name }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
@@ -164,18 +163,18 @@ data:
         Name               es
         Match              syslog.**
         Retry_Limit        False
-        Host               {{ .Values.fluentd.elasticsearch.host }}
-        tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
-        tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
-        Port               {{ .Values.fluentd.elasticsearch.port }}
-        {{- if .Values.fluentd.elasticsearch.secured }}
+        Host               {{ .Values.outputs.elasticsearch.host }}
+        tls                {{ .Values.outputs.elasticsearch.tlsEnabled }}
+        tls.verify         {{ .Values.outputs.elasticsearch.sslVerify }}
+        Port               {{ .Values.outputs.elasticsearch.port }}
+        {{- if .Values.outputs.elasticsearch.secured }}
         HTTP_User          ${FLUENT_ELASTICSEARCH_USER}
         HTTP_Passwd        ${FLUENT_ELASTICSEARCH_PASSWORD}
         {{- end}}
-        Path               {{ .Values.fluentd.elasticsearch.path }}
+        Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.fluentd.elasticsearch.indices.syslog.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.syslog.name }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
@@ -185,18 +184,18 @@ data:
         Name               es
         Match              kubernetes.**
         Retry_Limit        False
-        Host               {{ .Values.fluentd.elasticsearch.host }}
-        tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
-        tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
-        Port               {{ .Values.fluentd.elasticsearch.port }}
-        {{- if .Values.fluentd.elasticsearch.secured }}
+        Host               {{ .Values.outputs.elasticsearch.host }}
+        tls                {{ .Values.outputs.elasticsearch.tlsEnabled }}
+        tls.verify         {{ .Values.outputs.elasticsearch.sslVerify }}
+        Port               {{ .Values.outputs.elasticsearch.port }}
+        {{- if .Values.outputs.elasticsearch.secured }}
         HTTP_User          ${FLUENT_ELASTICSEARCH_USER}
         HTTP_Passwd        ${FLUENT_ELASTICSEARCH_PASSWORD}
         {{- end}}
-        Path               {{ .Values.fluentd.elasticsearch.path }}
+        Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.fluentd.elasticsearch.indices.containers.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.containers.name }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
@@ -206,32 +205,32 @@ data:
         Name               es
         Match              audit.kubernetes.**
         Retry_Limit        False
-        Host               {{ .Values.fluentd.elasticsearch.host }}
-        tls                {{ .Values.fluentd.elasticsearch.tlsEnabled }}
-        tls.verify         {{ .Values.fluentd.elasticsearch.sslVerify }}
-        Port               {{ .Values.fluentd.elasticsearch.port }}
-        {{- if .Values.fluentd.elasticsearch.secured }}
+        Host               {{ .Values.outputs.elasticsearch.host }}
+        tls                {{ .Values.outputs.elasticsearch.tlsEnabled }}
+        tls.verify         {{ .Values.outputs.elasticsearch.sslVerify }}
+        Port               {{ .Values.outputs.elasticsearch.port }}
+        {{- if .Values.outputs.elasticsearch.secured }}
         HTTP_User          ${FLUENT_ELASTICSEARCH_USER}
         HTTP_Passwd        ${FLUENT_ELASTICSEARCH_PASSWORD}
         {{- end}}
-        Path               {{ .Values.fluentd.elasticsearch.path }}
+        Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.fluentd.elasticsearch.indices.audit.kubernetes.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.audit.kubernetes.name }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
   {{- end }}
 
-  {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+  {{- if .Values.outputs.azure.logAnalytics.enabled }}
   outputs-azure-loganalytics.conf: |
     [OUTPUT]
         Name         azure
         Match        audit.ssh.**
         Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
         Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.fluentd.azure.logAnalytics.customLogs.audit.ssh.name }}
+        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.ssh.name }}
         Retry_Limit  false
 
     [OUTPUT]
@@ -239,7 +238,7 @@ data:
         Match        syslog.**
         Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
         Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.fluentd.azure.logAnalytics.customLogs.syslog.name }}
+        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.syslog.name }}
         Retry_Limit  false
 
     [OUTPUT]
@@ -247,7 +246,7 @@ data:
         Match        kubernetes.**
         Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
         Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.fluentd.azure.logAnalytics.customLogs.containers.name }}
+        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.containers.name }}
         Retry_Limit  false
 
     [OUTPUT]
@@ -255,8 +254,31 @@ data:
         Match        audit.kubernetes.**
         Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
         Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.fluentd.azure.logAnalytics.customLogs.audit.kubernetes.name }}
+        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.kubernetes.name }}
         Retry_Limit  false
+  {{- end }}
+
+  {{- if .Values.outputs.aws.S3.enabled }}
+  outputs-aws-s3.conf: |
+    Name                         s3
+    Match                        *
+    bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketName }}
+    region                       {{ .Values.outputs.aws.region }}
+    total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
+    s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+    s3_key_format_tag_delimiters .-_
+    store_dir                    ${storage_path}/S3
+  {{- end }}
+
+  {{- if or .Values.outputs.aws.cloudWatch.enabled }}
+  outputs-aws-cloudwatch.conf: |
+    Name               cloudwatch_logs
+    Match              *
+    region             {{ .Values.outputs.aws.region }}
+    log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+    log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}
+    log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
+    auto_create_group  On
   {{- end }}
 
   parsers.conf: |
@@ -266,7 +288,7 @@ data:
         Time_Key     time
         Time_Format  %Y-%m-%dT%H:%M:%S.%L
         Time_Keep    On
-    
+
     [PARSER]
         Name   apache
         Format regex

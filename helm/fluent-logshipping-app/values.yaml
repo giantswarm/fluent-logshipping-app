@@ -23,40 +23,28 @@ fluentbit:
 
   image:
     name: giantswarm/fluent-bit
-    tag: 1.4.5
+    tag: 1.7.1
 
   logLevel: info
   flushFrequencyInSeconds: 5
 
-fluentd:
-  replicas: 2
-  name: fluentd
-  port: 24224
-  protocol: TCP
-
-  logLevel: info
-
-  image:
-    name: giantswarm/fluentd
-    tag: 1.12.0
-
+outputs:
   aws:
     kiam: false
     role: ""
+    region: ""
     cloudWatch:
       enabled: false
-      region: ""
       logGroupName: "my-cluster"
       logStreamName: "example-stream"
+      logRetentionDays: -1
     S3:
       enabled: false
       bucketName: "my-cluster-logs"
-      bucketRegion: ""
       bucketPathPrefix: "gs-"
-      account: "00000000000"
-      role: ""
-      grant_full_control: ""
+      totalFileSize: "100M"
       s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
+
   azure:
     logAnalytics:
       enabled: false
@@ -97,3 +85,8 @@ fluentd:
 giantswarm:
   monitoring:
     enabled: true
+
+# Tolerate all nodes with NoSchedule taints
+tolerations:
+  - operator: "Exists"
+    effect: "NoSchedule"
