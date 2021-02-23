@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+- Drop fluentd, only use fluent-bit for pushing logs to outputs (fluentd was used for AWS outputs).
+
 ## v0.5.5
 
 ### Fixed
