@@ -65,6 +65,7 @@ data:
   inputs-syslog.conf: |
     [INPUT]
         Name              systemd
+        Path              /run/log/journal
         Tag               syslog.*
         Parser            syslog
         DB                ${input_database_path}/syslog.db
@@ -76,6 +77,7 @@ data:
     [INPUT]
         Name              systemd
         Tag               audit.ssh.*
+        Path              /run/log/journal
         Parser            syslog
         DB                ${input_database_path}/audit_ssh.db
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
