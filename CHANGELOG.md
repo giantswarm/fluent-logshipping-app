@@ -9,7 +9,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Fixed
 
-- Correct the output config format for AWS outputs
+- Correct the output config format for AWS outputs (split them based on input)
+- Mount journald path and set it in fluent-bit config
 
 ## v0.6.0
 _Note: Jumping to next minor version as we are dropping fluentd_
