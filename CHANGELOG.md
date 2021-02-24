@@ -10,7 +10,12 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ## v0.6.0
 _Note: Jumping to next minor version as we are dropping fluentd_
 
+### Changed
+
 - Drop fluentd, only use fluent-bit for pushing logs to outputs (fluentd was used for AWS outputs).
+
+### Added
+
 - Add toleration so that it can be run on any nodes with taints
 
 ## v0.5.5
