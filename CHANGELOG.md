@@ -8,6 +8,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ## Unreleased
 
 - Drop fluentd, only use fluent-bit for pushing logs to outputs (fluentd was used for AWS outputs).
+- Add toleration so that it can be run on any nodes with taints
 
 ## v0.5.5
 
