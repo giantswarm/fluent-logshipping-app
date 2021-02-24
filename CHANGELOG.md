@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+### Fixed
+
+- Correct the output config format for AWS outputs
+
 ## v0.6.0
 _Note: Jumping to next minor version as we are dropping fluentd_
 
