@@ -12,6 +12,9 @@ spec:
   template:
     metadata:
       annotations:
+        {{- if .Values.outputs.aws.kiam }}
+        iam.amazonaws.com/role: {{ .Values.outputs.aws.role }}
+        {{- end }}
         releasetime: {{ now | quote }}
         releaseRevision: {{ .Release.Revision | quote }}
       labels:
@@ -22,6 +25,9 @@ spec:
       - key: node-role.kubernetes.io/master
         operator: Exists
         effect: NoSchedule
+      {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
       serviceAccountName: {{ .Values.fluentbit.name }}
       securityContext:
         runAsUser: {{ .Values.fluentbit.userID }}
@@ -30,11 +36,7 @@ spec:
       - name: {{ .Values.fluentbit.name }}
         image: {{ .Values.image.registry }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag }}
         env:
-        - name: FLUENTD_HOST
-          value: "{{ .Values.fluentd.name }}.{{ .Release.Namespace }}.svc"
-        - name: FLUENTD_PORT
-          value: "{{ .Values.fluentd.port }}"
-        {{- if .Values.fluentd.azure.logAnalytics.enabled }}
+        {{- if .Values.outputs.azure.logAnalytics.enabled }}
         - name: FLUENT_AZURE_WORKSPACE_ID
           valueFrom:
             secretKeyRef:
@@ -46,7 +48,7 @@ spec:
               name: {{ .Values.fluentbit.name }}-secret
               key: WorkspaceKey
         {{- end }}
-        {{- if and .Values.fluentd.elasticsearch.enabled .Values.fluentd.elasticsearch.secured }}
+        {{- if and .Values.outputs.elasticsearch.enabled .Values.outputs.elasticsearch.secured }}
         - name: FLUENT_ELASTICSEARCH_USER
           valueFrom:
             secretKeyRef:
@@ -85,9 +87,9 @@ spec:
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc/
         ## Needed for syslog to work as the syslog plugins needs this id
-        - name: etcmachineid	
-          mountPath: /etc/machine-id	
-          readOnly: true	
+        - name: etcmachineid
+          mountPath: /etc/machine-id
+          readOnly: true
       terminationGracePeriodSeconds: 10
       volumes:
       - name: varlog
