@@ -36,6 +36,11 @@ spec:
       - name: {{ .Values.fluentbit.name }}
         image: {{ .Values.image.registry }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag }}
         env:
+        - name: K8S_NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
         {{- if .Values.outputs.azure.logAnalytics.enabled }}
         - name: FLUENT_AZURE_WORKSPACE_ID
           valueFrom:

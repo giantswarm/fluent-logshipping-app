@@ -310,7 +310,7 @@ data:
         Match              audit.ssh.**
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-ssh
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-ssh-${K8S_NODE_NAME}
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
 
@@ -319,7 +319,7 @@ data:
         Match              syslog.**
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-syslog
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-syslog-${K8S_NODE_NAME}
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
 
@@ -328,7 +328,7 @@ data:
         Match              kubernetes.**
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-containers
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-containers-${K8S_NODE_NAME}
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
 
@@ -337,7 +337,7 @@ data:
         Match              audit.kubernetes.**
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-kubernetes-audit
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-kubernetes-audit-${K8S_NODE_NAME}
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
