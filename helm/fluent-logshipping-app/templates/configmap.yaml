@@ -65,6 +65,7 @@ data:
   inputs-syslog.conf: |
     [INPUT]
         Name              systemd
+        Path              /run/log/journal
         Tag               syslog.*
         Parser            syslog
         DB                ${input_database_path}/syslog.db
@@ -76,6 +77,7 @@ data:
     [INPUT]
         Name              systemd
         Tag               audit.ssh.*
+        Path              /run/log/journal
         Parser            syslog
         DB                ${input_database_path}/audit_ssh.db
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
@@ -260,25 +262,84 @@ data:
 
   {{- if .Values.outputs.aws.S3.enabled }}
   outputs-aws-s3.conf: |
-    Name                         s3
-    Match                        *
-    bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketName }}
-    region                       {{ .Values.outputs.aws.region }}
-    total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-    s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
-    s3_key_format_tag_delimiters .-_
-    store_dir                    ${storage_path}/S3
+    [OUTPUT]
+        Name                         s3
+        Match                        audit.ssh.**
+        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-ssh
+        region                       {{ .Values.outputs.aws.region }}
+        total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
+        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format_tag_delimiters .-_
+        store_dir                    ${storage_path}/S3
+
+    [OUTPUT]
+        Name                         s3
+        Match                        syslog.**
+        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-syslog
+        region                       {{ .Values.outputs.aws.region }}
+        total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
+        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format_tag_delimiters .-_
+        store_dir                    ${storage_path}/S3
+
+    [OUTPUT]
+        Name                         s3
+        Match                        kubernetes.**
+        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-containers
+        region                       {{ .Values.outputs.aws.region }}
+        total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
+        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format_tag_delimiters .-_
+        store_dir                    ${storage_path}/S3
+
+    [OUTPUT]
+        Name                         s3
+        Match                        audit.kubernetes.**
+        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-kubernetes-audit
+        region                       {{ .Values.outputs.aws.region }}
+        total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
+        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format_tag_delimiters .-_
+        store_dir                    ${storage_path}/S3
   {{- end }}
 
   {{- if or .Values.outputs.aws.cloudWatch.enabled }}
   outputs-aws-cloudwatch.conf: |
-    Name               cloudwatch_logs
-    Match              *
-    region             {{ .Values.outputs.aws.region }}
-    log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-    log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}
-    log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
-    auto_create_group  On
+    [OUTPUT]
+        Name               cloudwatch_logs
+        Match              audit.ssh.**
+        region             {{ .Values.outputs.aws.region }}
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-ssh
+        log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
+        auto_create_group  true
+
+    [OUTPUT]
+        Name               cloudwatch_logs
+        Match              syslog.**
+        region             {{ .Values.outputs.aws.region }}
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-syslog
+        log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
+        auto_create_group  true
+
+    [OUTPUT]
+        Name               cloudwatch_logs
+        Match              kubernetes.**
+        region             {{ .Values.outputs.aws.region }}
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-containers
+        log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
+        auto_create_group  true
+
+    [OUTPUT]
+        Name               cloudwatch_logs
+        Match              audit.kubernetes.**
+        region             {{ .Values.outputs.aws.region }}
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-kubernetes-audit
+        log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
+        auto_create_group  true
   {{- end }}
 
   parsers.conf: |

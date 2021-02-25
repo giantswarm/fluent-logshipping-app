@@ -36,11 +36,11 @@ outputs:
     cloudWatch:
       enabled: false
       logGroupName: "my-cluster"
-      logStreamName: "example-stream"
+      logStreamNamePrefix: "example-stream"
       logRetentionDays: -1
     S3:
       enabled: false
-      bucketName: "my-cluster-logs"
+      bucketNamePrefix: "my-cluster-logs"
       bucketPathPrefix: "gs-"
       totalFileSize: "100M"
       s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"

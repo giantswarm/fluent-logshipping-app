@@ -76,6 +76,9 @@ spec:
             port: {{ .Values.fluentbit.port }}
           initialDelaySeconds: 10
         volumeMounts:
+        - mountPath: /run/log/journal/
+          name: runlogjournal
+          readOnly: true
         - name: varlog
           mountPath: /var/log
           readOnly: true
@@ -92,6 +95,9 @@ spec:
           readOnly: true
       terminationGracePeriodSeconds: 10
       volumes:
+      - name: runlogjournal
+        hostPath:
+          path: /run/log/journal
       - name: varlog
         hostPath:
           path: /var/log
