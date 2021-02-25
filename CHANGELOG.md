@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+### Added
+
+- [Cloudwatch Output] Use Node name as part of the log stream name
+
 ### Fixed
 
 - Correct the output config format for AWS outputs (split them based on input)
