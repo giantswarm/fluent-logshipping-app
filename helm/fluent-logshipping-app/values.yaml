@@ -39,7 +39,7 @@ outputs:
         - sshd
         - containers
         - syslog
-        - audit # (Kuberntest Audi logs)
+        - audit
       logGroupName: "my-cluster"
       logStreamNamePrefix: "example-stream"
       logRetentionDays: -1
