@@ -35,11 +35,17 @@ outputs:
     region: ""
     cloudWatch:
       enabled: false
+      inputLogTypes: &inputTypes
+        - sshd
+        - containers
+        - syslog
+        - audit # (Kuberntest Audi logs)
       logGroupName: "my-cluster"
       logStreamNamePrefix: "example-stream"
       logRetentionDays: -1
     S3:
       enabled: false
+      inputLogTypes: *inputTypes
       bucketNamePrefix: "my-cluster-logs"
       bucketPathPrefix: "gs-"
       totalFileSize: "100M"
@@ -48,6 +54,7 @@ outputs:
   azure:
     logAnalytics:
       enabled: false
+      inputLogTypes: *inputTypes
       workspaceId: ""
       sharedKey: ""
       customLogs:
@@ -63,6 +70,7 @@ outputs:
 
   elasticsearch:
     enabled: false
+    inputLogTypes: *inputTypes
     host: ""
     port: 9200
     path: "/"
