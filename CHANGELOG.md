@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+## v0.6.1
+
 ### Added
 
 - [Cloudwatch Output] Use Node name as part of the log stream name
@@ -15,6 +17,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 - Correct the output config format for AWS outputs (split them based on input)
 - Mount journald path and set it in fluent-bit config
+
+### Changed
+
+- Moved to Giant Swarm default catalogue
 
 ## v0.6.0
 _Note: Jumping to next minor version as we are dropping fluentd_
