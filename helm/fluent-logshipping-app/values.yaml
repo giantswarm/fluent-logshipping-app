@@ -89,6 +89,9 @@ outputs:
         name: kubernetes
       syslog:
         name: syslog
+  extra_output_config: ""
+
+additional_filters: ""
 
 giantswarm:
   monitoring:
