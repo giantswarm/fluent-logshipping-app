@@ -101,9 +101,9 @@ data:
         Skip_Long_Lines   ${input_skip_long_lines}
 
   filters.conf: |
-    {{- if .Values.additional_filters }}
-    ## additional_filters
-    {{- .Values.additional_filters | nindent 4 }}
+    {{- if .Values.extraFilters }}
+    ## extraFilters
+    {{- .Values.extraFilters | nindent 4 }}
     ## end
     {{- end }}
     [FILTER]
@@ -142,9 +142,9 @@ data:
         Match  *
         Format json
     {{- end }}
-    {{- if .Values.outputs.extra_output_config }}
-    ## extra_output_config
-    {{- .Values.outputs.extra_output_config | nindent 4 }}
+    {{- if .Values.outputs.extraOutputConfig }}
+    ## extraOutputConfig
+    {{- .Values.outputs.extraOutputConfig | nindent 4 }}
     ## end
     {{- end }}
 
