@@ -35,11 +35,17 @@ outputs:
     region: ""
     cloudWatch:
       enabled: false
+      inputLogTypes: &logTypes
+        - sshd
+        - containers
+        - syslog
+        - audit
       logGroupName: "my-cluster"
       logStreamNamePrefix: "example-stream"
       logRetentionDays: -1
     S3:
       enabled: false
+      inputLogTypes: *logTypes
       bucketNamePrefix: "my-cluster-logs"
       bucketPathPrefix: "gs-"
       totalFileSize: "100M"
@@ -48,6 +54,7 @@ outputs:
   azure:
     logAnalytics:
       enabled: false
+      inputLogTypes: *logTypes
       workspaceId: ""
       sharedKey: ""
       customLogs:
@@ -63,6 +70,7 @@ outputs:
 
   elasticsearch:
     enabled: false
+    inputLogTypes: *logTypes
     host: ""
     port: 9200
     path: "/"
@@ -81,6 +89,9 @@ outputs:
         name: kubernetes
       syslog:
         name: syslog
+  extraOutputConfig: ""
+
+extraFilters: ""
 
 giantswarm:
   monitoring:

@@ -101,6 +101,11 @@ data:
         Skip_Long_Lines   ${input_skip_long_lines}
 
   filters.conf: |
+    {{- if .Values.extraFilters }}
+    ## extraFilters
+    {{- .Values.extraFilters | nindent 4 }}
+    ## end
+    {{- end }}
     [FILTER]
         Name                kubernetes
         Match               kubernetes.*
@@ -137,9 +142,16 @@ data:
         Match  *
         Format json
     {{- end }}
+    {{- if .Values.outputs.extraOutputConfig }}
+    ## extraOutputConfig
+    {{- .Values.outputs.extraOutputConfig | nindent 4 }}
+    ## end
+    {{- end }}
+
 
   {{- if .Values.outputs.elasticsearch.enabled }}
   outputs-elasticsearch.conf: |
+  {{- if has "sshd" .Values.outputs.elasticsearch.inputLogTypes }}
     [OUTPUT]
         Name               es
         Match              audit.ssh.**
@@ -160,7 +172,9 @@ data:
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+  {{- end }}
 
+  {{- if has "syslog" .Values.outputs.elasticsearch.inputLogTypes }}
     [OUTPUT]
         Name               es
         Match              syslog.**
@@ -181,7 +195,9 @@ data:
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+  {{- end }}
 
+  {{- if has "containers" .Values.outputs.elasticsearch.inputLogTypes }}
     [OUTPUT]
         Name               es
         Match              kubernetes.**
@@ -202,7 +218,9 @@ data:
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+  {{- end }}
 
+  {{- if has "audit" .Values.outputs.elasticsearch.inputLogTypes }}
     [OUTPUT]
         Name               es
         Match              audit.kubernetes.**
@@ -224,9 +242,11 @@ data:
         Trace_Output       False
         Current_Time_Index False
   {{- end }}
+  {{- end }}
 
   {{- if .Values.outputs.azure.logAnalytics.enabled }}
   outputs-azure-loganalytics.conf: |
+  {{- if has "sshd" .Values.outputs.azure.logAnalytics.inputLogTypes }}
     [OUTPUT]
         Name         azure
         Match        audit.ssh.**
@@ -234,7 +254,9 @@ data:
         Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
         Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.ssh.name }}
         Retry_Limit  false
+  {{- end }}
 
+  {{- if has "syslog" .Values.outputs.azure.logAnalytics.inputLogTypes }}
     [OUTPUT]
         Name         azure
         Match        syslog.**
@@ -242,7 +264,9 @@ data:
         Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
         Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.syslog.name }}
         Retry_Limit  false
+  {{- end }}
 
+  {{- if has "containers" .Values.outputs.azure.logAnalytics.inputLogTypes }}
     [OUTPUT]
         Name         azure
         Match        kubernetes.**
@@ -250,7 +274,9 @@ data:
         Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
         Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.containers.name }}
         Retry_Limit  false
+  {{- end }}
 
+  {{- if has "audit" .Values.outputs.azure.logAnalytics.inputLogTypes }}
     [OUTPUT]
         Name         azure
         Match        audit.kubernetes.**
@@ -259,9 +285,11 @@ data:
         Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.kubernetes.name }}
         Retry_Limit  false
   {{- end }}
+  {{- end }}
 
   {{- if .Values.outputs.aws.S3.enabled }}
   outputs-aws-s3.conf: |
+  {{- if has "sshd" .Values.outputs.aws.S3.inputLogTypes }}
     [OUTPUT]
         Name                         s3
         Match                        audit.ssh.**
@@ -271,7 +299,9 @@ data:
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
+  {{- end }}
 
+  {{- if has "syslog" .Values.outputs.aws.S3.inputLogTypes }}
     [OUTPUT]
         Name                         s3
         Match                        syslog.**
@@ -281,7 +311,9 @@ data:
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
+  {{- end }}
 
+  {{- if has "containers" .Values.outputs.aws.S3.inputLogTypes }}
     [OUTPUT]
         Name                         s3
         Match                        kubernetes.**
@@ -291,7 +323,9 @@ data:
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
+  {{- end }}
 
+  {{- if has "audit" .Values.outputs.aws.S3.inputLogTypes }}
     [OUTPUT]
         Name                         s3
         Match                        audit.kubernetes.**
@@ -301,10 +335,12 @@ data:
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
-  {{- end }}
+ {{- end }}
+ {{- end }}
 
   {{- if or .Values.outputs.aws.cloudWatch.enabled }}
   outputs-aws-cloudwatch.conf: |
+  {{- if has "sshd" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
         Name               cloudwatch_logs
         Match              audit.ssh.**
@@ -313,7 +349,9 @@ data:
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-ssh-${K8S_NODE_NAME}
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
+  {{- end }}
 
+  {{- if has "syslog" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
         Name               cloudwatch_logs
         Match              syslog.**
@@ -322,7 +360,9 @@ data:
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-syslog-${K8S_NODE_NAME}
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
+  {{- end }}
 
+  {{- if has "containers" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
         Name               cloudwatch_logs
         Match              kubernetes.**
@@ -331,7 +371,9 @@ data:
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-containers-${K8S_NODE_NAME}
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
+  {{- end }}
 
+  {{- if has "audit" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
         Name               cloudwatch_logs
         Match              audit.kubernetes.**
@@ -340,6 +382,7 @@ data:
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-kubernetes-audit-${K8S_NODE_NAME}
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
+  {{- end }}
   {{- end }}
 
   parsers.conf: |
