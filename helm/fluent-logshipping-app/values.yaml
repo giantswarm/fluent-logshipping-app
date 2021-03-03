@@ -35,7 +35,7 @@ outputs:
     region: ""
     cloudWatch:
       enabled: false
-      inputLogTypes: &inputTypes
+      inputLogTypes: &logTypes
         - sshd
         - containers
         - syslog
@@ -45,7 +45,7 @@ outputs:
       logRetentionDays: -1
     S3:
       enabled: false
-      inputLogTypes: *inputTypes
+      inputLogTypes: *logTypes
       bucketNamePrefix: "my-cluster-logs"
       bucketPathPrefix: "gs-"
       totalFileSize: "100M"
@@ -54,7 +54,7 @@ outputs:
   azure:
     logAnalytics:
       enabled: false
-      inputLogTypes: *inputTypes
+      inputLogTypes: *logTypes
       workspaceId: ""
       sharedKey: ""
       customLogs:
@@ -70,7 +70,7 @@ outputs:
 
   elasticsearch:
     enabled: false
-    inputLogTypes: *inputTypes
+    inputLogTypes: *logTypes
     host: ""
     port: 9200
     path: "/"
