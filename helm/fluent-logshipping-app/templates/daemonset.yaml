@@ -66,12 +66,9 @@ spec:
               key: ElasticsearchPassword
         {{- end }}
         resources:
-          limits:
-            cpu: 100m
-            memory: 100Mi
-          requests:
-            cpu: 100m
-            memory: 100Mi
+          {{- with .Values.resources }}
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
         livenessProbe:
           tcpSocket:
             port: {{ .Values.fluentbit.port }}
