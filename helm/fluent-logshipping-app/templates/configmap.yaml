@@ -350,8 +350,8 @@ data:
         Name               cloudwatch_logs
         Match              audit.ssh.**
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-ssh-${K8S_NODE_NAME}
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/ssh
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-${K8S_NODE_NAME}-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -361,8 +361,8 @@ data:
         Name               cloudwatch_logs
         Match              syslog.**
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-syslog-${K8S_NODE_NAME}
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/syslog
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-${K8S_NODE_NAME}-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -372,8 +372,8 @@ data:
         Name               cloudwatch_logs
         Match              kubernetes.**
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-containers-${K8S_NODE_NAME}
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/containers
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -383,8 +383,8 @@ data:
         Name               cloudwatch_logs
         Match              audit.kubernetes.**
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-kubernetes-audit-${K8S_NODE_NAME}
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/kubernetes-audit
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}

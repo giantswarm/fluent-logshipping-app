@@ -7,6 +7,9 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+### Changed
+
+- [Cloudwatch Output] Break up the stream names, this helps prevent hitting API limits
 
 ## v0.6.3
 
