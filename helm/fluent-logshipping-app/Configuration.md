@@ -11,6 +11,10 @@ The following table lists the configurable parameters of the fluent-logshipping-
 | `fluentbit.groupID`                                   | fluentbit group ID                                                                | `1000`            |
 | `fluentbit.logLevel`                                  | log level collected by fluentbit                                                  | `info`            |
 | `fluentbit.flushFrequencyInSeconds`                   | Number of seconds between flushes to the forwards                                 | `5`               |
+| `fluentbit.memBufferLimit`                            | Size of the memory buffer limit                                                   | `10MB`            |
+| `fluentbit.backlogMemLimit`                           | Backlog Memory Limit                                                              | `50M`             |
+| `fluentbit.storageMaxChunksUp`                        | Maximum number of chunks to consider `up` in memory                               | `128`             |
+| `fluentbit.inputStorageTypes.{}`                      | Defined for each input type, determines what storage to use for buffers. Valid values are `memory` or `filesystem` | `memory` |
 | `outputs.name`                                        | outputs deployment name                                                           | `outputs`         |
 | `outputs.replicas`                                    | outputs replicas                                                                  | `2`               |
 | `outputs.port`                                        | outputs port                                                                      | `24224`           |
