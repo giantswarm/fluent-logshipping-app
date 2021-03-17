@@ -27,6 +27,16 @@ fluentbit:
 
   logLevel: info
   flushFrequencyInSeconds: 5
+  backlogMemLimit: "50M"
+  memBufferLimit: "10MB"
+  storageMaxChunksUp: 128
+
+
+  inputStorageTypes:
+    audit: "memory"
+    container: "memory"
+    sshd: "memory"
+    syslog: "memory"
 
 outputs:
   aws:

@@ -10,7 +10,7 @@ data:
   # ======================================================
   fluent-bit.conf: |
     # Setting the memory buffer limit for all the input plugins to handle backpressure (cf. https://docs.fluentbit.io/manual/v/0.12/configuration/backpressure)
-    @SET input_memory_buffer_limit=10MB
+    @SET input_memory_buffer_limit={{ .Values.fluentbit.memBufferLimit }}
     @SET input_refresh_interval_in_seconds=10
     @SET input_skip_long_lines=on
 
@@ -32,7 +32,8 @@ data:
         storage.path              ${storage_path}
         storage.sync              normal
         storage.checksum          off
-        storage.backlog.mem_limit 50M
+        storage.max_chunks_up     {{ .Values.fluentbit.storageMaxChunksUp }}
+        storage.backlog.mem_limit {{ .Values.fluentbit.backlogMemLimit }}
 
     @INCLUDE inputs.conf
     @INCLUDE filters.conf
@@ -57,6 +58,7 @@ data:
         # Buffering options
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Buffer_Max_Size   ${input_buffer_max_size}
+        storage.type      {{ .Values.fluentbit.inputStorageTypes.container }}
 
         # The interval of refreshing the list of watched files in seconds
         Refresh_Interval  ${input_refresh_interval_in_seconds}
@@ -69,6 +71,7 @@ data:
         Tag               syslog.*
         Parser            syslog
         DB                ${input_database_path}/syslog.db
+        storage.type      {{ .Values.fluentbit.inputStorageTypes.syslog }}
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
 
@@ -82,6 +85,7 @@ data:
         DB                ${input_database_path}/audit_ssh.db
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
         Mem_Buf_Limit     ${input_memory_buffer_limit}
+        storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
         Strip_Underscores on
 
     # Get the kubernetes api server audit logs
@@ -91,6 +95,7 @@ data:
         Path              /var/log/apiserver/audit.log
         Parser            json
         DB                ${input_database_path}/audit_kubernetes.db
+        storage.type      {{ .Values.fluentbit.inputStorageTypes.audit }}
 
         # Buffering options
         Buffer_Max_Size   ${input_buffer_max_size}
