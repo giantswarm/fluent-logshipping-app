@@ -7,6 +7,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+## v0.6.2
+
+### Added
+
+- Flexible Filter and Output, users can specifiy their own filter and outputs.
+- More options for back pressure tweaking
+
 ## v0.6.1
 
 ### Added
