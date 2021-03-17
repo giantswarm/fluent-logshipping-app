@@ -7,6 +7,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+
+## v0.6.3
+
+### Added
+
+- Make Daemonset resources configurable
+
 ## v0.6.2
 
 ### Added
