@@ -102,7 +102,7 @@ outputs:
   extraOutputConfig: ""
 
   tcp:
-    enabled: true
+    enabled: false
     host: ""
     port: ""
     # Specify the data format to be printed. Supported formats are msgpack, json, json_lines and json_stream.

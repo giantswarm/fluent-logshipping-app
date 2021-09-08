@@ -142,7 +142,7 @@ data:
     @INCLUDE outputs-aws-s3.conf
     {{- end }}
     {{- if .Values.outputs.tcp.enabled }}
-        @INCLUDE outputs-tcp.conf
+    @INCLUDE outputs-tcp.conf
     {{- end }}
     {{- if not (or .Values.outputs.elasticsearch.enabled .Values.outputs.azure.logAnalytics.enabled .Values.outputs.aws.cloudWatch.enabled .Values.outputs.aws.S3.enabled ) }}
     [OUTPUT]
