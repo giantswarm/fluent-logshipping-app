@@ -124,7 +124,7 @@ data:
         K8S-Logging.Exclude Off
 
     [FILTER]
-        Name   "record_modifier"
+        Name   record_modifier
         Match  *
         Record cluster {{ .Values.clusterID }}
 
