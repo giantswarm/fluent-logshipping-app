@@ -101,6 +101,21 @@ outputs:
         name: syslog
   extraOutputConfig: ""
 
+  tcp:
+    enabled: true
+    host: ""
+    port: ""
+    # Specify the data format to be printed. Supported formats are msgpack, json, json_lines and json_stream.
+    format: json
+    # Specify the name of the time key in the output record. To disable the time key just set the value to false.
+    json_date_key: date
+    # Specify the format of the date. Supported formats are double, epoch and iso8601 (eg: 2018-05-30T09:39:52.000681Z)
+    json_date_format: double
+    inputLogTypes: *logTypes
+    indices:
+      syslog:
+        name: syslog
+
 extraFilters: ""
 
 giantswarm:
