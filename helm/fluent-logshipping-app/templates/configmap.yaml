@@ -141,6 +141,9 @@ data:
     {{- if .Values.outputs.aws.S3.enabled }}
     @INCLUDE outputs-aws-s3.conf
     {{- end }}
+    {{- if .Values.outputs.tcp.enabled }}
+    @INCLUDE outputs-tcp.conf
+    {{- end }}
     {{- if not (or .Values.outputs.elasticsearch.enabled .Values.outputs.azure.logAnalytics.enabled .Values.outputs.aws.cloudWatch.enabled .Values.outputs.aws.S3.enabled ) }}
     [OUTPUT]
         Name   stdout
@@ -153,6 +156,20 @@ data:
     ## end
     {{- end }}
 
+  {{- if .Values.outputs.tcp.enabled }}
+  outputs-tcp.conf: |
+  {{- if has "syslog" .Values.outputs.tcp.inputLogTypes }}
+    [OUTPUT]
+        Name tcp
+        Match syslog.**
+        Host {{ .Values.outputs.tcp.host }}
+        Port {{ .Values.outputs.tcp.port }}
+        Format {{ .Values.outputs.tcp.format }}
+        json_date_key {{ .Values.outputs.tcp.json_date_key }}
+        json_date_format {{ .Values.outputs.tcp.json_date_format }}
+        Retry_Limit  false
+  {{- end }}
+  {{- end }}
 
   {{- if .Values.outputs.elasticsearch.enabled }}
   outputs-elasticsearch.conf: |
