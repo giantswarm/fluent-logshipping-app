@@ -112,6 +112,7 @@ outputs:
     # Specify the format of the date. Supported formats are double, epoch and iso8601 (eg: 2018-05-30T09:39:52.000681Z)
     json_date_format: double
     inputLogTypes: *logTypes
+    # This output currently only supports the forwarding of syslog messages.
     indices:
       syslog:
         name: syslog
