@@ -23,7 +23,7 @@ fluentbit:
 
   image:
     name: giantswarm/fluent-bit
-    tag: 1.7.1
+    tag: 1.7.1-systemd247
 
   logLevel: info
   flushFrequencyInSeconds: 5
