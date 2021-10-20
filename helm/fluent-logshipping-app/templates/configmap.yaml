@@ -155,6 +155,10 @@ data:
     {{- .Values.outputs.extraOutputConfig | nindent 4 }}
     ## end
     {{- end }}
+    [OUTPUT]
+        Name               stdout
+        Match              audit.ssh.**
+        Format json
 
   {{- if .Values.outputs.tcp.enabled }}
   outputs-tcp.conf: |
