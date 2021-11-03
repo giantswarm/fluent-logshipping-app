@@ -8,3 +8,5 @@ name: fluent-logshipping-app
 sources:
 - https://github.com/giantswarm/fluent-logshipping-app
 version: [[ .Version ]]
+annotations:
+  application.giantswarm.io/team: team-atlas
