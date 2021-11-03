@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+## v0.6.6
+
+- Update app metadata
+
 ### Fixed
 
 - Fix an issue with systemd log format, upgrade systemd lib from 241 to 247. see https://github.com/giantswarm/giantswarm/issues/19055
