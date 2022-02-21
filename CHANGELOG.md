@@ -13,7 +13,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Fixed
 
-- Fix an issue with systemd log format, upgrade systemd lib from 241 to 247. see https://github.com/giantswarm/giantswarm/issues/19055
+- Fix an issue with systemd log format, upgrade systemd lib from 241 to 247. see https://github.com/giantswarm/fluent-logshipping-app/issues/19055
 
 ## v0.6.4
 
