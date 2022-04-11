@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Unreleased
 
+### Fixed
+
+- Fix rbac api version
+
 ## v0.6.6
 
 - Update app metadata
