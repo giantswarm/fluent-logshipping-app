@@ -5,13 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project's packages adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
 
 ### Fixed
 
 - Fix rbac api version
 
-## v0.6.6
+## [v0.6.6]
 
 - Update app metadata
 
@@ -19,26 +19,26 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 - Fix an issue with systemd log format, upgrade systemd lib from 241 to 247. see https://github.com/giantswarm/giantswarm/issues/19055
 
-## v0.6.4
+## [v0.6.4]
 
 ### Changed
 
 - [Cloudwatch Output] Break up the stream names, this helps prevent hitting API limits
 
-## v0.6.3
+## [v0.6.3]
 
 ### Added
 
 - Make Daemonset resources configurable
 
-## v0.6.2
+## [v0.6.2]
 
 ### Added
 
 - Flexible Filter and Output, users can specifiy their own filter and outputs.
 - More options for back pressure tweaking
 
-## v0.6.1
+## [v0.6.1]
 
 ### Added
 
@@ -53,7 +53,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 - Moved to Giant Swarm default catalogue
 
-## v0.6.0
+## [v0.6.0]
 _Note: Jumping to next minor version as we are dropping fluentd_
 
 ### Changed
@@ -64,7 +64,7 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 
 - Add toleration so that it can be run on any nodes with taints
 
-## v0.5.5
+## [v0.5.5]
 
 ### Fixed
 
@@ -174,7 +174,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.6.0...master
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.6.6...HEAD
+[v0.6.6]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.6.6
 [v0.6.0]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.6.0
 [v0.5.3]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.5.3
 [v0.5.2]: https://github.com/giantswarm/fluent-logshipping-app/releases/tag/v0.5.2
