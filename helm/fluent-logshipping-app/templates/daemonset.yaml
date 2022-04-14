@@ -15,7 +15,6 @@ spec:
         {{- if .Values.outputs.aws.kiam }}
         iam.amazonaws.com/role: {{ .Values.outputs.aws.role }}
         {{- end }}
-        releasetime: {{ now | quote }}
         releaseRevision: {{ .Release.Revision | quote }}
       labels:
         app: {{ .Values.fluentbit.name }}
@@ -34,7 +33,7 @@ spec:
         runAsGroup: {{ .Values.fluentbit.groupID }}
       containers:
       - name: {{ .Values.fluentbit.name }}
-        image: {{ .Values.image.registry }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag }}
+        image: {{ .Values.registry.domain }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag }}
         env:
         - name: K8S_NODE_NAME
           valueFrom:
@@ -79,41 +78,41 @@ spec:
           initialDelaySeconds: 10
         volumeMounts:
         - mountPath: /run/log/journal/
-          name: runlogjournal
+          name: run-log-journal
           readOnly: true
-        - name: varlog
+        - name: var-log
           mountPath: /var/log
           readOnly: true
         - name: varrunfluentbit
           mountPath: /var/run/fluent-bit
-        - name: varlibdockercontainers
+        - name: var-lib-docker-containers
           mountPath: /var/lib/docker/containers
           readOnly: true
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc/
         ## Needed for syslog to work as the syslog plugins needs this id
-        - name: etcmachineid
+        - name: etc-machine-id
           mountPath: /etc/machine-id
           readOnly: true
       terminationGracePeriodSeconds: 10
       volumes:
-      - name: runlogjournal
+      - name: run-log-journal
         hostPath:
           path: /run/log/journal
-      - name: varlog
+      - name: var-log
         hostPath:
           path: /var/log
       - name: varrunfluentbit
         hostPath:
           path: /var/run/fluent-bit
           type: DirectoryOrCreate
-      - name: varlibdockercontainers
+      - name: var-lib-docker-containers
         hostPath:
           path: /var/lib/docker/containers
       - name: fluent-bit-config
         configMap:
           name: {{ .Values.fluentbit.name }}-config
-      - name: etcmachineid
+      - name: etc-machine-id
         hostPath:
           path: /etc/machine-id
           type: File

@@ -128,6 +128,54 @@ data:
         Match  *
         Record cluster {{ .Values.clusterID }}
 
+
+  parsers.conf: |
+    [PARSER]
+        Name         docker
+        Format       json
+        Time_Key     time
+        Time_Format  %Y-%m-%dT%H:%M:%S.%L
+        Time_Keep    On
+
+    [PARSER]
+        Name   apache
+        Format regex
+        Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name   apache2
+        Format regex
+        Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +\S*)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name   apache_error
+        Format regex
+        Regex  ^\[[^ ]* (?<time>[^\]]*)\] \[(?<level>[^\]]*)\](?: \[pid (?<pid>[^\]]*)\])?( \[client (?<client>[^\]]*)\])? (?<message>.*)$
+
+    [PARSER]
+        Name   nginx
+        Format regex
+        Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name   json
+        Format json
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name        syslog
+        Format      regex
+        Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
+        Time_Key    time
+        Time_Format %b %d %H:%M:%S
+
   outputs.conf: |
     {{- if .Values.outputs.elasticsearch.enabled }}
     @INCLUDE outputs-elasticsearch.conf
@@ -316,6 +364,7 @@ data:
         Name                         s3
         Match                        audit.ssh.**
         bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-ssh
+        role_arn                     {{ .Values.outputs.aws.role }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
@@ -328,6 +377,7 @@ data:
         Name                         s3
         Match                        syslog.**
         bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-syslog
+        role_arn                     {{ .Values.outputs.aws.role }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
@@ -340,6 +390,7 @@ data:
         Name                         s3
         Match                        kubernetes.**
         bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-containers
+        role_arn                     {{ .Values.outputs.aws.role }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
@@ -352,6 +403,7 @@ data:
         Name                         s3
         Match                        audit.kubernetes.**
         bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-kubernetes-audit
+        role_arn                     {{ .Values.outputs.aws.role }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
@@ -366,6 +418,7 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              audit.ssh.**
+        role_arn           {{ .Values.outputs.aws.role }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/ssh
         log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-${K8S_NODE_NAME}-
@@ -377,6 +430,7 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              syslog.**
+        role_arn           {{ .Values.outputs.aws.role }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/syslog
         log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-${K8S_NODE_NAME}-
@@ -388,6 +442,7 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              kubernetes.**
+        role_arn           {{ .Values.outputs.aws.role }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/containers
         log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-
@@ -399,6 +454,7 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              audit.kubernetes.**
+        role_arn           {{ .Values.outputs.aws.role }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/kubernetes-audit
         log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-
@@ -406,50 +462,3 @@ data:
         auto_create_group  true
   {{- end }}
   {{- end }}
-
-  parsers.conf: |
-    [PARSER]
-        Name         docker
-        Format       json
-        Time_Key     time
-        Time_Format  %Y-%m-%dT%H:%M:%S.%L
-        Time_Keep    On
-
-    [PARSER]
-        Name   apache
-        Format regex
-        Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
-        Time_Key time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name   apache2
-        Format regex
-        Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +\S*)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
-        Time_Key time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name   apache_error
-        Format regex
-        Regex  ^\[[^ ]* (?<time>[^\]]*)\] \[(?<level>[^\]]*)\](?: \[pid (?<pid>[^\]]*)\])?( \[client (?<client>[^\]]*)\])? (?<message>.*)$
-
-    [PARSER]
-        Name   nginx
-        Format regex
-        Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
-        Time_Key time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name   json
-        Format json
-        Time_Key time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name        syslog
-        Format      regex
-        Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
-        Time_Key    time
-        Time_Format %b %d %H:%M:%S

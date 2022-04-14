@@ -2,14 +2,12 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-namespace: kube-system
-
 # clusterID is dynamic environment value, calculated after cluster creation
 # applies only to Giant Swarm clusters
 clusterID: clusterID
 
-image:
-  registry: quay.io
+registry:
+  domain: quay.io
 
 fluentbit:
   name: fluent-bit
@@ -30,7 +28,6 @@ fluentbit:
   backlogMemLimit: "50M"
   memBufferLimit: "10MB"
   storageMaxChunksUp: 128
-
 
   inputStorageTypes:
     audit: "memory"
@@ -99,7 +96,6 @@ outputs:
         name: kubernetes
       syslog:
         name: syslog
-  extraOutputConfig: ""
 
   tcp:
     enabled: false
@@ -116,6 +112,8 @@ outputs:
     indices:
       syslog:
         name: syslog
+
+  extraOutputConfig: ""
 
 extraFilters: ""
 
