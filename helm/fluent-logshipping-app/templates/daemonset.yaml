@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ .Values.fluentbit.name }}
-  namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ .Values.fluentbit.name }}
+    {{- include "labels.common" . | nindent 4 }}
+  name: {{ include "resource.default.name" . }}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app: {{ .Values.fluentbit.name }}
+      {{- include "labels.selector" . | nindent 6 }}
   template:
     metadata:
       annotations:
@@ -17,7 +17,7 @@ spec:
         {{- end }}
         releaseRevision: {{ .Release.Revision | quote }}
       labels:
-        app: {{ .Values.fluentbit.name }}
+        {{- include "labels.common" . | nindent 8 }}
     spec:
       tolerations:
       # Tolerate master taint
@@ -27,13 +27,13 @@ spec:
       {{- with .Values.tolerations }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
-      serviceAccountName: {{ .Values.fluentbit.name }}
+      serviceAccountName: {{ include "resource.default.name" . }}
       securityContext:
         runAsUser: {{ .Values.fluentbit.userID }}
         runAsGroup: {{ .Values.fluentbit.groupID }}
       containers:
-      - name: {{ .Values.fluentbit.name }}
-        image: {{ .Values.registry.domain }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag }}
+      - name: fluent-bit
+        image: {{ .Values.registry.domain }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag | default .Chart.AppVersion }}
         env:
         - name: K8S_NODE_NAME
           valueFrom:
@@ -44,24 +44,24 @@ spec:
         - name: FLUENT_AZURE_WORKSPACE_ID
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.fluentbit.name }}-secret
+              name: {{ include "resource.default.name" . }}-secret
               key: WorkspaceID
         - name: FLUENT_AZURE_WORKSPACE_KEY
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.fluentbit.name }}-secret
+              name: {{ include "resource.default.name" . }}-secret
               key: WorkspaceKey
         {{- end }}
         {{- if and .Values.outputs.elasticsearch.enabled .Values.outputs.elasticsearch.secured }}
         - name: FLUENT_ELASTICSEARCH_USER
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.fluentbit.name }}-secret
+              name: {{ include "resource.default.name" . }}-secret
               key: ElasticsearchUser
         - name: FLUENT_ELASTICSEARCH_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.fluentbit.name }}-secret
+              name: {{ include "resource.default.name" . }}-secret
               key: ElasticsearchPassword
         {{- end }}
         resources:
@@ -83,7 +83,7 @@ spec:
         - name: var-log
           mountPath: /var/log
           readOnly: true
-        - name: varrunfluentbit
+        - name: var-run-fluent-bit
           mountPath: /var/run/fluent-bit
         - name: var-lib-docker-containers
           mountPath: /var/lib/docker/containers
@@ -102,7 +102,7 @@ spec:
       - name: var-log
         hostPath:
           path: /var/log
-      - name: varrunfluentbit
+      - name: var-run-fluent-bit
         hostPath:
           path: /var/run/fluent-bit
           type: DirectoryOrCreate
@@ -111,7 +111,7 @@ spec:
           path: /var/lib/docker/containers
       - name: fluent-bit-config
         configMap:
-          name: {{ .Values.fluentbit.name }}-config
+          name: {{ include "resource.default.name" . }}-configmap
       - name: etc-machine-id
         hostPath:
           path: /etc/machine-id

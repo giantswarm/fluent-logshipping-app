@@ -6,11 +6,14 @@
 # applies only to Giant Swarm clusters
 clusterID: clusterID
 
+project:
+  branch: "[[ .Branch ]]"
+  commit: "[[ .SHA ]]"
+
 registry:
   domain: quay.io
 
 fluentbit:
-  name: fluent-bit
   port: 5170
   protocol: TCP
 
@@ -21,7 +24,8 @@ fluentbit:
 
   image:
     name: giantswarm/fluent-bit
-    tag: 1.7.1-systemd247
+    # -- Overrides the image tag whose default is the chart's appVersion
+    tag: ""
 
   logLevel: info
   flushFrequencyInSeconds: 5

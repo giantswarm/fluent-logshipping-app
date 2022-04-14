@@ -1,7 +1,9 @@
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
-  name: {{ .Values.fluentbit.name }}-psp
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+  name: {{ include "resource.psp.name" . }}
 spec:
   privileged: true
   fsGroup:

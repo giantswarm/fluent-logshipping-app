@@ -1,7 +1,9 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ .Values.fluentbit.name }}-read
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+  name: {{ include "resource.default.name" . }}-read
 rules:
 - apiGroups: [""]
   resources:
@@ -12,20 +14,24 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ .Values.fluentbit.name }}-read
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+  name: {{ include "resource.default.name" . }}-read
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ .Values.fluentbit.name }}-read
+  name: {{ include "resource.default.name" . }}-read
 subjects:
 - kind: ServiceAccount
-  name: {{ .Values.fluentbit.name }}
+  name: {{ include "resource.default.name" . }}
   namespace: {{ .Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ .Values.fluentbit.name }}-psp
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+  name: {{ include "resource.psp.name" . }}
 rules:
   - apiGroups:
       - extensions
@@ -34,17 +40,19 @@ rules:
     verbs:
       - use
     resourceNames:
-      - {{ .Values.fluentbit.name }}-psp
+      - {{ include "resource.psp.name" . }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ .Values.fluentbit.name }}-psp
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+  name: {{ include "resource.psp.name" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Values.fluentbit.name }}
+    name: {{ include "resource.default.name" . }}
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Values.fluentbit.name }}-psp
+  name: {{ include "resource.psp.name" . }}
   apiGroup: rbac.authorization.k8s.io 
