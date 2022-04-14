@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Push to app collections.
+
 ## [0.6.7] - 2022-04-11
 
 ### Fixed
