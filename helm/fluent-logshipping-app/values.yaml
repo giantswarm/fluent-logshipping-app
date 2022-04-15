@@ -40,6 +40,7 @@ fluentbit:
     syslog: "memory"
 
 outputs:
+  enabled: true
   aws:
     kiam: false
     role: ""

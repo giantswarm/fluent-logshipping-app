@@ -177,6 +177,7 @@ data:
         Time_Format %b %d %H:%M:%S
 
   outputs.conf: |
+    {{- if .Values.outputs.enabled }}
     {{- if .Values.outputs.elasticsearch.enabled }}
     @INCLUDE outputs-elasticsearch.conf
     {{- end }}
@@ -202,6 +203,7 @@ data:
     ## extraOutputConfig
     {{- .Values.outputs.extraOutputConfig | nindent 4 }}
     ## end
+    {{- end }}
     {{- end }}
 
   {{- if .Values.outputs.tcp.enabled }}
