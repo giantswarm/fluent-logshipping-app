@@ -1,3 +1,4 @@
+{{- if and .Values.outputs .Values.outputs.inputLogTypes }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -77,8 +78,8 @@ spec:
             port: {{ .Values.fluentbit.port }}
           initialDelaySeconds: 10
         volumeMounts:
-        - mountPath: /run/log/journal/
-          name: run-log-journal
+        - name: systemd-log
+          mountPath: /run/log
           readOnly: true
         - name: var-log
           mountPath: /var/log
@@ -96,9 +97,9 @@ spec:
           readOnly: true
       terminationGracePeriodSeconds: 10
       volumes:
-      - name: run-log-journal
+      - name: systemd-log
         hostPath:
-          path: /run/log/journal
+          path: /run/log
       - name: var-log
         hostPath:
           path: /var/log
@@ -120,3 +121,4 @@ spec:
     rollingUpdate:
       maxUnavailable: 1
     type: RollingUpdate
+{{- end }}

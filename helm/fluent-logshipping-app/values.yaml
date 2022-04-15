@@ -40,18 +40,18 @@ fluentbit:
     syslog: "memory"
 
 outputs:
-  enabled: true
+  inputLogTypes: &logTypes
+  - sshd
+  - containers
+  - syslog
+  - audit
   aws:
     kiam: false
     role: ""
     region: ""
     cloudWatch:
       enabled: false
-      inputLogTypes: &logTypes
-        - sshd
-        - containers
-        - syslog
-        - audit
+      inputLogTypes: *logTypes
       logGroupName: "my-cluster"
       logStreamNamePrefix: "example-stream"
       logRetentionDays: -1

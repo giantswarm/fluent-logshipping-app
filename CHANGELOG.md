@@ -12,6 +12,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 - Upgrade to `fluent-bit v1.9.1`
 - Sort out app labels.
 - Push to app collections.
+- Disable fluentbit if not outputs and inputs are defined.
 
 ## [0.6.7] - 2022-04-11
 

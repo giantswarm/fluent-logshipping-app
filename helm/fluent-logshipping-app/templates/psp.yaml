@@ -1,3 +1,4 @@
+{{- if and .Values.outputs .Values.outputs.inputLogTypes }}
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
@@ -24,3 +25,4 @@ spec:
   hostNetwork: false
   hostIPC: false
   hostPID: false
+{{- end }}

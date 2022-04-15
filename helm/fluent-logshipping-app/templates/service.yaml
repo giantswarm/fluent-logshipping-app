@@ -1,3 +1,4 @@
+{{- if and .Values.outputs .Values.outputs.inputLogTypes }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -20,3 +21,4 @@ spec:
       targetPort: {{ .Values.fluentbit.port }}
   selector:
     {{- include "labels.selector" . | nindent 4 }}
+{{- end }}
