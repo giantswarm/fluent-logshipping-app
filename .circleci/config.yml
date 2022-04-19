@@ -77,7 +77,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-collection:
-          name: "push to-vsphere-app-collection"
+          name: "push-to-vsphere-app-collection"
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "vsphere-app-collection"
