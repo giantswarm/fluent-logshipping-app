@@ -90,7 +90,7 @@ data:
         storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
-        ## Filters journalctl logs for either the syslog identifier=sshd of the _SYSTEMD_UNIT=sshd.service to ensure we only get SSH logs.
+        ## Filters journalctl logs either by syslog identifier or systemd unit name to ensure we only get SSH logs.
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
         Systemd_Filter    _SYSTEMD_UNIT=sshd.service
     {{- end }}
