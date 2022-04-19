@@ -384,13 +384,17 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        audit.ssh.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketName }}-ssh
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}
         {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
         {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
+        s3_key_format                {{ printf "%s-ssh/%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- else }}
+        s3_key_format                {{ printf "ssh/%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
   {{- end }}
@@ -399,13 +403,17 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        syslog.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketName }}-syslog
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}
         {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
         {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
+        s3_key_format                {{ printf "%s-syslog/%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- else }}
+        s3_key_format                {{ printf "syslog/%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
   {{- end }}
@@ -414,13 +422,17 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        kubernetes.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketName }}-containers
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}
         {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
         {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
+        s3_key_format                {{ printf "%s-containers/%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- else }}
+        s3_key_format                {{ printf "containers/%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
   {{- end }}
@@ -429,13 +441,17 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        audit.kubernetes.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketName }}-kubernetes-audit
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}
         {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
         {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
+        s3_key_format                {{ printf "%s-k8s-audit/%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- else }}
+        s3_key_format                {{ printf "k8s-audit/%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
  {{- end }}
@@ -451,8 +467,8 @@ data:
         role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/ssh
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -465,8 +481,8 @@ data:
         role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/syslog
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-syslog-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -479,8 +495,8 @@ data:
         role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/containers
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-containers-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -493,8 +509,8 @@ data:
         role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/kubernetes-audit
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-k8s-audit-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}

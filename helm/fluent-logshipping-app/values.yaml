@@ -59,6 +59,7 @@ outputs:
       enabled: false
       inputLogTypes: *logTypes
       bucketName: "my-cluster-logs"
+      bucketPathPrefix: ""
       totalFileSize: "100M"
       s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
 
