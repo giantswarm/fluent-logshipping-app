@@ -38,7 +38,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-collection:
-          name: "push to-aws-app-collection"
+          name: "push-to-aws-app-collection"
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "aws-app-collection"
