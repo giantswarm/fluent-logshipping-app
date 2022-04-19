@@ -53,13 +53,12 @@ outputs:
       enabled: false
       inputLogTypes: *logTypes
       logGroupName: "my-cluster"
-      logStreamNamePrefix: "example-stream"
+      logStreamName: "example-stream"
       logRetentionDays: -1
     S3:
       enabled: false
       inputLogTypes: *logTypes
-      bucketNamePrefix: "my-cluster-logs"
-      bucketPathPrefix: "gs-"
+      bucketName: "my-cluster-logs"
       totalFileSize: "100M"
       s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
 

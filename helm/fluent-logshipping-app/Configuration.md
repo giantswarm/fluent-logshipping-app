@@ -27,7 +27,6 @@ The following table lists the configurable parameters of the fluent-logshipping-
 | `outputs.aws.S3.enabled`                              | Enable S3 plugin                                                                  | `false`           |
 | `outputs.aws.S3.bucketName`                           | outputs S3 plugin bucket name                                                     | `my-cluster-logs` |
 | `outputs.aws.S3.bucketRegion`                         | outputs S3 plugin region                                                          | `eu-central-1`    |
-| `outputs.aws.S3.bucketPathPrefix`                     | outputs S3 plugin prefix                                                          | `gs-`             |
 | `outputs.aws.S3.role`                                 | outputs S3 plugin default role name to assume                                     | `""`              |
 | `outputs.azure.logAnalytics.enabled`                  | Enable Azure Log Analytics plugin                                                 | `false`           |
 | `outputs.azure.logAnalytics.workspaceId`              | Azure Log Analytics plugin workspace id ([where do I find it?](Azure.md))         | ``                |

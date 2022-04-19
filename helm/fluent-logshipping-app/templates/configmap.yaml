@@ -90,6 +90,7 @@ data:
         storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
+        ## Filters journalctl logs for either the syslog identifier=sshd of the _SYSTEMD_UNIT=sshd.service to ensure we only get SSH logs.
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
         Systemd_Filter    _SYSTEMD_UNIT=sshd.service
     {{- end }}
@@ -383,8 +384,10 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        audit.ssh.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-ssh
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}-ssh
+        {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
+        {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
@@ -396,8 +399,10 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        syslog.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-syslog
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}-syslog
+        {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
+        {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
@@ -409,8 +414,10 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        kubernetes.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-containers
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}-containers
+        {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
+        {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
@@ -422,8 +429,10 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        audit.kubernetes.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-kubernetes-audit
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}-kubernetes-audit
+        {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
+        {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
@@ -438,10 +447,12 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              audit.ssh.**
+        {{- if .Values.outputs.aws.role }}
         role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/ssh
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-${K8S_NODE_NAME}-
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -450,10 +461,12 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              syslog.**
+        {{- if .Values.outputs.aws.role }}
         role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/syslog
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-${K8S_NODE_NAME}-
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -462,10 +475,12 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              kubernetes.**
+        {{- if .Values.outputs.aws.role }}
         role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/containers
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -474,10 +489,12 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              audit.kubernetes.**
+        {{- if .Values.outputs.aws.role }}
         role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/kubernetes-audit
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
