@@ -90,7 +90,7 @@ workflows:
               only: /^v.*/
       
       - architect/push-to-app-collection:
-          name: "push to-openstack-app-collection"
+          name: "push-to-openstack-app-collection"
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "openstack-app-collection"
