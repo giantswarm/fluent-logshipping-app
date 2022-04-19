@@ -1,12 +1,10 @@
-fluentd:
+outputs:
   aws:
     kiam: true
+    region: "eu-central-1"
+    role: arn:aws:iam::00000000000:role/my-role
     S3:
       enabled: true
       bucketName: "my-cluster-logs"
-      bucketRegion: "eu-central-1"
-      bucketPathPrefix: "gs-"
-      account: "00000000000"
-      role: "my-role"
+      totalFileSize: "100M"
       s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
-  

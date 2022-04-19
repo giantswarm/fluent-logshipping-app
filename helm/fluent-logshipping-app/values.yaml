@@ -2,17 +2,18 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-namespace: kube-system
-
 # clusterID is dynamic environment value, calculated after cluster creation
 # applies only to Giant Swarm clusters
 clusterID: clusterID
 
-image:
-  registry: quay.io
+project:
+  branch: "[[ .Branch ]]"
+  commit: "[[ .SHA ]]"
+
+registry:
+  domain: quay.io
 
 fluentbit:
-  name: fluent-bit
   port: 5170
   protocol: TCP
 
@@ -23,14 +24,14 @@ fluentbit:
 
   image:
     name: giantswarm/fluent-bit
-    tag: 1.7.1-systemd247
+    # -- Overrides the image tag whose default is the chart's appVersion
+    tag: ""
 
   logLevel: info
   flushFrequencyInSeconds: 5
   backlogMemLimit: "50M"
   memBufferLimit: "10MB"
   storageMaxChunksUp: 128
-
 
   inputStorageTypes:
     audit: "memory"
@@ -39,25 +40,26 @@ fluentbit:
     syslog: "memory"
 
 outputs:
+  inputLogTypes: &logTypes
+  - sshd
+  - containers
+  - syslog
+  - audit
   aws:
     kiam: false
     role: ""
     region: ""
     cloudWatch:
       enabled: false
-      inputLogTypes: &logTypes
-        - sshd
-        - containers
-        - syslog
-        - audit
+      inputLogTypes: *logTypes
       logGroupName: "my-cluster"
-      logStreamNamePrefix: "example-stream"
+      logStreamName: "example-stream"
       logRetentionDays: -1
     S3:
       enabled: false
       inputLogTypes: *logTypes
-      bucketNamePrefix: "my-cluster-logs"
-      bucketPathPrefix: "gs-"
+      bucketName: "my-cluster-logs"
+      bucketPathPrefix: ""
       totalFileSize: "100M"
       s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
 
@@ -99,7 +101,6 @@ outputs:
         name: kubernetes
       syslog:
         name: syslog
-  extraOutputConfig: ""
 
   tcp:
     enabled: false
@@ -116,6 +117,8 @@ outputs:
     indices:
       syslog:
         name: syslog
+
+  extraOutputConfig: ""
 
 extraFilters: ""
 

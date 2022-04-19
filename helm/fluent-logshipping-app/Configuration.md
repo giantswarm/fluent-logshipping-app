@@ -4,7 +4,6 @@ The following table lists the configurable parameters of the fluent-logshipping-
 
 | Parameter                                             | Description                                                                       | Default           |
 | ----------------------------------------------------- | --------------------------------------------------------------------------------- | ----------------- |
-| `fluentbit.name`                                      | fluentbit deployment name                                                         | `fluent-bit`      |
 | `fluentbit.port`                                      | fluentbit port                                                                    | `5170`            |
 | `fluentbit.protocol`                                  | fluentbit protocol                                                                | `TCP`             |
 | `fluentbit.userID`                                    | fluentbit user ID                                                                 | `1000`            |
@@ -21,15 +20,13 @@ The following table lists the configurable parameters of the fluent-logshipping-
 | `outputs.protocol`                                    | outputs protocol                                                                  | `TCP`             |
 | `outputs.aws.kiam`                                    | Kiam support                                                                      | `false`           |
 | `outputs.aws.role`                                    | AWS role to assume                                                                | `""`              |
+| `outputs.aws.region`                                  | outputs AWS region                                                                 | `eu-central-1`    |
 | `outputs.aws.cloudWatch.enabled`                      | Enable CloudWatch plugin                                                          | `false`           |
-| `outputs.aws.cloudWatch.region`                       | outputs CloudWatch plugin region                                                  | `eu-central-1`    |
 | `outputs.aws.cloudWatch.logGroupName`                 | outputs CloudWatch plugin log group name                                          | `my-cluster`      |
 | `outputs.aws.cloudWatch.logStreamName`                | outputs CloudWatch plugin log stream name                                         | `example-stream`  |
 | `outputs.aws.S3.enabled`                              | Enable S3 plugin                                                                  | `false`           |
 | `outputs.aws.S3.bucketName`                           | outputs S3 plugin bucket name                                                     | `my-cluster-logs` |
-| `outputs.aws.S3.bucketRegion`                         | outputs S3 plugin region                                                          | `eu-central-1`    |
-| `outputs.aws.S3.bucketPathPrefix`                     | outputs S3 plugin prefix                                                          | `gs-`             |
-| `outputs.aws.S3.account`                              | outputs S3 plugin default account of the S3 bucket                                | `0000000000`      |
+| `outputs.aws.S3.bucketPathPrefix`                     | outputs S3 path in the bucket                                                      | ``    |
 | `outputs.aws.S3.role`                                 | outputs S3 plugin default role name to assume                                     | `""`              |
 | `outputs.azure.logAnalytics.enabled`                  | Enable Azure Log Analytics plugin                                                 | `false`           |
 | `outputs.azure.logAnalytics.workspaceId`              | Azure Log Analytics plugin workspace id ([where do I find it?](Azure.md))         | ``                |

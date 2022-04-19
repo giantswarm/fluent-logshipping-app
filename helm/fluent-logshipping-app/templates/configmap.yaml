@@ -1,10 +1,11 @@
+{{- if and .Values.outputs .Values.outputs.inputLogTypes }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.fluentbit.name }}-config
-  namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ .Values.fluentbit.name }}
+    {{- include "labels.common" . | nindent 4 }}
+  name: {{ include "resource.default.name" . }}-configmap
+  namespace: {{ .Release.Namespace }}
 data:
   # Configuration files: server, input, filters and output
   # ======================================================
@@ -40,9 +41,15 @@ data:
     @INCLUDE outputs.conf
 
   inputs.conf: |
+    {{- if has "containers" .Values.outputs.inputLogTypes }}
     @INCLUDE inputs-kubernetes.conf
+    {{- end }}
+    {{- if has "syslog" .Values.outputs.inputLogTypes }}
     @INCLUDE inputs-syslog.conf
+    {{- end }}
+    {{- if or (has "audit" .Values.outputs.inputLogTypes) (has "sshd" .Values.outputs.inputLogTypes) }}
     @INCLUDE inputs-auditing.conf
+    {{- end }}
 
   inputs-kubernetes.conf: |
     # Get all the container logs
@@ -67,27 +74,28 @@ data:
   inputs-syslog.conf: |
     [INPUT]
         Name              systemd
-        Path              /run/log/journal
         Tag               syslog.*
-        Parser            syslog
         DB                ${input_database_path}/syslog.db
         storage.type      {{ .Values.fluentbit.inputStorageTypes.syslog }}
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
 
   inputs-auditing.conf: |
+    {{- if has "sshd" .Values.outputs.inputLogTypes }}
     # Get the sshd audit logs
     [INPUT]
         Name              systemd
         Tag               audit.ssh.*
-        Path              /run/log/journal
-        Parser            syslog
         DB                ${input_database_path}/audit_ssh.db
-        Systemd_Filter    SYSLOG_IDENTIFIER=sshd
-        Mem_Buf_Limit     ${input_memory_buffer_limit}
         storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
+        Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
+        ## Filters journalctl logs either by syslog identifier or systemd unit name to ensure we only get SSH logs.
+        Systemd_Filter    SYSLOG_IDENTIFIER=sshd
+        Systemd_Filter    _SYSTEMD_UNIT=sshd.service
+    {{- end }}
 
+    {{- if has "audit" .Values.outputs.inputLogTypes }}
     # Get the kubernetes api server audit logs
     [INPUT]
         Name              tail
@@ -104,6 +112,7 @@ data:
         # The interval of refreshing the list of watched files in seconds
         Refresh_Interval  ${input_refresh_interval_in_seconds}
         Skip_Long_Lines   ${input_skip_long_lines}
+    {{- end }}
 
   filters.conf: |
     {{- if .Values.extraFilters }}
@@ -128,6 +137,46 @@ data:
         Match  *
         Record cluster {{ .Values.clusterID }}
 
+  parsers.conf: |
+    [PARSER]
+        Name         docker
+        Format       json
+        Time_Key     time
+        Time_Format  %Y-%m-%dT%H:%M:%S.%L
+        Time_Keep    On
+
+    [PARSER]
+        Name   apache
+        Format regex
+        Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name   apache2
+        Format regex
+        Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +\S*)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name   apache_error
+        Format regex
+        Regex  ^\[[^ ]* (?<time>[^\]]*)\] \[(?<level>[^\]]*)\](?: \[pid (?<pid>[^\]]*)\])?( \[client (?<client>[^\]]*)\])? (?<message>.*)$
+
+    [PARSER]
+        Name   nginx
+        Format regex
+        Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name   json
+        Format json
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
   outputs.conf: |
     {{- if .Values.outputs.elasticsearch.enabled }}
     @INCLUDE outputs-elasticsearch.conf
@@ -144,16 +193,36 @@ data:
     {{- if .Values.outputs.tcp.enabled }}
     @INCLUDE outputs-tcp.conf
     {{- end }}
-    {{- if not (or .Values.outputs.elasticsearch.enabled .Values.outputs.azure.logAnalytics.enabled .Values.outputs.aws.cloudWatch.enabled .Values.outputs.aws.S3.enabled ) }}
-    [OUTPUT]
-        Name   stdout
-        Match  *
-        Format json
-    {{- end }}
     {{- if .Values.outputs.extraOutputConfig }}
     ## extraOutputConfig
     {{- .Values.outputs.extraOutputConfig | nindent 4 }}
     ## end
+    {{- end }}
+    {{- if not (or .Values.outputs.elasticsearch.enabled .Values.outputs.azure.logAnalytics.enabled .Values.outputs.aws.cloudWatch.enabled .Values.outputs.aws.S3.enabled .Values.outputs.tcp.enabled .Values.outputs.extraOutputConfig) }}
+    {{- if has "syslog" .Values.outputs.inputLogTypes }}
+    [OUTPUT]
+        Name   stdout
+        Match  syslog.**
+        Format json
+    {{- end }}
+    {{- if has "sshd" .Values.outputs.inputLogTypes }}
+    [OUTPUT]
+        Name   stdout
+        Match  audit.ssh.**
+        Format json
+    {{- end }}
+    {{- if has "containers" .Values.outputs.inputLogTypes }}
+    [OUTPUT]
+        Name   stdout
+        Match  kubernetes.**
+        Format json
+    {{- end }}
+    {{- if has "audit" .Values.outputs.inputLogTypes }}
+    [OUTPUT]
+        Name   stdout
+        Match  audit.kubernetes.**
+        Format json
+    {{- end }}
     {{- end }}
 
   {{- if .Values.outputs.tcp.enabled }}
@@ -315,10 +384,17 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        audit.ssh.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-ssh
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}
+        {{- if .Values.outputs.aws.role }}
+        role_arn                     {{ .Values.outputs.aws.role }}
+        {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
+        s3_key_format                {{ printf "%s-ssh/%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- else }}
+        s3_key_format                {{ printf "ssh/%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
   {{- end }}
@@ -327,10 +403,17 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        syslog.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-syslog
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}
+        {{- if .Values.outputs.aws.role }}
+        role_arn                     {{ .Values.outputs.aws.role }}
+        {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
+        s3_key_format                {{ printf "%s-syslog/%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- else }}
+        s3_key_format                {{ printf "syslog/%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
   {{- end }}
@@ -339,10 +422,17 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        kubernetes.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-containers
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}
+        {{- if .Values.outputs.aws.role }}
+        role_arn                     {{ .Values.outputs.aws.role }}
+        {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
+        s3_key_format                {{ printf "%s-containers/%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- else }}
+        s3_key_format                {{ printf "containers/%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
   {{- end }}
@@ -351,10 +441,17 @@ data:
     [OUTPUT]
         Name                         s3
         Match                        audit.kubernetes.**
-        bucket                       {{ .Values.outputs.aws.S3.bucketPathPrefix }}{{ .Values.outputs.aws.S3.bucketNamePrefix }}-kubernetes-audit
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}
+        {{- if .Values.outputs.aws.role }}
+        role_arn                     {{ .Values.outputs.aws.role }}
+        {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        s3_key_format                {{ .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
+        s3_key_format                {{ printf "%s-k8s-audit/%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- else }}
+        s3_key_format                {{ printf "k8s-audit/%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
  {{- end }}
@@ -366,9 +463,12 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              audit.ssh.**
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/ssh
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-${K8S_NODE_NAME}-
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -377,9 +477,12 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              syslog.**
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/syslog
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-${K8S_NODE_NAME}-
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-syslog-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -388,9 +491,12 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              kubernetes.**
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/containers
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-containers-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -399,57 +505,14 @@ data:
     [OUTPUT]
         Name               cloudwatch_logs
         Match              audit.kubernetes.**
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
-        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}/kubernetes-audit
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamNamePrefix }}-
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-k8s-audit-
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
   {{- end }}
-
-  parsers.conf: |
-    [PARSER]
-        Name         docker
-        Format       json
-        Time_Key     time
-        Time_Format  %Y-%m-%dT%H:%M:%S.%L
-        Time_Keep    On
-
-    [PARSER]
-        Name   apache
-        Format regex
-        Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
-        Time_Key time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name   apache2
-        Format regex
-        Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +\S*)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
-        Time_Key time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name   apache_error
-        Format regex
-        Regex  ^\[[^ ]* (?<time>[^\]]*)\] \[(?<level>[^\]]*)\](?: \[pid (?<pid>[^\]]*)\])?( \[client (?<client>[^\]]*)\])? (?<message>.*)$
-
-    [PARSER]
-        Name   nginx
-        Format regex
-        Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
-        Time_Key time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name   json
-        Format json
-        Time_Key time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name        syslog
-        Format      regex
-        Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
-        Time_Key    time
-        Time_Format %b %d %H:%M:%S
+{{- end }}
