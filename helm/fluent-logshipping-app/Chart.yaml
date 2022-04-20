@@ -10,4 +10,4 @@ sources:
 version: [[ .Version ]]
 annotations:
   application.giantswarm.io/team: team-atlas
-  config.giantswarm.io/version: g8s-efk-to-fluent-logshipping-app
+  config.giantswarm.io/version: 1.x.x

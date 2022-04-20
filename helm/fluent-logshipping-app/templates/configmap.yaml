@@ -468,7 +468,7 @@ data:
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh-
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -482,7 +482,7 @@ data:
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-syslog-
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-syslog
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -496,7 +496,7 @@ data:
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-containers-
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-containers
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
@@ -510,7 +510,7 @@ data:
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_prefix  {{ .Values.outputs.aws.cloudWatch.logStreamName }}-k8s-audit-
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-k8s-audit
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}

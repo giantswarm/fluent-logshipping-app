@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Move to `log_stream_name` as `log_stream_prefix` is deprecated for the cloudwatch_logs plugin.
+
 ## [0.7.0] - 2022-04-19
 
 ### Changed
