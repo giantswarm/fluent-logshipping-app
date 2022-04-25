@@ -496,7 +496,7 @@ data:
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-containers-$(kubernetes['container_name'])
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-containers
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
