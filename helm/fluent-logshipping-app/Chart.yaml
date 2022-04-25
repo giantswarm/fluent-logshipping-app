@@ -10,4 +10,4 @@ sources:
 version: [[ .Version ]]
 annotations:
   application.giantswarm.io/team: team-atlas
-  config.giantswarm.io/version: 1.x.x
+  config.giantswarm.io/version: set-kiam-for-fluent-logshipping-app

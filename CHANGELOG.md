@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Split log streams per containers.
+
 ## [0.7.1] - 2022-04-20
 
 ### Fixed
@@ -71,6 +75,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 - Moved to Giant Swarm default catalogue
 
 ## [v0.6.0]
+
 _Note: Jumping to next minor version as we are dropping fluentd_
 
 ### Changed
@@ -119,14 +124,17 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 ## v0.5.1
 
 ### Changed
+
 - Update fluent-bit to v1.4.5
 
 ### Fixed
+
 - Fix wrong configuration for elasticsearch
 
 ## v0.5.0
 
 ### Added
+
 - Add kiam support
 
 ## v0.4.0
