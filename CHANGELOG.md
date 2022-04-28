@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix extra slash in s3 object key format.
+
 ## [0.7.2] - 2022-04-28
 
 ### Fixed
