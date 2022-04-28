@@ -7,9 +7,9 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
-### Changed
+### Fixed
 
-- Split log streams per containers.
+- Fix s3 object key format.
 
 ## [0.7.1] - 2022-04-20
 
