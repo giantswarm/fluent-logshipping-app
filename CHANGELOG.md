@@ -7,6 +7,12 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [0.7.2] - 2022-04-28
+
+### Fixed
+
+- Fix s3 object key format.
+
 ## [0.7.1] - 2022-04-20
 
 ### Fixed
@@ -71,6 +77,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 - Moved to Giant Swarm default catalogue
 
 ## [v0.6.0]
+
 _Note: Jumping to next minor version as we are dropping fluentd_
 
 ### Changed
@@ -119,14 +126,17 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 ## v0.5.1
 
 ### Changed
+
 - Update fluent-bit to v1.4.5
 
 ### Fixed
+
 - Fix wrong configuration for elasticsearch
 
 ## v0.5.0
 
 ### Added
+
 - Add kiam support
 
 ## v0.4.0
@@ -191,7 +201,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.7.2...HEAD
+[0.7.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.6.7...v0.7.0
 [0.6.7]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.6.6...v0.6.7

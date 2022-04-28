@@ -7,4 +7,4 @@ outputs:
       enabled: true
       bucketName: "my-cluster-logs"
       totalFileSize: "100M"
-      s3_object_key_format: "%{path}%{time_slice}_%{index}.%{file_extension}"
+      s3_object_key_format: "/$TAG/%Y/%m/%d/%H/%M/%S"
