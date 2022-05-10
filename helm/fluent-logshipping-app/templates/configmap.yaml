@@ -392,9 +392,9 @@ data:
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         send_content_md5             true
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
-        s3_key_format                {{ printf "%s/ssh%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format                {{ printf "%s/ssh%s" (regexReplaceAll "^/*" .Values.outputs.aws.S3.bucketPathPrefix "/") .Values.outputs.aws.S3.s3_object_key_format }}
         {{- else }}
-        s3_key_format                {{ printf "ssh%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format                {{ printf "/ssh%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
@@ -412,9 +412,9 @@ data:
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         send_content_md5             true
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
-        s3_key_format                {{ printf "%s/syslog%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format                {{ printf "%s/syslog%s" (regexReplaceAll "^/*" .Values.outputs.aws.S3.bucketPathPrefix "/") .Values.outputs.aws.S3.s3_object_key_format }}
         {{- else }}
-        s3_key_format                {{ printf "syslog%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format                {{ printf "/syslog%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
@@ -432,9 +432,9 @@ data:
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         send_content_md5             true
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
-        s3_key_format                {{ printf "%s/containers%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format                {{ printf "%s/containers%s" (regexReplaceAll "^/*" .Values.outputs.aws.S3.bucketPathPrefix "/") .Values.outputs.aws.S3.s3_object_key_format }}
         {{- else }}
-        s3_key_format                {{ printf "containers%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format                {{ printf "/containers%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
@@ -452,9 +452,9 @@ data:
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         send_content_md5             true
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
-        s3_key_format                {{ printf "%s/k8s-audit%s" .Values.outputs.aws.S3.bucketPathPrefix .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format                {{ printf "%s/k8s-audit%s" (regexReplaceAll "^/*" .Values.outputs.aws.S3.bucketPathPrefix "/") .Values.outputs.aws.S3.s3_object_key_format }}
         {{- else }}
-        s3_key_format                {{ printf "k8s-audit%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        s3_key_format                {{ printf "/k8s-audit%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3

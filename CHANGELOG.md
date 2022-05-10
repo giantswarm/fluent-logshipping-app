@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix missing leading slash on s3 bucket prefix.
+
 ## [0.7.3] - 2022-04-28
 
 ### Fixed
