@@ -390,7 +390,6 @@ data:
         {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        send_content_md5             true
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
         s3_key_format                {{ printf "/%s/ssh%s" (trimPrefix "/" .Values.outputs.aws.S3.bucketPathPrefix) .Values.outputs.aws.S3.s3_object_key_format }}
         {{- else }}
@@ -410,7 +409,6 @@ data:
         {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        send_content_md5             true
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
         s3_key_format                {{ printf "/%s/syslog%s" (trimPrefix "/" .Values.outputs.aws.S3.bucketPathPrefix) .Values.outputs.aws.S3.s3_object_key_format }}
         {{- else }}
@@ -430,7 +428,6 @@ data:
         {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        send_content_md5             true
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
         s3_key_format                {{ printf "/%s/containers%s" (trimPrefix "/" .Values.outputs.aws.S3.bucketPathPrefix) .Values.outputs.aws.S3.s3_object_key_format }}
         {{- else }}
@@ -450,7 +447,6 @@ data:
         {{- end }}
         region                       {{ .Values.outputs.aws.region }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
-        send_content_md5             true
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
         s3_key_format                {{ printf "/%s/k8s-audit%s" (trimPrefix "/" .Values.outputs.aws.S3.bucketPathPrefix) .Values.outputs.aws.S3.s3_object_key_format }}
         {{- else }}
