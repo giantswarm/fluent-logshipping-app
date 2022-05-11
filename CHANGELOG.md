@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Downgrade fluent-bit to 1.7.9.
+
 ### Fixed
 
 - Fix missing leading slash on s3 bucket prefix.
