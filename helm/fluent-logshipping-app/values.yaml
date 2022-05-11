@@ -25,7 +25,7 @@ fluentbit:
   image:
     name: giantswarm/fluent-bit
     # -- Overrides the image tag whose default is the chart's appVersion
-    tag: ""
+    tag: "1.7.1-systemd247"
 
   logLevel: info
   flushFrequencyInSeconds: 5
