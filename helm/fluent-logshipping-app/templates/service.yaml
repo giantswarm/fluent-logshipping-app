@@ -5,7 +5,7 @@ metadata:
   annotations:
     {{- if .Values.giantswarm.monitoring.enabled }}
     giantswarm.io/monitoring: "true"
-    giantswarm.io/monitoring-path: "api/v1/metrics/prometheus"
+    giantswarm.io/monitoring-path: "/api/v1/metrics/prometheus"
     giantswarm.io/monitoring-port: "{{ .Values.fluentbit.port }}"
     {{- end }}
     prometheus.io/scrape: "true"

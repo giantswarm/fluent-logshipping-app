@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix prometheus metric path in the annotation
+
 ## [1.0.0] - 2022-05-11
 
 ### Changed
