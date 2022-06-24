@@ -388,7 +388,12 @@ data:
         {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
         {{- end }}
+        {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
+        {{- end }}
+        {{- if .Values.outputs.aws.S3.endpoint }}
+        endpoint                     {{ .Values.outputs.aws.S3.endpoint }}
+        {{- end }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
         s3_key_format                {{ printf "/%s/ssh%s" (trimPrefix "/" .Values.outputs.aws.S3.bucketPathPrefix) .Values.outputs.aws.S3.s3_object_key_format }}
@@ -407,7 +412,12 @@ data:
         {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
         {{- end }}
+        {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
+        {{- end }}
+        {{- if .Values.outputs.aws.S3.endpoint }}
+        endpoint                     {{ .Values.outputs.aws.S3.endpoint }}
+        {{- end }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
         s3_key_format                {{ printf "/%s/syslog%s" (trimPrefix "/" .Values.outputs.aws.S3.bucketPathPrefix) .Values.outputs.aws.S3.s3_object_key_format }}
@@ -426,7 +436,12 @@ data:
         {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
         {{- end }}
+        {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
+        {{- end }}
+        {{- if .Values.outputs.aws.S3.endpoint }}
+        endpoint                     {{ .Values.outputs.aws.S3.endpoint }}
+        {{- end }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
         s3_key_format                {{ printf "/%s/containers%s" (trimPrefix "/" .Values.outputs.aws.S3.bucketPathPrefix) .Values.outputs.aws.S3.s3_object_key_format }}
@@ -445,7 +460,12 @@ data:
         {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
         {{- end }}
+        {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
+        {{- end }}
+        {{- if .Values.outputs.aws.S3.endpoint }}
+        endpoint                     {{ .Values.outputs.aws.S3.endpoint }}
+        {{- end }}
         total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
         {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
         s3_key_format                {{ printf "/%s/k8s-audit%s" (trimPrefix "/" .Values.outputs.aws.S3.bucketPathPrefix) .Values.outputs.aws.S3.s3_object_key_format }}

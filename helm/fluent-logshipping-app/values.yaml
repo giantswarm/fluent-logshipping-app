@@ -49,6 +49,9 @@ outputs:
     kiam: false
     role: ""
     region: ""
+    credentials:
+      awsAccessKey: ""
+      awsSecretKey: ""
     cloudWatch:
       enabled: false
       inputLogTypes: *logTypes
@@ -60,6 +63,7 @@ outputs:
       inputLogTypes: *logTypes
       bucketName: "my-cluster-logs"
       bucketPathPrefix: ""
+      endpoint: ""
       totalFileSize: "100M"
       s3_object_key_format: "/$TAG/%Y/%m/%d/%H/%M/%S"
 

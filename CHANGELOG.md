@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Add aws s3 endpoint and access key support.
+
 ## [1.0.1] - 2022-05-12
 
 ### Fixed
