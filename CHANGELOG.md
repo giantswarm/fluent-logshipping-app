@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [1.1.0] - 2022-06-27
+
 ### Fixed
 
 - Add aws s3 endpoint and access key support.
@@ -227,7 +229,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.7.3...v1.0.0
 [0.7.3]: https://github.com/giantswarm/fluent-logshipping-app/compare/v0.7.2...v0.7.3
