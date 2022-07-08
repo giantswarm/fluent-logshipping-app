@@ -85,7 +85,7 @@ data:
     # Get the sshd audit logs
     [INPUT]
         Name              systemd
-        Tag               audit.ssh.*
+        Tag               audit.ssh.sshd.*
         DB                ${input_database_path}/audit_ssh.db
         storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
         Mem_Buf_Limit     ${input_memory_buffer_limit}
@@ -93,6 +93,16 @@ data:
         ## Filters journalctl logs either by syslog identifier or systemd unit name to ensure we only get SSH logs.
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
         Systemd_Filter    _SYSTEMD_UNIT=sshd.service
+
+    # Get the auditd execve logs
+    [INPUT]
+        Name              systemd
+        Tag               audit.ssh.execve.*
+        DB                ${input_database_path}/audit_execve.db
+        storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
+        Mem_Buf_Limit     ${input_memory_buffer_limit}
+        Strip_Underscores on
+        Systemd_Filter    _AUDIT_FIELD_KEY="auditing"
     {{- end }}
 
     {{- if has "audit" .Values.outputs.inputLogTypes }}
@@ -136,6 +146,11 @@ data:
         Name   record_modifier
         Match  *
         Record cluster {{ .Values.clusterID }}
+
+    [FILTER]
+        Name   grep
+        Match  audit.ssh.execve.*
+        Exclude TTY (none)
 
   parsers.conf: |
     [PARSER]
@@ -208,7 +223,11 @@ data:
     {{- if has "sshd" .Values.outputs.inputLogTypes }}
     [OUTPUT]
         Name   stdout
-        Match  audit.ssh.**
+        Match  audit.ssh.sshd.**
+        Format json
+    [OUTPUT]
+        Name   stdout
+        Match  audit.ssh.execve.**
         Format json
     {{- end }}
     {{- if has "containers" .Values.outputs.inputLogTypes }}
@@ -245,7 +264,27 @@ data:
   {{- if has "sshd" .Values.outputs.elasticsearch.inputLogTypes }}
     [OUTPUT]
         Name               es
-        Match              audit.ssh.**
+        Match              audit.ssh.sshd.**
+        Retry_Limit        False
+        Host               {{ .Values.outputs.elasticsearch.host }}
+        tls                {{ .Values.outputs.elasticsearch.tlsEnabled }}
+        tls.verify         {{ .Values.outputs.elasticsearch.sslVerify }}
+        Port               {{ .Values.outputs.elasticsearch.port }}
+        {{- if .Values.outputs.elasticsearch.secured }}
+        HTTP_User          ${FLUENT_ELASTICSEARCH_USER}
+        HTTP_Passwd        ${FLUENT_ELASTICSEARCH_PASSWORD}
+        {{- end}}
+        Path               {{ .Values.outputs.elasticsearch.path }}
+        Type               _doc
+        Logstash_Format    True
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.audit.ssh.name }}
+        Include_Tag_Key    False
+        Replace_Dots       True
+        Trace_Output       False
+        Current_Time_Index False
+    [OUTPUT]
+        Name               es
+        Match              audit.ssh.execve.**
         Retry_Limit        False
         Host               {{ .Values.outputs.elasticsearch.host }}
         tls                {{ .Values.outputs.elasticsearch.tlsEnabled }}
@@ -340,7 +379,14 @@ data:
   {{- if has "sshd" .Values.outputs.azure.logAnalytics.inputLogTypes }}
     [OUTPUT]
         Name         azure
-        Match        audit.ssh.**
+        Match        audit.ssh.sshd.**
+        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
+        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
+        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.ssh.name }}
+        Retry_Limit  false
+    [OUTPUT]
+        Name         azure
+        Match        audit.ssh.execve.**
         Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
         Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
         Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.ssh.name }}
@@ -383,7 +429,28 @@ data:
   {{- if has "sshd" .Values.outputs.aws.S3.inputLogTypes }}
     [OUTPUT]
         Name                         s3
-        Match                        audit.ssh.**
+        Match                        audit.ssh.sshd.**
+        bucket                       {{ .Values.outputs.aws.S3.bucketName }}
+        {{- if .Values.outputs.aws.role }}
+        role_arn                     {{ .Values.outputs.aws.role }}
+        {{- end }}
+        {{- if .Values.outputs.aws.region }}
+        region                       {{ .Values.outputs.aws.region }}
+        {{- end }}
+        {{- if .Values.outputs.aws.S3.endpoint }}
+        endpoint                     {{ .Values.outputs.aws.S3.endpoint }}
+        {{- end }}
+        total_file_size              {{ .Values.outputs.aws.S3.totalFileSize }}
+        {{- if .Values.outputs.aws.S3.bucketPathPrefix }}
+        s3_key_format                {{ printf "/%s/ssh%s" (trimPrefix "/" .Values.outputs.aws.S3.bucketPathPrefix) .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- else }}
+        s3_key_format                {{ printf "/ssh%s" .Values.outputs.aws.S3.s3_object_key_format }}
+        {{- end }}
+        s3_key_format_tag_delimiters .-_
+        store_dir                    ${storage_path}/S3
+    [OUTPUT]
+        Name                         s3
+        Match                        audit.ssh.execve.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
         {{- if .Values.outputs.aws.role }}
         role_arn                     {{ .Values.outputs.aws.role }}
@@ -482,7 +549,18 @@ data:
   {{- if has "sshd" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
         Name               cloudwatch_logs
-        Match              audit.ssh.**
+        Match              audit.ssh.sshd.**
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
+        region             {{ .Values.outputs.aws.region }}
+        log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh
+        log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
+        auto_create_group  true
+    [OUTPUT]
+        Name               cloudwatch_logs
+        Match              audit.ssh.execve.**
         {{- if .Values.outputs.aws.role }}
         role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
