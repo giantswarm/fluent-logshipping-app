@@ -7,6 +7,7 @@ workflows:
     jobs:
       - architect/push-to-app-catalog:
           name: push-to-giantswarm-catalog
+          context: "architect"
           app_catalog: "giantswarm-catalog"
           app_catalog_test: "giantswarm-test-catalog"
           chart: "fluent-logshipping-app"
@@ -17,6 +18,7 @@ workflows:
 
       - architect/push-to-app-catalog:
           name: push-to-control-plane-catalog
+          context: "architect"
           app_catalog: "control-plane-catalog"
           app_catalog_test: "control-plane-test-catalog"
           chart: "fluent-logshipping-app"
@@ -26,6 +28,7 @@ workflows:
 
       - architect/push-to-app-collection:
           name: "push-to-shared-app-collection"
+          context: "architect"
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "shared-app-collection"
@@ -39,6 +42,7 @@ workflows:
 
       - architect/push-to-app-collection:
           name: "push-to-aws-app-collection"
+          context: "architect"
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "aws-app-collection"
@@ -52,6 +56,7 @@ workflows:
 
       - architect/push-to-app-collection:
           name: "push-to-azure-app-collection"
+          context: "architect"
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "azure-app-collection"
@@ -65,6 +70,7 @@ workflows:
 
       - architect/push-to-app-collection:
           name: "push-to-kvm-app-collection"
+          context: "architect"
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "kvm-app-collection"
@@ -78,6 +84,7 @@ workflows:
 
       - architect/push-to-app-collection:
           name: "push-to-vsphere-app-collection"
+          context: "architect"
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "vsphere-app-collection"
@@ -91,6 +98,7 @@ workflows:
       
       - architect/push-to-app-collection:
           name: "push-to-openstack-app-collection"
+          context: "architect"
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "openstack-app-collection"
