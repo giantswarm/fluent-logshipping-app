@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Support collection of the execve auditd logs
+
 ## [1.1.1] - 2022-06-27
 
 ### Fixed
