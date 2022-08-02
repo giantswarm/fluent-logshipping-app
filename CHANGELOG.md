@@ -9,6 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Added
 
+- Add VPA support.
 - Add container registry domain support to images.
  
 ### Changed
