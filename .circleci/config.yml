@@ -69,20 +69,6 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-collection:
-          name: "push-to-kvm-app-collection"
-          context: "architect"
-          app_name: "fluent-logshipping-app"
-          app_namespace: "monitoring"
-          app_collection_repo: "kvm-app-collection"
-          requires:
-            - push-to-control-plane-catalog
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-app-collection:
           name: "push-to-vsphere-app-collection"
           context: "architect"
           app_name: "fluent-logshipping-app"
