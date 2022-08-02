@@ -11,7 +11,7 @@ project:
   commit: "[[ .SHA ]]"
 
 registry:
-  domain: quay.io
+  domain: docker.io
 
 fluentbit:
   port: 5170
