@@ -7,6 +7,14 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add container registry domain support to images.
+ 
+### Changed
+
+- Send md5 header for s3 outputs.
+
 ## [1.2.0] - 2022-07-11
 
 ### Changed

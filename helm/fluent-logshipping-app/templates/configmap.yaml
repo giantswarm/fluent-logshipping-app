@@ -448,6 +448,7 @@ data:
         {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
+        send_content_md5             true
     [OUTPUT]
         Name                         s3
         Match                        audit.ssh.execve.**
@@ -469,6 +470,7 @@ data:
         {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
+        send_content_md5             true
   {{- end }}
 
   {{- if has "syslog" .Values.outputs.aws.S3.inputLogTypes }}
@@ -493,6 +495,7 @@ data:
         {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
+        send_content_md5             true
   {{- end }}
 
   {{- if has "containers" .Values.outputs.aws.S3.inputLogTypes }}
@@ -517,6 +520,7 @@ data:
         {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
+        send_content_md5             true
   {{- end }}
 
   {{- if has "audit" .Values.outputs.aws.S3.inputLogTypes }}
@@ -541,6 +545,7 @@ data:
         {{- end }}
         s3_key_format_tag_delimiters .-_
         store_dir                    ${storage_path}/S3
+        send_content_md5             true
  {{- end }}
  {{- end }}
 

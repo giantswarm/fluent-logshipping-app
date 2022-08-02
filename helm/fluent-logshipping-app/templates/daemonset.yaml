@@ -34,7 +34,7 @@ spec:
         runAsGroup: {{ .Values.fluentbit.groupID }}
       containers:
       - name: fluent-bit
-        image: {{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag | default .Chart.AppVersion }}
+        image: {{ .Values.registry.domain }}/{{ .Values.fluentbit.image.name }}:{{ .Values.fluentbit.image.tag | default .Chart.AppVersion }}
         env:
         - name: K8S_NODE_NAME
           valueFrom:
