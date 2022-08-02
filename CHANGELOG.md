@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add VPA support.
+
 ## [1.2.0] - 2022-07-11
 
 ### Changed

@@ -1,0 +1,26 @@
+{{ if eq (include "resource.vpa.enabled" .) "true" }}
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+  name: {{ include "resource.default.name" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  resourcePolicy:
+    containerPolicies:
+    - containerName: fluent-bit
+      controlledResources:
+        - memory
+      maxAllowed:
+        memory: 500Mi
+      minAllowed:
+        memory: 100Mi
+      mode: Auto
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name:  {{ include "resource.default.name"  . }}
+  updatePolicy:
+    updateMode: Auto
+{{ end }}
