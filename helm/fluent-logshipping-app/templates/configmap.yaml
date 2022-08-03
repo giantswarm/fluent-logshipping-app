@@ -553,7 +553,7 @@ data:
   outputs-aws-cloudwatch.conf: |
   {{- if has "sshd" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
-        Name               cloudwatch_logs
+        Name               cloudwatch
         Match              audit.ssh.sshd.**
         {{- if .Values.outputs.aws.role }}
         role_arn           {{ .Values.outputs.aws.role }}
@@ -564,7 +564,7 @@ data:
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
     [OUTPUT]
-        Name               cloudwatch_logs
+        Name               cloudwatch
         Match              audit.ssh.execve.**
         {{- if .Values.outputs.aws.role }}
         role_arn           {{ .Values.outputs.aws.role }}
@@ -578,7 +578,7 @@ data:
 
   {{- if has "syslog" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
-        Name               cloudwatch_logs
+        Name               cloudwatch
         Match              syslog.**
         {{- if .Values.outputs.aws.role }}
         role_arn           {{ .Values.outputs.aws.role }}
@@ -592,28 +592,28 @@ data:
 
   {{- if has "containers" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
-        Name               cloudwatch_logs
+        Name               cloudwatch
         Match              kubernetes.**
         {{- if .Values.outputs.aws.role }}
         role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-containers
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-containers-$(kubernetes['namespace_name'])/$(kubernetes['container_name'])
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}
 
   {{- if has "audit" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
-        Name               cloudwatch_logs
+        Name               cloudwatch
         Match              audit.kubernetes.**
         {{- if .Values.outputs.aws.role }}
         role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
-        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-k8s-audit
+        log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-k8s-audit
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
   {{- end }}

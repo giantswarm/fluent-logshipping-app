@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Use fluent-bit image with aws-for-fluent-bit plugins to be able to configure the log-stream-name and reduce risks of throttling.
+
 ## [1.3.0] - 2022-08-02
 
 ### Added

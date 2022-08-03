@@ -25,7 +25,8 @@ fluentbit:
   image:
     name: giantswarm/fluent-bit
     # -- Overrides the image tag whose default is the chart's appVersion
-    tag: "1.7.9-systemd247"
+    # This image fixes some systemd issues fixed in 1.8.x and adds the aws-for-fluent-bit cloudwatch plugin to be able to template cloudwatch log stream names.
+    tag: "1.7.9-systemd247-aws-plugins"
 
   logLevel: info
   flushFrequencyInSeconds: 5
