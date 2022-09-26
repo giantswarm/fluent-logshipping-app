@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Support CRI instead of Docker log format.
+- Change storage path to not use a tmpfs filesystem to not overload nodes.
+
 ## [1.4.0] - 2022-08-04
 
 ### Changed
