@@ -96,11 +96,8 @@ spec:
         - name: var-log
           mountPath: /var/log
           readOnly: true
-        - name: var-run-fluent-bit
-          mountPath: /var/run/fluent-bit
-        - name: var-lib-docker-containers
-          mountPath: /var/lib/docker/containers
-          readOnly: true
+        - name: var-tmp-fluent-bit
+          mountPath: /var/tmp/fluent-bit
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc/
         ## Needed for syslog to work as the syslog plugins needs this id
@@ -115,13 +112,10 @@ spec:
       - name: var-log
         hostPath:
           path: /var/log
-      - name: var-run-fluent-bit
+      - name: var-tmp-fluent-bit
         hostPath:
-          path: /var/run/fluent-bit
+          path: /var/tmp/fluent-bit
           type: DirectoryOrCreate
-      - name: var-lib-docker-containers
-        hostPath:
-          path: /var/lib/docker/containers
       - name: fluent-bit-config
         configMap:
           name: {{ include "resource.default.name" . }}-configmap

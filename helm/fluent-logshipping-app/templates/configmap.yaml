@@ -17,8 +17,8 @@ data:
 
     @SET input_buffer_max_size=1MB
 
-    @SET input_database_path=/var/run/fluent-bit
-    @SET storage_path=/var/run/fluent-bit/storage
+    @SET input_database_path=/var/tmp/fluent-bit
+    @SET storage_path=/var/tmp/fluent-bit/storage
 
     [SERVICE]
         Flush             {{ .Values.fluentbit.flushFrequencyInSeconds }}
@@ -57,10 +57,9 @@ data:
         Name              tail
         Tag               kubernetes.*
         Alias             kubernetes
-        Parser            docker
+        Parser            cri
         Path              /var/log/containers/*.log
         DB                ${input_database_path}/kubernetes.db
-        Docker_Mode       on
 
         # Buffering options
         Mem_Buf_Limit     ${input_memory_buffer_limit}
@@ -154,11 +153,13 @@ data:
 
   parsers.conf: |
     [PARSER]
-        Name         docker
-        Format       json
-        Time_Key     time
-        Time_Format  %Y-%m-%dT%H:%M:%S.%L
-        Time_Keep    On
+        # http://rubular.com/r/tjUt3Awgg4
+        Name cri
+        Format regex
+        Regex ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<message>.*)$
+        Time_Key    time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+        Time_Keep   On
 
     [PARSER]
         Name   apache
@@ -447,7 +448,7 @@ data:
         s3_key_format                {{ printf "/ssh%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
-        store_dir                    ${storage_path}/S3
+        store_dir                    ${storage_path}/S3/ssh/sshd
         send_content_md5             true
     [OUTPUT]
         Name                         s3
@@ -469,7 +470,7 @@ data:
         s3_key_format                {{ printf "/ssh%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
-        store_dir                    ${storage_path}/S3
+        store_dir                    ${storage_path}/S3/ssh/execve
         send_content_md5             true
   {{- end }}
 
@@ -494,7 +495,7 @@ data:
         s3_key_format                {{ printf "/syslog%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
-        store_dir                    ${storage_path}/S3
+        store_dir                    ${storage_path}/S3/syslog
         send_content_md5             true
   {{- end }}
 
@@ -519,7 +520,7 @@ data:
         s3_key_format                {{ printf "/containers%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
-        store_dir                    ${storage_path}/S3
+        store_dir                    ${storage_path}/S3/containers
         send_content_md5             true
   {{- end }}
 
@@ -544,7 +545,7 @@ data:
         s3_key_format                {{ printf "/k8s-audit%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
-        store_dir                    ${storage_path}/S3
+        store_dir                    ${storage_path}/S3/k8s-audit
         send_content_md5             true
  {{- end }}
  {{- end }}
