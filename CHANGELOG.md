@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.0.0] - 2022-09-28
+
 ### Changed
 
 - Support CRI instead of Docker log format.
@@ -263,7 +265,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.4.0...v2.0.0
 [1.4.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.1.1...v1.2.0
