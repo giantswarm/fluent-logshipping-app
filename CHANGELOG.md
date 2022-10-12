@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.0.1] - 2022-10-12
+
 ### Changed
 
 - Update audit log location to use the whole list of audit log files.
@@ -269,7 +271,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.4.0...v2.0.0
 [1.4.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.2.0...v1.3.0
