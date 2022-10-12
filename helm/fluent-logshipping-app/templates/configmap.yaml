@@ -109,7 +109,7 @@ data:
     [INPUT]
         Name              tail
         Tag               audit.kubernetes.*
-        Path              /var/log/apiserver/audit.log
+        Path              /var/log/apiserver/*.log
         Parser            json
         DB                ${input_database_path}/audit_kubernetes.db
         storage.type      {{ .Values.fluentbit.inputStorageTypes.audit }}

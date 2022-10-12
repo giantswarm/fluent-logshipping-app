@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Update audit log location to use the whole list of audit log files.
+
 ## [2.0.0] - 2022-09-28
 
 ### Changed

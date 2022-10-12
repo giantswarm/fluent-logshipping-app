@@ -16,7 +16,6 @@ spec:
         {{- if .Values.outputs.aws.kiam }}
         iam.amazonaws.com/role: {{ .Values.outputs.aws.role }}
         {{- end }}
-        releaseRevision: {{ .Release.Revision | quote }}
       labels:
         {{- include "labels.common" . | nindent 8 }}
     spec:
