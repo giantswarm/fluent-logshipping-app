@@ -9,6 +9,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [2.0.2] - 2022-11-08
 
+### Changed
+
+- Push to GCP, CAPA and VCD app collections.
+
 ## [2.0.1] - 2022-10-12
 
 ### Changed
