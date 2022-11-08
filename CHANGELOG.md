@@ -7,6 +7,12 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.0.2] - 2022-11-08
+
+### Changed
+
+- Push to GCP, CAPA and VCD app collections.
+
 ## [2.0.1] - 2022-10-12
 
 ### Changed
@@ -271,7 +277,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.2...HEAD
+[2.0.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.4.0...v2.0.0
 [1.4.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v1.3.0...v1.4.0
