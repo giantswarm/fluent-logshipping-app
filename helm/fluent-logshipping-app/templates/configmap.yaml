@@ -151,6 +151,11 @@ data:
         Match  audit.ssh.execve.*
         Exclude TTY (none)
 
+    [FILTER]
+        Name   record_modifier
+        Match  audit.ssh.execve.*
+        Record host ${K8S_NODE_NAME}
+
   parsers.conf: |
     [PARSER]
         # http://rubular.com/r/tjUt3Awgg4
