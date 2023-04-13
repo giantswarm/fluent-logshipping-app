@@ -40,6 +40,9 @@ fluentbit:
     sshd: "memory"
     syslog: "memory"
 
+serviceAccount:
+  annotations: {}
+
 outputs:
   inputLogTypes: &logTypes
   - sshd
