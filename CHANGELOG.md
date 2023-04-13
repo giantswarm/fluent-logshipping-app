@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.1.0] - 2023-04-13
+
 ### Added
 - Service Account annotations - e.g. for IRSA
 
@@ -286,7 +288,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.3...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.3...v2.1.0
 [2.0.3]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.0.0...v2.0.1
