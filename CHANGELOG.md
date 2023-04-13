@@ -7,6 +7,9 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+- Service Account annotations - e.g. for IRSA
+
 ## [2.0.3] - 2023-01-09
 
 ### Added
