@@ -27,20 +27,6 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-collection:
-          name: "push-to-shared-app-collection"
-          context: "architect"
-          app_name: "fluent-logshipping-app"
-          app_namespace: "monitoring"
-          app_collection_repo: "shared-app-collection"
-          requires:
-            - push-to-control-plane-catalog
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-app-collection:
           name: "push-to-aws-app-collection"
           context: "architect"
           app_name: "fluent-logshipping-app"
