@@ -20,8 +20,7 @@ spec:
         {{- include "labels.common" . | nindent 8 }}
     spec:
       tolerations:
-      # Tolerate master taint
-      - key: node-role.kubernetes.io/master
+      - key: node-role.kubernetes.io/control-plane
         operator: Exists
         effect: NoSchedule
       {{- with .Values.tolerations }}
