@@ -7,9 +7,15 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Change control-plane node toleration.
+- Ensure fluent-logshipping-app will run on 1.25.
+
 ## [2.1.0] - 2023-04-13
 
 ### Added
+
 - Service Account annotations - e.g. for IRSA
 
 ## [2.0.3] - 2023-01-09
