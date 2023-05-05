@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Removed
+
+- Stop pushing to `openstack-app-collection`.
+
 ## [2.2.0] - 2023-04-27
 
 ### Changed
