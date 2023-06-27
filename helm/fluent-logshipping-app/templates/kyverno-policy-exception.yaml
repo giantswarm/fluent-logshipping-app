@@ -43,7 +43,7 @@ spec:
     any:
     - resources:
         kinds:
-        - Daemonset
+        - DaemonSet
         - Pod
         namespaces:
         - {{ .Release.Namespace }}
