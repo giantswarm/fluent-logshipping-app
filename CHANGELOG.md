@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add Kyverno Policy Exceptions.
+
 ### Removed
 
 - Stop pushing to `openstack-app-collection`.

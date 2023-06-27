@@ -134,6 +134,11 @@ giantswarm:
   monitoring:
     enabled: true
 
+# Enable Kyverno PolicyException
+kyvernoPolicyExceptions:
+  enabled: true
+  namespace: giantswarm
+
 # Tolerate all nodes with NoSchedule taints
 tolerations:
   - operator: "Exists"
