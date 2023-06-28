@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.3.2] - 2023-06-28
+
 ### Fixed
 
 - Fix cluster role to use latest PSP api group.
@@ -316,7 +318,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.1...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.2...HEAD
+[2.3.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.1...v2.3.2
 [2.3.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.1.0...v2.2.0
