@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix cluster role to use latest PSP api group.
+
 ## [2.3.1] - 2023-06-27
 
 ### Fixed
