@@ -36,7 +36,7 @@ metadata:
   name: {{ include "resource.psp.name" . }}
 rules:
   - apiGroups:
-      - extensions
+      - policy
     resources:
       - podsecuritypolicies
     verbs:
