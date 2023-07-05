@@ -68,19 +68,6 @@
                 }
             }
         },
-        "giantswarm": {
-            "type": "object",
-            "properties": {
-                "monitoring": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        }
-                    }
-                }
-            }
-        },
         "kyvernoPolicyExceptions": {
             "type": "object",
             "properties": {
@@ -420,6 +407,20 @@
             "properties": {
                 "annotations": {
                     "type": "object"
+                }
+            }
+        },
+        "serviceMonitor": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "interval": {
+                    "type": "string"
+                },
+                "scrapeTimeout": {
+                    "type": "string"
                 }
             }
         },

@@ -44,4 +44,3 @@ The following table lists the configurable parameters of the fluent-logshipping-
 | `outputs.elasticsearch.indices.audit.ssh.name`        | Elasticsearch ssh audit log index name                                            | `audit-ssh`       |
 | `outputs.elasticsearch.indices.containers.name`       | Elasticsearch container index name                                                | `kubernetes`      |
 | `outputs.elasticsearch.indices.syslog.name`           | Elasticsearch syslog index name                                                   | `syslog`          |
-| `giantswarm.monitoring.enabled`                       | Giantswarm monitoring support                                                     | `true`            |
