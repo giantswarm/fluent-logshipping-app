@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Upgrades fluent-bit to 2.1.6.
+- Adds support for ausearch and the exec plugin using a custom image.
+
 ## [2.3.3] - 2023-07-05
 
 ### Added
