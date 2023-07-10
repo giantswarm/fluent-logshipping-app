@@ -95,13 +95,11 @@ data:
 
     # Get the auditd execve logs
     [INPUT]
-        Name              systemd
+        Name              exec
         Tag               audit.ssh.execve.*
-        DB                ${input_database_path}/audit_execve.db
         storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
-        Mem_Buf_Limit     ${input_memory_buffer_limit}
-        Strip_Underscores on
-        Systemd_Filter    _AUDIT_FIELD_KEY="auditing"
+        Buf_Size          ${input_memory_buffer_limit}
+        Command           tail --follow=name --retry /var/log/audit/audit.log | grep "key=\"auditing\"" | grep -v "tty=(none)" | ausearch -i
     {{- end }}
 
     {{- if has "audit" .Values.outputs.inputLogTypes }}
@@ -145,11 +143,6 @@ data:
         Name   record_modifier
         Match  *
         Record cluster {{ .Values.clusterID }}
-
-    [FILTER]
-        Name   grep
-        Match  audit.ssh.execve.*
-        Exclude TTY (none)
 
     [FILTER]
         Name   record_modifier
