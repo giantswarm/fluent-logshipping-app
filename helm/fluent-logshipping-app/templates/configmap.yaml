@@ -70,6 +70,8 @@ data:
         Refresh_Interval  ${input_refresh_interval_in_seconds}
         Skip_Long_Lines   ${input_skip_long_lines}
 
+        threaded          on
+
   inputs-syslog.conf: |
     [INPUT]
         Name              systemd
@@ -78,6 +80,7 @@ data:
         storage.type      {{ .Values.fluentbit.inputStorageTypes.syslog }}
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
+        threaded          on
 
   inputs-auditing.conf: |
     {{- if has "sshd" .Values.outputs.inputLogTypes }}
@@ -92,6 +95,7 @@ data:
         ## Filters journalctl logs either by syslog identifier or systemd unit name to ensure we only get SSH logs.
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
         Systemd_Filter    _SYSTEMD_UNIT=sshd.service
+        threaded          on
 
     # Get the auditd execve logs
     [INPUT]
@@ -100,6 +104,7 @@ data:
         storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
         Buf_Size          ${input_memory_buffer_limit}
         Command           tail --follow=name --retry /var/log/audit/audit.log | grep "key=\"auditing\"" | grep -v "tty=(none)" | ausearch -i
+        threaded          on
     {{- end }}
 
     {{- if has "audit" .Values.outputs.inputLogTypes }}
