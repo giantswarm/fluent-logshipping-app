@@ -23,10 +23,12 @@ fluentbit:
   groupID: 0
 
   image:
-    name: giantswarm/fluent-bit
+    name: giantswarm/fluent-bit-audited
     # -- Overrides the image tag whose default is the chart's appVersion
-    # This image fixes some systemd issues fixed in 1.8.x and adds the aws-for-fluent-bit cloudwatch plugin to be able to template cloudwatch log stream names.
-    tag: "1.9.8-aws-plugins"
+    # We use a custom version here that is built here https://github.com/giantswarm/fluent-bit/tree/v0.1.0.
+    # This version adds a shell in the container so we can use the exec plugin as well as install ausearch.
+    # It is based on version 2.1.6 of fluent-bit.
+    tag: "0.1.0"
 
   logLevel: info
   flushFrequencyInSeconds: 5

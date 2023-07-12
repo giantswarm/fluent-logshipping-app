@@ -12,10 +12,12 @@ spec:
     - containerName: fluent-bit
       controlledResources:
         - memory
+        - cpu
       maxAllowed:
         memory: 500Mi
       minAllowed:
         memory: 100Mi
+        cpu: 200m
       mode: Auto
   targetRef:
     apiVersion: apps/v1
