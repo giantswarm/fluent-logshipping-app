@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [3.0.1] - 2023-08-29
+
 ### Fixed
 
 - Fix ausearch command to ensure we get all possible command executions.
@@ -335,7 +337,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.0.1...HEAD
+[3.0.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.3...v3.0.0
 [2.3.3]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.2...v2.3.3
 [2.3.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.1...v2.3.2
