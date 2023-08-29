@@ -103,7 +103,7 @@ data:
         Tag               audit.ssh.execve.*
         storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
         Buf_Size          ${input_memory_buffer_limit}
-        Command           tail --follow=name --retry /var/log/audit/audit.log | grep "key=\"auditing\"" | grep -v "tty=(none)" | ausearch -i
+        Command           tail --follow=name --retry /var/log/audit/audit.log | ausearch -k auditing -i
         threaded          on
     {{- end }}
 

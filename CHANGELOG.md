@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix ausearch command to ensure we get all possible command executions.
+
 ## [3.0.0] - 2023-07-12
 
 ### Changed
