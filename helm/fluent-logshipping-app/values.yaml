@@ -6,6 +6,10 @@
 # applies only to Giant Swarm clusters
 clusterID: clusterID
 
+global:
+  podSecurityStandards:
+    enforced: false
+
 project:
   branch: "[[ .Branch ]]"
   commit: "[[ .SHA ]]"
