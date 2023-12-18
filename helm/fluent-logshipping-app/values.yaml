@@ -31,13 +31,17 @@ fluentbit:
     # -- Overrides the image tag whose default is the chart's appVersion
     # We use a custom version here that is built here https://github.com/giantswarm/fluent-bit/tree/v0.1.0.
     # This version adds a shell in the container so we can use the exec plugin as well as install ausearch.
-    # It is based on version 2.1.6 of fluent-bit.
-    tag: "0.1.0"
+    # It is based on version 2.2.0 of fluent-bit.
+    tag: "0.2.0"
 
   logLevel: info
   flushFrequencyInSeconds: 5
   backlogMemLimit: "50M"
   memBufferLimit: "10MB"
+
+  storage:
+    sizeLimit: 15Gi
+
   storageMaxChunksUp: 128
 
   inputStorageTypes:

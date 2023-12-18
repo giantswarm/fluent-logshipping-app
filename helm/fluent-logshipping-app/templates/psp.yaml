@@ -24,6 +24,7 @@ spec:
     - 'configMap'
     - 'hostPath'
     - 'projected'
+    - 'emptyDir'
   allowPrivilegeEscalation: true
   hostNetwork: false
   hostIPC: false
