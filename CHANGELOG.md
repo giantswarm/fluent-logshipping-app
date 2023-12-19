@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [3.1.0] - 2023-12-19
+
 ### Changed
 
 - Upgrade to fluent-bit 2.2.0
@@ -348,7 +350,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.0.2...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.0.2...v3.1.0
 [3.0.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.3...v3.0.0
