@@ -60,6 +60,14 @@
                 "protocol": {
                     "type": "string"
                 },
+                "storage": {
+                    "type": "object",
+                    "properties": {
+                        "sizeLimit": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "storageMaxChunksUp": {
                     "type": "integer"
                 },

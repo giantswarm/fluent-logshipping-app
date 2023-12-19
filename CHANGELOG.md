@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Upgrade to fluent-bit 2.2.0
+- Use emptyDir instead of hostPath for filesystem storage type.
+
 ## [3.0.2] - 2023-10-02
 
 ### Changed

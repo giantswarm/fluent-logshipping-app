@@ -94,14 +94,15 @@ spec:
         - name: var-log
           mountPath: /var/log
           readOnly: true
-        - name: var-tmp-fluent-bit
-          mountPath: /var/tmp/fluent-bit
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc/
+          readOnly: true
         ## Needed for syslog to work as the syslog plugins needs this id
         - name: etc-machine-id
           mountPath: /etc/machine-id
           readOnly: true
+        - name: tmp-storage
+          mountPath: /var/tmp/fluent-bit
       terminationGracePeriodSeconds: 10
       volumes:
       - name: systemd-log
@@ -110,10 +111,6 @@ spec:
       - name: var-log
         hostPath:
           path: /var/log
-      - name: var-tmp-fluent-bit
-        hostPath:
-          path: /var/tmp/fluent-bit
-          type: DirectoryOrCreate
       - name: fluent-bit-config
         configMap:
           name: {{ include "resource.default.name" . }}-configmap
@@ -121,6 +118,9 @@ spec:
         hostPath:
           path: /etc/machine-id
           type: File
+      - name: tmp-storage
+        emptyDir:
+          sizeLimit: {{ .Values.fluentbit.storage.sizeLimit }}
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1
