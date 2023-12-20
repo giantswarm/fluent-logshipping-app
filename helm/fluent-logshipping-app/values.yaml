@@ -15,7 +15,7 @@ project:
   commit: "[[ .SHA ]]"
 
 registry:
-  domain: docker.io
+  domain: gsoci.azurecr.io
 
 fluentbit:
   port: 5170
@@ -55,10 +55,10 @@ serviceAccount:
 
 outputs:
   inputLogTypes: &logTypes
-  - sshd
-  - containers
-  - syslog
-  - audit
+    - sshd
+    - containers
+    - syslog
+    - audit
   aws:
     kiam: false
     role: ""
