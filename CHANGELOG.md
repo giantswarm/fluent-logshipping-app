@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Renders resources only if the daemonset is deployed.
+
 ## [3.1.1] - 2023-12-20
 
 ### Changed
