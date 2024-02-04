@@ -1,3 +1,4 @@
+{{- if and .Values.outputs .Values.outputs.inputLogTypes }}
 {{- if .Values.kyvernoPolicyExceptions.enabled }}
 {{- if .Capabilities.APIVersions.Has "kyverno.io/v2alpha1/PolicyException" -}}
 apiVersion: kyverno.io/v2alpha1
@@ -49,5 +50,6 @@ spec:
         - {{ .Release.Namespace }}
         names:
         - {{ include "resource.default.name" . }}*
-  {{- end -}}
+{{- end -}}
+{{- end -}}
 {{- end -}}
