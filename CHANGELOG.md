@@ -7,11 +7,20 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Push to `capz-app-collection`
+
+### Removed
+
+- Remove deprecated KIAM and role properties support as everything should be using IRSA by now.
+- Removed `azure` and `tcp` configuration as it is unused.
+
 ## [3.1.2] - 2024-02-04
 
 ### Fixed
 
-- Renders resources only if the daemonset is deployed.
+- Renders resources only if the daemonset is deployed to avoid rendering useless resources like VPA CR.
 
 ## [3.1.1] - 2023-12-20
 

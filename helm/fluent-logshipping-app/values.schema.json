@@ -169,94 +169,15 @@
                                 }
                             }
                         },
-                        "kiam": {
-                            "type": "boolean"
-                        },
                         "region": {
                             "type": "string"
-                        },
-                        "role": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "azure": {
-                    "type": "object",
-                    "properties": {
-                        "logAnalytics": {
-                            "type": "object",
-                            "properties": {
-                                "customLogs": {
-                                    "type": "object",
-                                    "properties": {
-                                        "audit": {
-                                            "type": "object",
-                                            "properties": {
-                                                "kubernetes": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "name": {
-                                                            "type": "string"
-                                                        }
-                                                    }
-                                                },
-                                                "ssh": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "name": {
-                                                            "type": "string"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "containers": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        },
-                                        "syslog": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                "enabled": {
-                                    "type": "boolean"
-                                },
-                                "inputLogTypes": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                },
-                                "sharedKey": {
-                                    "type": "string"
-                                },
-                                "workspaceId": {
-                                    "type": "string"
-                                }
-                            }
                         }
                     }
                 },
                 "elasticsearch": {
                     "type": "object",
                     "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "host": {
-                            "type": "string"
-                        },
-                        "indices": {
+                        "config": {
                             "type": "object",
                             "properties": {
                                 "audit": {
@@ -265,7 +186,7 @@
                                         "kubernetes": {
                                             "type": "object",
                                             "properties": {
-                                                "name": {
+                                                "indexName": {
                                                     "type": "string"
                                                 }
                                             }
@@ -273,7 +194,7 @@
                                         "ssh": {
                                             "type": "object",
                                             "properties": {
-                                                "name": {
+                                                "indexName": {
                                                     "type": "string"
                                                 }
                                             }
@@ -283,7 +204,7 @@
                                 "containers": {
                                     "type": "object",
                                     "properties": {
-                                        "name": {
+                                        "indexName": {
                                             "type": "string"
                                         }
                                     }
@@ -291,12 +212,18 @@
                                 "syslog": {
                                     "type": "object",
                                     "properties": {
-                                        "name": {
+                                        "indexName": {
                                             "type": "string"
                                         }
                                     }
                                 }
                             }
+                        },
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "host": {
+                            "type": "string"
                         },
                         "inputLogTypes": {
                             "type": "array",
@@ -335,59 +262,6 @@
                     "items": {
                         "type": "string"
                     }
-                },
-                "tcp": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "format": {
-                            "type": "string"
-                        },
-                        "host": {
-                            "type": "string"
-                        },
-                        "indices": {
-                            "type": "object",
-                            "properties": {
-                                "syslog": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "inputLogTypes": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "json_date_format": {
-                            "type": "string"
-                        },
-                        "json_date_key": {
-                            "type": "string"
-                        },
-                        "port": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "project": {
-            "type": "object",
-            "properties": {
-                "branch": {
-                    "type": "string"
-                },
-                "commit": {
-                    "type": "string"
                 }
             }
         },
