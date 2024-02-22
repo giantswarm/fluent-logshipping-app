@@ -10,6 +10,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Changed
 
 - Push to `capz-app-collection`
+- Configure multiline parser to not split long log lines.
 
 ### Removed
 
