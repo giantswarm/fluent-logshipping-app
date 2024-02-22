@@ -57,7 +57,7 @@ data:
         Name              tail
         Tag               kubernetes.*
         Alias             kubernetes
-        Parser            cri
+        multiline.parser  cri, docker
         Path              /var/log/containers/*.log
         DB                ${input_database_path}/kubernetes.db
 
