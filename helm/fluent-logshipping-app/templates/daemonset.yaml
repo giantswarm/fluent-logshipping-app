@@ -12,10 +12,6 @@ spec:
       {{- include "labels.selector" . | nindent 6 }}
   template:
     metadata:
-      annotations:
-        {{- if .Values.outputs.aws.kiam }}
-        iam.amazonaws.com/role: {{ .Values.outputs.aws.role }}
-        {{- end }}
       labels:
         {{- include "labels.common" . | nindent 8 }}
     spec:
@@ -39,18 +35,6 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: spec.nodeName
-        {{- if .Values.outputs.azure.logAnalytics.enabled }}
-        - name: FLUENT_AZURE_WORKSPACE_ID
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "resource.default.name" . }}-secret
-              key: WorkspaceID
-        - name: FLUENT_AZURE_WORKSPACE_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "resource.default.name" . }}-secret
-              key: WorkspaceKey
-        {{- end }}
         {{- if and .Values.outputs.elasticsearch.enabled .Values.outputs.elasticsearch.secured }}
         - name: FLUENT_ELASTICSEARCH_USER
           valueFrom:

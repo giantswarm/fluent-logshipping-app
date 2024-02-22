@@ -200,24 +200,19 @@ data:
     {{- if .Values.outputs.elasticsearch.enabled }}
     @INCLUDE outputs-elasticsearch.conf
     {{- end }}
-    {{- if .Values.outputs.azure.logAnalytics.enabled }}
-    @INCLUDE outputs-azure-loganalytics.conf
-    {{- end }}
     {{- if .Values.outputs.aws.cloudWatch.enabled }}
     @INCLUDE outputs-aws-cloudwatch.conf
     {{- end }}
     {{- if .Values.outputs.aws.S3.enabled }}
     @INCLUDE outputs-aws-s3.conf
     {{- end }}
-    {{- if .Values.outputs.tcp.enabled }}
-    @INCLUDE outputs-tcp.conf
-    {{- end }}
     {{- if .Values.outputs.extraOutputConfig }}
     ## extraOutputConfig
     {{- .Values.outputs.extraOutputConfig | nindent 4 }}
     ## end
     {{- end }}
-    {{- if not (or .Values.outputs.elasticsearch.enabled .Values.outputs.azure.logAnalytics.enabled .Values.outputs.aws.cloudWatch.enabled .Values.outputs.aws.S3.enabled .Values.outputs.tcp.enabled .Values.outputs.extraOutputConfig) }}
+
+    {{- if not (or .Values.outputs.elasticsearch.enabled .Values.outputs.aws.cloudWatch.enabled .Values.outputs.aws.S3.enabled .Values.outputs.extraOutputConfig) }}
     {{- if has "syslog" .Values.outputs.inputLogTypes }}
     [OUTPUT]
         Name   stdout
@@ -248,21 +243,6 @@ data:
     {{- end }}
     {{- end }}
 
-  {{- if .Values.outputs.tcp.enabled }}
-  outputs-tcp.conf: |
-  {{- if has "syslog" .Values.outputs.tcp.inputLogTypes }}
-    [OUTPUT]
-        Name tcp
-        Match syslog.**
-        Host {{ .Values.outputs.tcp.host }}
-        Port {{ .Values.outputs.tcp.port }}
-        Format {{ .Values.outputs.tcp.format }}
-        json_date_key {{ .Values.outputs.tcp.json_date_key }}
-        json_date_format {{ .Values.outputs.tcp.json_date_format }}
-        Retry_Limit  false
-  {{- end }}
-  {{- end }}
-
   {{- if .Values.outputs.elasticsearch.enabled }}
   outputs-elasticsearch.conf: |
   {{- if has "sshd" .Values.outputs.elasticsearch.inputLogTypes }}
@@ -281,11 +261,14 @@ data:
         Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.audit.ssh.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.config.audit.ssh.indexName }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+        {{- if .Values.outputs.elasticsearch.config.audit.ssh.suppressTypeName }}
+        Suppress_Type_Name On
+        {{- end }}
     [OUTPUT]
         Name               es
         Match              audit.ssh.execve.**
@@ -301,11 +284,14 @@ data:
         Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.audit.ssh.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.config.audit.ssh.indexName }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+        {{- if .Values.outputs.elasticsearch.config.audit.ssh.suppressTypeName }}
+        Suppress_Type_Name On
+        {{- end }}
   {{- end }}
 
   {{- if has "syslog" .Values.outputs.elasticsearch.inputLogTypes }}
@@ -324,11 +310,14 @@ data:
         Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.syslog.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.config.syslog.indexName }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+        {{- if .Values.outputs.elasticsearch.config.syslog.suppressTypeName }}
+        Suppress_Type_Name On
+        {{- end }}
   {{- end }}
 
   {{- if has "containers" .Values.outputs.elasticsearch.inputLogTypes }}
@@ -347,11 +336,14 @@ data:
         Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.containers.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.config.containers.indexName }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+        {{- if .Values.outputs.elasticsearch.config.containers.suppressTypeName }}
+        Suppress_Type_Name On
+        {{- end }}
   {{- end }}
 
   {{- if has "audit" .Values.outputs.elasticsearch.inputLogTypes }}
@@ -370,61 +362,14 @@ data:
         Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.audit.kubernetes.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.config.audit.kubernetes.indexName }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
-  {{- end }}
-  {{- end }}
-
-  {{- if .Values.outputs.azure.logAnalytics.enabled }}
-  outputs-azure-loganalytics.conf: |
-  {{- if has "sshd" .Values.outputs.azure.logAnalytics.inputLogTypes }}
-    [OUTPUT]
-        Name         azure
-        Match        audit.ssh.sshd.**
-        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
-        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.ssh.name }}
-        Retry_Limit  false
-    [OUTPUT]
-        Name         azure
-        Match        audit.ssh.execve.**
-        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
-        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.ssh.name }}
-        Retry_Limit  false
-  {{- end }}
-
-  {{- if has "syslog" .Values.outputs.azure.logAnalytics.inputLogTypes }}
-    [OUTPUT]
-        Name         azure
-        Match        syslog.**
-        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
-        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.syslog.name }}
-        Retry_Limit  false
-  {{- end }}
-
-  {{- if has "containers" .Values.outputs.azure.logAnalytics.inputLogTypes }}
-    [OUTPUT]
-        Name         azure
-        Match        kubernetes.**
-        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
-        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.containers.name }}
-        Retry_Limit  false
-  {{- end }}
-
-  {{- if has "audit" .Values.outputs.azure.logAnalytics.inputLogTypes }}
-    [OUTPUT]
-        Name         azure
-        Match        audit.kubernetes.**
-        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
-        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.kubernetes.name }}
-        Retry_Limit  false
+        {{- if .Values.outputs.elasticsearch.config.audit.kubernetes.suppressTypeName }}
+        Suppress_Type_Name On
+        {{- end }}
   {{- end }}
   {{- end }}
 
@@ -435,9 +380,6 @@ data:
         Name                         s3
         Match                        audit.ssh.sshd.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
-        {{- if .Values.outputs.aws.role }}
-        role_arn                     {{ .Values.outputs.aws.role }}
-        {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
         {{- end }}
@@ -457,9 +399,6 @@ data:
         Name                         s3
         Match                        audit.ssh.execve.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
-        {{- if .Values.outputs.aws.role }}
-        role_arn                     {{ .Values.outputs.aws.role }}
-        {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
         {{- end }}
@@ -482,9 +421,6 @@ data:
         Name                         s3
         Match                        syslog.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
-        {{- if .Values.outputs.aws.role }}
-        role_arn                     {{ .Values.outputs.aws.role }}
-        {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
         {{- end }}
@@ -507,9 +443,6 @@ data:
         Name                         s3
         Match                        kubernetes.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
-        {{- if .Values.outputs.aws.role }}
-        role_arn                     {{ .Values.outputs.aws.role }}
-        {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
         {{- end }}
@@ -532,9 +465,6 @@ data:
         Name                         s3
         Match                        audit.kubernetes.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
-        {{- if .Values.outputs.aws.role }}
-        role_arn                     {{ .Values.outputs.aws.role }}
-        {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
         {{- end }}
@@ -559,9 +489,6 @@ data:
     [OUTPUT]
         Name               cloudwatch
         Match              audit.ssh.sshd.**
-        {{- if .Values.outputs.aws.role }}
-        role_arn           {{ .Values.outputs.aws.role }}
-        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh
@@ -570,9 +497,6 @@ data:
     [OUTPUT]
         Name               cloudwatch
         Match              audit.ssh.execve.**
-        {{- if .Values.outputs.aws.role }}
-        role_arn           {{ .Values.outputs.aws.role }}
-        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh
@@ -584,9 +508,6 @@ data:
     [OUTPUT]
         Name               cloudwatch
         Match              syslog.**
-        {{- if .Values.outputs.aws.role }}
-        role_arn           {{ .Values.outputs.aws.role }}
-        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-syslog
@@ -598,9 +519,6 @@ data:
     [OUTPUT]
         Name               cloudwatch
         Match              kubernetes.**
-        {{- if .Values.outputs.aws.role }}
-        role_arn           {{ .Values.outputs.aws.role }}
-        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-containers-$(kubernetes['namespace_name'])/$(kubernetes['container_name'])
@@ -612,9 +530,6 @@ data:
     [OUTPUT]
         Name               cloudwatch
         Match              audit.kubernetes.**
-        {{- if .Values.outputs.aws.role }}
-        role_arn           {{ .Values.outputs.aws.role }}
-        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-k8s-audit
