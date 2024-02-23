@@ -1,0 +1,23 @@
+{{- if and .Values.fluentbit.persistence.pvc.enabled (not .Values.fluentbit.persistence.pvc.existingClaim)}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+  name: {{ include "resource.default.name" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    {{- range .Values.fluentbit.persistence.pvc.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.fluentbit.persistence.pvc.size | quote }}
+  {{- with .Values.fluentbit.persistence.pvc.storageClassName }}
+  storageClassName: {{ . }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "labels.selector" . | nindent 6 }}
+{{- end }}

@@ -14,6 +14,23 @@
                 "backlogMemLimit": {
                     "type": "string"
                 },
+                "buffering": {
+                    "type": "object",
+                    "properties": {
+                        "audit": {
+                            "type": "string"
+                        },
+                        "containers": {
+                            "type": "string"
+                        },
+                        "sshd": {
+                            "type": "string"
+                        },
+                        "syslog": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "flushFrequencyInSeconds": {
                     "type": "integer"
                 },
@@ -31,42 +48,50 @@
                         }
                     }
                 },
-                "inputStorageTypes": {
-                    "type": "object",
-                    "properties": {
-                        "audit": {
-                            "type": "string"
-                        },
-                        "container": {
-                            "type": "string"
-                        },
-                        "sshd": {
-                            "type": "string"
-                        },
-                        "syslog": {
-                            "type": "string"
-                        }
-                    }
-                },
                 "logLevel": {
                     "type": "string"
                 },
                 "memBufferLimit": {
                     "type": "string"
                 },
+                "persistence": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "medium": {
+                                    "type": "string"
+                                },
+                                "sizeLimit": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "pvc": {
+                            "type": "object",
+                            "properties": {
+                                "accessModes": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "enabled": {
+                                    "type": "boolean"
+                                },
+                                "size": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
                 "port": {
                     "type": "integer"
                 },
                 "protocol": {
                     "type": "string"
-                },
-                "storage": {
-                    "type": "object",
-                    "properties": {
-                        "sizeLimit": {
-                            "type": "string"
-                        }
-                    }
                 },
                 "storageMaxChunksUp": {
                     "type": "integer"
