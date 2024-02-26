@@ -106,7 +106,7 @@ spec:
       {{- if .Values.fluentbit.persistence.pvc.enabled }}
         persistentVolumeClaim:
           {{- if .Values.fluentbit.persistence.pvc.existingClaim }}
-          claimName: {{ .Values.persistence.pvc.existingClaim }}
+          claimName: {{ .Values.fluentbit.persistence.pvc.existingClaim }}
           {{- else }}
           claimName: {{ include "resource.default.name" . }}
           {{- end }}
