@@ -12,6 +12,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 - Push to `capz-app-collection`
 - Configure multiline parser to not split long log lines.
 - Allow the use of a PVC instead of an emptyDir to keep the tracked files upon restart.
+- Add post processing extra filters and rename the `extraFilters` property into `extraFilters.preprocessing`
 
 ### Removed
 
