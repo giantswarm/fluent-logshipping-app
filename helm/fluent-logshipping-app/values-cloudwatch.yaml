@@ -5,8 +5,16 @@ serviceAccount:
 
 # Use filesystem to store the logs instead of memory
 fluentbit:
-  inputStorageTypes:
+  buffering:
     container: filesystem
+
+# -- Persistence settings can be tied to a PVC or an emptyDir
+persistence:
+  pvc:
+    enabled: false
+  emptyDir:
+    enabled: true
+    sizeLimit: 20Gi
 
 outputs:
   # we limit to sshd logs only

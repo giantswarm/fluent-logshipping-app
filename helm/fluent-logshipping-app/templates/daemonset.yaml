@@ -81,12 +81,11 @@ spec:
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc/
           readOnly: true
-        ## Needed for syslog to work as the syslog plugins needs this id
         - name: etc-machine-id
           mountPath: /etc/machine-id
           readOnly: true
-        - name: tmp-storage
-          mountPath: /var/tmp/fluent-bit
+        - name: storage
+          mountPath: /var/fluent-bit/data
       terminationGracePeriodSeconds: 10
       volumes:
       - name: systemd-log
@@ -98,13 +97,24 @@ spec:
       - name: fluent-bit-config
         configMap:
           name: {{ include "resource.default.name" . }}-configmap
+      ## Needed for syslog to work as the syslog plugins needs this id on AWS
       - name: etc-machine-id
         hostPath:
           path: /etc/machine-id
           type: File
-      - name: tmp-storage
+      - name: storage
+      {{- if .Values.fluentbit.persistence.pvc.enabled }}
+        persistentVolumeClaim:
+          {{- if .Values.fluentbit.persistence.pvc.existingClaim }}
+          claimName: {{ .Values.fluentbit.persistence.pvc.existingClaim }}
+          {{- else }}
+          claimName: {{ include "resource.default.name" . }}
+          {{- end }}
+      {{- else }}
         emptyDir:
-          sizeLimit: {{ .Values.fluentbit.storage.sizeLimit }}
+          medium: {{ .Values.fluentbit.persistence.emptyDir.medium | default "" }}
+          sizeLimit: {{ .Values.fluentbit.persistence.emptyDir.sizeLimit | default "1Gi" }}
+      {{- end }}
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1

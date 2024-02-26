@@ -29,14 +29,27 @@ fluentbit:
   backlogMemLimit: "50M"
   memBufferLimit: "10MB"
 
-  storage:
-    sizeLimit: 15Gi
+  # -- Persistence settings to store the fluent bit databases and filesystem buffering if enabled. Empty Dir is used by default.
+  persistence:
+    pvc:
+      enabled: false
+      # -- Name of the PVC to use if it exists in the cluster already.
+      # existingClaim: ""
+      accessModes:
+      - ReadWriteOnce
+      size: 10Gi
+      # storageClassName: default
+    emptyDir:
+      # -- Value is either disk ("") or memory "Memory". Default is disk
+      medium: ""
+      ## 1 Gi is enough for the databases but this can be increased if buffering on the filesystem is used.
+      sizeLimit: 1Gi
 
   storageMaxChunksUp: 128
 
-  inputStorageTypes:
+  buffering:
     audit: "memory"
-    container: "memory"
+    containers: "memory"
     sshd: "memory"
     syslog: "memory"
 
