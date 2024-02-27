@@ -110,7 +110,9 @@ outputs:
 
   extraOutputConfig: ""
 
-extraFilters: ""
+extraFilters:
+  preprocessing: ""
+  postprocessing: ""
 
 serviceMonitor:
   enabled: true

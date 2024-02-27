@@ -128,10 +128,8 @@ data:
     {{- end }}
 
   filters.conf: |
-    {{- if .Values.extraFilters }}
-    ## extraFilters
-    {{- .Values.extraFilters | nindent 4 }}
-    ## end
+    {{- if .Values.extraFilters.preprocessing }}
+    {{- .Values.extraFilters.preprocessing | nindent 4 }}
     {{- end }}
     [FILTER]
         Name                kubernetes
@@ -154,6 +152,10 @@ data:
         Name   record_modifier
         Match  audit.ssh.execve.*
         Record host ${K8S_NODE_NAME}
+
+    {{- if .Values.extraFilters.postprocessing }}
+    {{- .Values.extraFilters.postprocessing | nindent 4 }}
+    {{- end }}
 
   parsers.conf: |
     [PARSER]

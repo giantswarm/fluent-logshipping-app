@@ -6,7 +6,15 @@
             "type": "string"
         },
         "extraFilters": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+                "postprocessing": {
+                    "type": "string"
+                },
+                "preprocessing": {
+                    "type": "string"
+                }
+            }
         },
         "fluentbit": {
             "type": "object",
