@@ -12,6 +12,10 @@ spec:
       {{- include "labels.selector" . | nindent 6 }}
   template:
     metadata:
+      annotations:
+        {{- if .Values.outputs.aws.kiam }}
+        iam.amazonaws.com/role: {{ .Values.outputs.aws.role }}
+        {{- end }}
       labels:
         {{- include "labels.common" . | nindent 8 }}
     spec:

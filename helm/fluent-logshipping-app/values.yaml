@@ -63,7 +63,9 @@ outputs:
     - syslog
     - audit
   aws:
+    kiam: false
     region: ""
+    role: ""
     credentials:
       awsAccessKey: ""
       awsSecretKey: ""

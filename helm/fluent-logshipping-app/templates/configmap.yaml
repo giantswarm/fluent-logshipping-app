@@ -384,6 +384,9 @@ data:
         Name                         s3
         Match                        audit.ssh.sshd.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
         {{- end }}
@@ -403,6 +406,9 @@ data:
         Name                         s3
         Match                        audit.ssh.execve.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
         {{- end }}
@@ -425,6 +431,9 @@ data:
         Name                         s3
         Match                        syslog.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
         {{- end }}
@@ -447,6 +456,9 @@ data:
         Name                         s3
         Match                        kubernetes.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
         {{- end }}
@@ -469,6 +481,9 @@ data:
         Name                         s3
         Match                        audit.kubernetes.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
         {{- end }}
@@ -493,6 +508,9 @@ data:
     [OUTPUT]
         Name               cloudwatch
         Match              audit.ssh.sshd.**
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh
@@ -501,6 +519,9 @@ data:
     [OUTPUT]
         Name               cloudwatch
         Match              audit.ssh.execve.**
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh
@@ -512,6 +533,9 @@ data:
     [OUTPUT]
         Name               cloudwatch
         Match              syslog.**
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-syslog
@@ -523,6 +547,9 @@ data:
     [OUTPUT]
         Name               cloudwatch
         Match              kubernetes.**
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-containers-$(kubernetes['namespace_name'])/$(kubernetes['container_name'])
@@ -534,6 +561,9 @@ data:
     [OUTPUT]
         Name               cloudwatch
         Match              audit.kubernetes.**
+        {{- if .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
+        {{- end }}
         region             {{ .Values.outputs.aws.region }}
         log_group_name     {{ .Values.outputs.aws.cloudWatch.logGroupName }}
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-k8s-audit
