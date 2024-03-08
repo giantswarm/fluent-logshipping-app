@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changelog
+
+- Add back `kiam` support.
+
 ## [4.0.0] - 2024-03-08
 
 ### Changed

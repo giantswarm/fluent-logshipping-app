@@ -28,3 +28,15 @@ outputs:
       inputLogTypes: *logTypes
       logStreamNamePrefix: "my-stream-name"
       logRetentionDays: 3
+
+extraFilters:
+  # Exclude kube-system and giantswarm namespaces.
+  postprocessing: |
+    [FILTER]
+        Name           grep
+        Match          kubernetes.*
+        Exclude        $kubernetes['namespace_name'] kube-system
+    [FILTER]
+        Name           grep
+        Match          kubernetes.*
+        Exclude        $kubernetes['namespace_name'] giantswarm
