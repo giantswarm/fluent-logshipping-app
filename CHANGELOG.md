@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [4.1.0] - 2024-03-08
+
 ### Changelog
 
 - Add back `kiam` support.
@@ -380,7 +382,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v4.1.0...HEAD
+[4.1.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.1.2...v4.0.0
 [3.1.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.1.0...v3.1.1
