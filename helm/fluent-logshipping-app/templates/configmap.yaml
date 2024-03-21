@@ -52,6 +52,7 @@ data:
     @INCLUDE inputs-auditing.conf
     {{- end }}
 
+  {{- if has "containers" .Values.outputs.inputLogTypes }}
   inputs-kubernetes.conf: |
     # Get all the container logs
     [INPUT]
@@ -72,7 +73,9 @@ data:
         Skip_Long_Lines   ${input_skip_long_lines}
 
         threaded          on
+  {{- end }}
 
+  {{- if has "syslog" .Values.outputs.inputLogTypes }}
   inputs-syslog.conf: |
     [INPUT]
         Name              systemd
@@ -82,7 +85,9 @@ data:
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
         threaded          on
+  {{- end }}
 
+  {{- if or (has "audit" .Values.outputs.inputLogTypes) (has "sshd" .Values.outputs.inputLogTypes) (has "execve" .Values.outputs.inputLogTypes) }}
   inputs-auditing.conf: |
     {{- if has "sshd" .Values.outputs.inputLogTypes }}
     # Get the sshd audit logs
@@ -128,6 +133,7 @@ data:
         Refresh_Interval  ${input_refresh_interval_in_seconds}
         Skip_Long_Lines   ${input_skip_long_lines}
     {{- end }}
+  {{- end }}
 
   filters.conf: |
     {{- if .Values.extraFilters.preprocessing }}
