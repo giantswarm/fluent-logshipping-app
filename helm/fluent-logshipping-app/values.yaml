@@ -58,6 +58,7 @@ serviceAccount:
 
 outputs:
   inputLogTypes: &logTypes
+    - execve
     - sshd
     - containers
     - syslog
