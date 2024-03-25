@@ -48,10 +48,11 @@ data:
     {{- if has "syslog" .Values.outputs.inputLogTypes }}
     @INCLUDE inputs-syslog.conf
     {{- end }}
-    {{- if or (has "audit" .Values.outputs.inputLogTypes) (has "sshd" .Values.outputs.inputLogTypes) }}
+    {{- if or (has "audit" .Values.outputs.inputLogTypes) (has "sshd" .Values.outputs.inputLogTypes) (has "execve" .Values.outputs.inputLogTypes) }}
     @INCLUDE inputs-auditing.conf
     {{- end }}
 
+  {{- if has "containers" .Values.outputs.inputLogTypes }}
   inputs-kubernetes.conf: |
     # Get all the container logs
     [INPUT]
@@ -72,7 +73,9 @@ data:
         Skip_Long_Lines   ${input_skip_long_lines}
 
         threaded          on
+  {{- end }}
 
+  {{- if has "syslog" .Values.outputs.inputLogTypes }}
   inputs-syslog.conf: |
     [INPUT]
         Name              systemd
@@ -82,7 +85,9 @@ data:
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
         threaded          on
+  {{- end }}
 
+  {{- if or (has "audit" .Values.outputs.inputLogTypes) (has "sshd" .Values.outputs.inputLogTypes) (has "execve" .Values.outputs.inputLogTypes) }}
   inputs-auditing.conf: |
     {{- if has "sshd" .Values.outputs.inputLogTypes }}
     # Get the sshd audit logs
@@ -97,7 +102,9 @@ data:
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
         Systemd_Filter    _SYSTEMD_UNIT=sshd.service
         threaded          on
+    {{- end }}
 
+    {{- if has "execve" .Values.outputs.inputLogTypes }}
     # Get the auditd execve logs
     [INPUT]
         Name              exec
@@ -126,11 +133,13 @@ data:
         Refresh_Interval  ${input_refresh_interval_in_seconds}
         Skip_Long_Lines   ${input_skip_long_lines}
     {{- end }}
+  {{- end }}
 
   filters.conf: |
     {{- if .Values.extraFilters.preprocessing }}
     {{- .Values.extraFilters.preprocessing | nindent 4 }}
     {{- end }}
+
     [FILTER]
         Name                kubernetes
         Match               kubernetes.*
@@ -148,10 +157,12 @@ data:
         Match  *
         Record cluster {{ .Values.clusterID }}
 
+    {{- if has "execve" .Values.outputs.inputLogTypes }}
     [FILTER]
         Name   record_modifier
         Match  audit.ssh.execve.*
         Record host ${K8S_NODE_NAME}
+    {{- end }}
 
     {{- if .Values.extraFilters.postprocessing }}
     {{- .Values.extraFilters.postprocessing | nindent 4 }}
@@ -227,6 +238,8 @@ data:
         Name   stdout
         Match  audit.ssh.sshd.**
         Format json
+    {{- end }}
+    {{- if has "execve" .Values.outputs.inputLogTypes }}
     [OUTPUT]
         Name   stdout
         Match  audit.ssh.execve.**
@@ -272,6 +285,8 @@ data:
         {{- if .Values.outputs.elasticsearch.config.audit.ssh.suppressTypeName }}
         Suppress_Type_Name On
         {{- end }}
+    {{- end }}
+    {{- if has "execve" .Values.outputs.elasticsearch.inputLogTypes }}
     [OUTPUT]
         Name               es
         Match              audit.ssh.execve.**
@@ -402,6 +417,8 @@ data:
         s3_key_format_tag_delimiters .-_
         store_dir                    ${s3_output_storage_path}/audit/sshd
         send_content_md5             true
+  {{- end }}
+  {{- if has "execve" .Values.outputs.aws.S3.inputLogTypes }}
     [OUTPUT]
         Name                         s3
         Match                        audit.ssh.execve.**
@@ -516,6 +533,8 @@ data:
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
+  {{- end }}
+  {{- if has "execve" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
         Name               cloudwatch
         Match              audit.ssh.execve.**

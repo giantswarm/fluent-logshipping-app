@@ -7,9 +7,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Add possibility to disable the execve audit logs as they are quite noisy.
+
 ## [4.1.0] - 2024-03-08
 
-### Changelog
+### Changed
 
 - Add back `kiam` support.
 
