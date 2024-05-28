@@ -19,10 +19,10 @@ fluentbit:
   image:
     name: giantswarm/fluent-bit-audited
     # -- Overrides the image tag whose default is the chart's appVersion
-    # We use a custom version here that is built here https://github.com/giantswarm/fluent-bit/tree/v0.1.0.
+    # We use a custom version here that is built here https://github.com/giantswarm/fluent-bit.
     # This version adds a shell in the container so we can use the exec plugin as well as install ausearch.
-    # It is based on version 2.2.0 of fluent-bit.
-    tag: "0.2.0"
+    # It is based on version 3.0.6 of fluent-bit.
+    tag: "0.3.0"
 
   logLevel: info
   flushFrequencyInSeconds: 5
