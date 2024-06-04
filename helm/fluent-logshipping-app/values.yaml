@@ -129,11 +129,6 @@ kyvernoPolicyExceptions:
   enabled: true
   namespace: giantswarm
 
-# Tolerate all nodes with NoSchedule taints
-tolerations:
-  - operator: "Exists"
-    effect: "NoSchedule"
-
 resources:
   limits:
     memory: 200Mi
