@@ -26,6 +26,7 @@ spec:
       {{- with .Values.tolerations }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
+      priorityClassName: prometheus
       serviceAccountName: {{ include "resource.default.name" . }}
       securityContext:
         runAsUser: {{ .Values.fluentbit.userID }}
