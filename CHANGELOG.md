@@ -7,6 +7,14 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Added priorityClassName=prometheus to the fluent-bit daemonset.
+
+### Removed
+
+- Removed NoSchedule node taint toleration from fluent-bit daemonset.
+
 ## [5.0.0] - 2024-05-28
 
 ### Changed
