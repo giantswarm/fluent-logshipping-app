@@ -11,6 +11,88 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 - Add priorityClass to the dameonset.
 
+## [5.0.0] - 2024-05-28
+
+### Changed
+
+- Upgrade to fluent-bit 3.0.6 to fix some recent CVEs.
+
+## [4.2.0] - 2024-03-25
+
+### Changed
+
+- Add possibility to disable the execve audit logs as they are quite noisy.
+
+## [4.1.0] - 2024-03-08
+
+### Changed
+
+- Add back `kiam` support.
+
+## [4.0.0] - 2024-03-08
+
+### Changed
+
+- Push to `capz-app-collection`
+- Configure multiline parser to not split long log lines.
+- Allow the use of a PVC instead of an emptyDir to keep the tracked files upon restart.
+- Add post processing extra filters and rename the `extraFilters` property into `extraFilters.preprocessing`
+
+### Removed
+
+- Remove deprecated KIAM and role properties support as everything should be using IRSA by now.
+- Removed `azure` and `tcp` configuration as it is unused.
+
+## [3.1.2] - 2024-02-04
+
+### Fixed
+
+- Renders resources only if the daemonset is deployed to avoid rendering useless resources like VPA CR.
+
+## [3.1.1] - 2023-12-20
+
+### Changed
+
+- Configure `gsoci.azurecr.io` as the default container image registry.
+
+## [3.1.0] - 2023-12-19
+
+### Changed
+
+- Upgrade to fluent-bit 2.2.0
+- Use emptyDir instead of hostPath for filesystem storage type.
+
+## [3.0.2] - 2023-10-02
+
+### Changed
+
+- Add condition for PSP installation in helm chart.
+
+## [3.0.1] - 2023-08-29
+
+### Fixed
+
+- Fix ausearch command to ensure we get all possible command executions.
+
+## [3.0.0] - 2023-07-12
+
+### Changed
+
+- Upgrades fluent-bit to 2.1.6.
+- Adds support for ausearch and the exec plugin using a custom image.
+
+## [2.3.3] - 2023-07-05
+
+### Added
+
+- Add service monitor.
+
+## [2.3.2] - 2023-06-28
+
+### Fixed
+
+- Fix cluster role to use latest PSP api group.
+
 ## [2.3.1] - 2023-06-27
 
 ### Fixed
@@ -316,7 +398,19 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.1...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v4.2.0...v5.0.0
+[4.2.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v4.1.0...v4.2.0
+[4.1.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v4.0.0...v4.1.0
+[4.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.1.2...v4.0.0
+[3.1.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.1.1...v3.1.2
+[3.1.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.1.0...v3.1.1
+[3.1.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.0.2...v3.1.0
+[3.0.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.0.1...v3.0.2
+[3.0.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v3.0.0...v3.0.1
+[3.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.3...v3.0.0
+[2.3.3]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.2...v2.3.3
+[2.3.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.1...v2.3.2
 [2.3.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v2.1.0...v2.2.0

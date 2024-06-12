@@ -40,18 +40,6 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: spec.nodeName
-        {{- if .Values.outputs.azure.logAnalytics.enabled }}
-        - name: FLUENT_AZURE_WORKSPACE_ID
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "resource.default.name" . }}-secret
-              key: WorkspaceID
-        - name: FLUENT_AZURE_WORKSPACE_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "resource.default.name" . }}-secret
-              key: WorkspaceKey
-        {{- end }}
         {{- if and .Values.outputs.elasticsearch.enabled .Values.outputs.elasticsearch.secured }}
         - name: FLUENT_ELASTICSEARCH_USER
           valueFrom:
@@ -95,14 +83,14 @@ spec:
         - name: var-log
           mountPath: /var/log
           readOnly: true
-        - name: var-tmp-fluent-bit
-          mountPath: /var/tmp/fluent-bit
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc/
-        ## Needed for syslog to work as the syslog plugins needs this id
+          readOnly: true
         - name: etc-machine-id
           mountPath: /etc/machine-id
           readOnly: true
+        - name: storage
+          mountPath: /var/fluent-bit/data
       terminationGracePeriodSeconds: 10
       volumes:
       - name: systemd-log
@@ -111,17 +99,27 @@ spec:
       - name: var-log
         hostPath:
           path: /var/log
-      - name: var-tmp-fluent-bit
-        hostPath:
-          path: /var/tmp/fluent-bit
-          type: DirectoryOrCreate
       - name: fluent-bit-config
         configMap:
           name: {{ include "resource.default.name" . }}-configmap
+      ## Needed for syslog to work as the syslog plugins needs this id on AWS
       - name: etc-machine-id
         hostPath:
           path: /etc/machine-id
           type: File
+      - name: storage
+      {{- if .Values.fluentbit.persistence.pvc.enabled }}
+        persistentVolumeClaim:
+          {{- if .Values.fluentbit.persistence.pvc.existingClaim }}
+          claimName: {{ .Values.fluentbit.persistence.pvc.existingClaim }}
+          {{- else }}
+          claimName: {{ include "resource.default.name" . }}
+          {{- end }}
+      {{- else }}
+        emptyDir:
+          medium: {{ .Values.fluentbit.persistence.emptyDir.medium | default "" }}
+          sizeLimit: {{ .Values.fluentbit.persistence.emptyDir.sizeLimit | default "1Gi" }}
+      {{- end }}
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1

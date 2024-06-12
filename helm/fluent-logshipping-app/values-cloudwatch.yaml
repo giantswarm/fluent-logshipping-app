@@ -1,0 +1,42 @@
+# Needed to configure IRSA
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::00000000000:role/my-role
+
+# Use filesystem to store the logs instead of memory
+fluentbit:
+  buffering:
+    container: filesystem
+
+# -- Persistence settings can be tied to a PVC or an emptyDir
+persistence:
+  pvc:
+    enabled: false
+  emptyDir:
+    enabled: true
+    sizeLimit: 20Gi
+
+outputs:
+  # we limit to sshd logs only
+  inputLogTypes: &logTypes
+  - containers
+  aws:
+    region: "eu-central-1"
+    cloudWatch:
+      enabled: true
+      logGroupName: my-log-group-name
+      inputLogTypes: *logTypes
+      logStreamNamePrefix: "my-stream-name"
+      logRetentionDays: 3
+
+extraFilters:
+  # Exclude kube-system and giantswarm namespaces.
+  postprocessing: |
+    [FILTER]
+        Name           grep
+        Match          kubernetes.*
+        Exclude        $kubernetes['namespace_name'] kube-system
+    [FILTER]
+        Name           grep
+        Match          kubernetes.*
+        Exclude        $kubernetes['namespace_name'] giantswarm

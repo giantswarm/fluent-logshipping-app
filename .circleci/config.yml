@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@4.29.0
+  architect: giantswarm/architect@5.2.1
 
 workflows:
   package-and-push-chart-on-tag:
@@ -41,39 +41,11 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-collection:
-          name: "push-to-azure-app-collection"
-          context: "architect"
-          app_name: "fluent-logshipping-app"
-          app_namespace: "monitoring"
-          app_collection_repo: "azure-app-collection"
-          requires:
-            - push-to-control-plane-catalog
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-app-collection:
           name: "push-to-vsphere-app-collection"
           context: "architect"
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "vsphere-app-collection"
-          requires:
-            - push-to-control-plane-catalog
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-app-collection:
-          name: push-to-gcp-app-collection
-          context: architect
-          app_name: "fluent-logshipping-app"
-          app_namespace: "monitoring"
-          app_collection_repo: "gcp-app-collection"
           requires:
             - push-to-control-plane-catalog
           filters:
@@ -102,6 +74,20 @@ workflows:
           app_name: "fluent-logshipping-app"
           app_namespace: "monitoring"
           app_collection_repo: "capa-app-collection"
+          requires:
+            - push-to-control-plane-catalog
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-app-collection:
+          context: architect
+          name: push-to-capz-app-collection
+          app_name: "fluent-logshipping-app"
+          app_namespace: "monitoring"
+          app_collection_repo: "capz-app-collection"
           requires:
             - push-to-control-plane-catalog
           filters:

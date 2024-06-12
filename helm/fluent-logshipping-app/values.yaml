@@ -1,17 +1,11 @@
-# Default values for fluent-logshipping-app.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# clusterID is dynamic environment value, calculated after cluster creation
-# applies only to Giant Swarm clusters
 clusterID: clusterID
 
-project:
-  branch: "[[ .Branch ]]"
-  commit: "[[ .SHA ]]"
+global:
+  podSecurityStandards:
+    enforced: false
 
 registry:
-  domain: docker.io
+  domain: gsoci.azurecr.io
 
 fluentbit:
   priorityClass:
@@ -27,20 +21,39 @@ fluentbit:
   groupID: 0
 
   image:
-    name: giantswarm/fluent-bit
+    name: giantswarm/fluent-bit-audited
     # -- Overrides the image tag whose default is the chart's appVersion
-    # This image fixes some systemd issues fixed in 1.8.x and adds the aws-for-fluent-bit cloudwatch plugin to be able to template cloudwatch log stream names.
-    tag: "1.9.8-aws-plugins"
+    # We use a custom version here that is built here https://github.com/giantswarm/fluent-bit.
+    # This version adds a shell in the container so we can use the exec plugin as well as install ausearch.
+    # It is based on version 3.0.6 of fluent-bit.
+    tag: "0.3.0"
 
   logLevel: info
   flushFrequencyInSeconds: 5
   backlogMemLimit: "50M"
   memBufferLimit: "10MB"
+
+  # -- Persistence settings to store the fluent bit databases and filesystem buffering if enabled. Empty Dir is used by default.
+  persistence:
+    pvc:
+      enabled: false
+      # -- Name of the PVC to use if it exists in the cluster already.
+      # existingClaim: ""
+      accessModes:
+      - ReadWriteOnce
+      size: 10Gi
+      # storageClassName: default
+    emptyDir:
+      # -- Value is either disk ("") or memory "Memory". Default is disk
+      medium: ""
+      ## 1 Gi is enough for the databases but this can be increased if buffering on the filesystem is used.
+      sizeLimit: 1Gi
+
   storageMaxChunksUp: 128
 
-  inputStorageTypes:
+  buffering:
     audit: "memory"
-    container: "memory"
+    containers: "memory"
     sshd: "memory"
     syslog: "memory"
 
@@ -49,14 +62,15 @@ serviceAccount:
 
 outputs:
   inputLogTypes: &logTypes
-  - sshd
-  - containers
-  - syslog
-  - audit
+    - execve
+    - sshd
+    - containers
+    - syslog
+    - audit
   aws:
     kiam: false
-    role: ""
     region: ""
+    role: ""
     credentials:
       awsAccessKey: ""
       awsSecretKey: ""
@@ -75,23 +89,6 @@ outputs:
       totalFileSize: "100M"
       s3_object_key_format: "/$TAG/%Y/%m/%d/%H/%M/%S"
 
-  azure:
-    logAnalytics:
-      enabled: false
-      inputLogTypes: *logTypes
-      workspaceId: ""
-      sharedKey: ""
-      customLogs:
-        audit:
-          ssh:
-            name: SshAuditLogs
-          kubernetes:
-            name: KubernetesAuditLogs
-        containers:
-          name: KubernetesContainerLogs
-        syslog:
-          name: KubernetesSyslog
-
   elasticsearch:
     enabled: false
     inputLogTypes: *logTypes
@@ -103,40 +100,33 @@ outputs:
     secured: false
     user: ""
     password: ""
-    indices:
+    config:
       audit:
         ssh:
-          name: audit-ssh
+          indexName: audit-ssh
+          # suppressTypeName: false
         kubernetes:
-          name: audit-kubernetes
+          indexName: audit-kubernetes
+          # suppressTypeName: false
       containers:
-        name: kubernetes
+        indexName: kubernetes
+        # suppressTypeName: false
       syslog:
-        name: syslog
-
-  tcp:
-    enabled: false
-    host: ""
-    port: ""
-    # Specify the data format to be printed. Supported formats are msgpack, json, json_lines and json_stream.
-    format: json
-    # Specify the name of the time key in the output record. To disable the time key just set the value to false.
-    json_date_key: date
-    # Specify the format of the date. Supported formats are double, epoch and iso8601 (eg: 2018-05-30T09:39:52.000681Z)
-    json_date_format: double
-    inputLogTypes: *logTypes
-    # This output currently only supports the forwarding of syslog messages.
-    indices:
-      syslog:
-        name: syslog
+        indexName: syslog
+        # suppressTypeName: false
 
   extraOutputConfig: ""
 
-extraFilters: ""
+extraFilters:
+  preprocessing: ""
+  postprocessing: ""
 
-giantswarm:
-  monitoring:
-    enabled: true
+serviceMonitor:
+  enabled: true
+  # -- (duration) Prometheus scrape interval.
+  interval: "60s"
+  # -- (duration) Prometheus scrape timeout.
+  scrapeTimeout: "45s"
 
 # Enable Kyverno PolicyException
 kyvernoPolicyExceptions:

@@ -6,13 +6,38 @@
             "type": "string"
         },
         "extraFilters": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+                "postprocessing": {
+                    "type": "string"
+                },
+                "preprocessing": {
+                    "type": "string"
+                }
+            }
         },
         "fluentbit": {
             "type": "object",
             "properties": {
                 "backlogMemLimit": {
                     "type": "string"
+                },
+                "buffering": {
+                    "type": "object",
+                    "properties": {
+                        "audit": {
+                            "type": "string"
+                        },
+                        "containers": {
+                            "type": "string"
+                        },
+                        "sshd": {
+                            "type": "string"
+                        },
+                        "syslog": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "flushFrequencyInSeconds": {
                     "type": "integer"
@@ -31,28 +56,44 @@
                         }
                     }
                 },
-                "inputStorageTypes": {
-                    "type": "object",
-                    "properties": {
-                        "audit": {
-                            "type": "string"
-                        },
-                        "container": {
-                            "type": "string"
-                        },
-                        "sshd": {
-                            "type": "string"
-                        },
-                        "syslog": {
-                            "type": "string"
-                        }
-                    }
-                },
                 "logLevel": {
                     "type": "string"
                 },
                 "memBufferLimit": {
                     "type": "string"
+                },
+                "persistence": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "medium": {
+                                    "type": "string"
+                                },
+                                "sizeLimit": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "pvc": {
+                            "type": "object",
+                            "properties": {
+                                "accessModes": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "enabled": {
+                                    "type": "boolean"
+                                },
+                                "size": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
                 },
                 "port": {
                     "type": "integer"
@@ -79,13 +120,13 @@
                 }
             }
         },
-        "giantswarm": {
+        "global": {
             "type": "object",
             "properties": {
-                "monitoring": {
+                "podSecurityStandards": {
                     "type": "object",
                     "properties": {
-                        "enabled": {
+                        "enforced": {
                             "type": "boolean"
                         }
                     }
@@ -183,83 +224,10 @@
                         }
                     }
                 },
-                "azure": {
-                    "type": "object",
-                    "properties": {
-                        "logAnalytics": {
-                            "type": "object",
-                            "properties": {
-                                "customLogs": {
-                                    "type": "object",
-                                    "properties": {
-                                        "audit": {
-                                            "type": "object",
-                                            "properties": {
-                                                "kubernetes": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "name": {
-                                                            "type": "string"
-                                                        }
-                                                    }
-                                                },
-                                                "ssh": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "name": {
-                                                            "type": "string"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "containers": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        },
-                                        "syslog": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                "enabled": {
-                                    "type": "boolean"
-                                },
-                                "inputLogTypes": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                },
-                                "sharedKey": {
-                                    "type": "string"
-                                },
-                                "workspaceId": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                },
                 "elasticsearch": {
                     "type": "object",
                     "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "host": {
-                            "type": "string"
-                        },
-                        "indices": {
+                        "config": {
                             "type": "object",
                             "properties": {
                                 "audit": {
@@ -268,7 +236,7 @@
                                         "kubernetes": {
                                             "type": "object",
                                             "properties": {
-                                                "name": {
+                                                "indexName": {
                                                     "type": "string"
                                                 }
                                             }
@@ -276,7 +244,7 @@
                                         "ssh": {
                                             "type": "object",
                                             "properties": {
-                                                "name": {
+                                                "indexName": {
                                                     "type": "string"
                                                 }
                                             }
@@ -286,7 +254,7 @@
                                 "containers": {
                                     "type": "object",
                                     "properties": {
-                                        "name": {
+                                        "indexName": {
                                             "type": "string"
                                         }
                                     }
@@ -294,12 +262,18 @@
                                 "syslog": {
                                     "type": "object",
                                     "properties": {
-                                        "name": {
+                                        "indexName": {
                                             "type": "string"
                                         }
                                     }
                                 }
                             }
+                        },
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "host": {
+                            "type": "string"
                         },
                         "inputLogTypes": {
                             "type": "array",
@@ -338,59 +312,6 @@
                     "items": {
                         "type": "string"
                     }
-                },
-                "tcp": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "format": {
-                            "type": "string"
-                        },
-                        "host": {
-                            "type": "string"
-                        },
-                        "indices": {
-                            "type": "object",
-                            "properties": {
-                                "syslog": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "inputLogTypes": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "json_date_format": {
-                            "type": "string"
-                        },
-                        "json_date_key": {
-                            "type": "string"
-                        },
-                        "port": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "project": {
-            "type": "object",
-            "properties": {
-                "branch": {
-                    "type": "string"
-                },
-                "commit": {
-                    "type": "string"
                 }
             }
         },
@@ -431,6 +352,20 @@
             "properties": {
                 "annotations": {
                     "type": "object"
+                }
+            }
+        },
+        "serviceMonitor": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "interval": {
+                    "type": "string"
+                },
+                "scrapeTimeout": {
+                    "type": "string"
                 }
             }
         },

@@ -1,5 +1,4 @@
-
-[![CircleCI](https://circleci.com/gh/giantswarm/fluent-logshipping-app.svg?style=shield)](https://circleci.com/gh/giantswarm/fluent-logshipping-app)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/giantswarm/fluent-logshipping-app/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/giantswarm/fluent-logshipping-app/tree/master)
 
 # Fluent log shipping app
 
@@ -17,10 +16,6 @@ It use [fluent-bit](https://github.com/fluent/fluent-bit) DaemonSet, a lightweig
 
 - [CloudWatch](https://aws.amazon.com/cloudwatch/)
 - [S3](https://aws.amazon.com/s3/)
-
-### Azure
-
-- [Log Analytics](https://azure.microsoft.com/en-us/services/monitor)
 
 ### Others
 
@@ -56,10 +51,6 @@ Configuration options are documented in [Configuration.md](helm/fluent-logshippi
 
 - When using Cloudwatch or S3 a new role has to be created upfront which allows pushing of the logs to the backend(s). More info about permissions in official docs ([S3](https://github.com/fluent/fluent-plugin-s3#iam-policy), [CloudWatch](https://github.com/fluent-plugins-nursery/fluent-plugin-cloudwatch-logs#preparation)).
 - When using S3 as an ouput for logs in the Management Cluster make sure to include "-g8s-" in the name of the bucket or modify the S3 VPC endpoint to allow a different name, otherwise you will get an Unauthorized error.
-
-### Configuration
-
-- For clusters running kiam you must enable the `values.aws.kiam` configuration option.
 
 ## Compatibility
 

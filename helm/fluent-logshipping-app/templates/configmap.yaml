@@ -14,11 +14,12 @@ data:
     @SET input_memory_buffer_limit={{ .Values.fluentbit.memBufferLimit }}
     @SET input_refresh_interval_in_seconds=10
     @SET input_skip_long_lines=on
-
     @SET input_buffer_max_size=1MB
 
-    @SET input_database_path=/var/tmp/fluent-bit
-    @SET storage_path=/var/tmp/fluent-bit/storage
+    # Set the database path where the input plugins keep track of monitored files and offsets.
+    @SET data_path=/var/fluent-bit/data
+    # Set the storage path where the input chuncks will be stored
+    @SET input_storage_path=${data_path}/inputs
 
     [SERVICE]
         Flush             {{ .Values.fluentbit.flushFrequencyInSeconds }}
@@ -30,7 +31,7 @@ data:
         HTTP_Port         {{ .Values.fluentbit.port }}
 
         # Configure optional buffer on the filesystem
-        storage.path              ${storage_path}
+        storage.path              ${input_storage_path}
         storage.sync              normal
         storage.checksum          off
         storage.max_chunks_up     {{ .Values.fluentbit.storageMaxChunksUp }}
@@ -47,61 +48,71 @@ data:
     {{- if has "syslog" .Values.outputs.inputLogTypes }}
     @INCLUDE inputs-syslog.conf
     {{- end }}
-    {{- if or (has "audit" .Values.outputs.inputLogTypes) (has "sshd" .Values.outputs.inputLogTypes) }}
+    {{- if or (has "audit" .Values.outputs.inputLogTypes) (has "sshd" .Values.outputs.inputLogTypes) (has "execve" .Values.outputs.inputLogTypes) }}
     @INCLUDE inputs-auditing.conf
     {{- end }}
 
+  {{- if has "containers" .Values.outputs.inputLogTypes }}
   inputs-kubernetes.conf: |
     # Get all the container logs
     [INPUT]
         Name              tail
         Tag               kubernetes.*
         Alias             kubernetes
-        Parser            cri
+        multiline.parser  cri, docker
         Path              /var/log/containers/*.log
-        DB                ${input_database_path}/kubernetes.db
+        DB                ${data_path}/kubernetes.db
 
         # Buffering options
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Buffer_Max_Size   ${input_buffer_max_size}
-        storage.type      {{ .Values.fluentbit.inputStorageTypes.container }}
+        storage.type      {{ .Values.fluentbit.buffering.containers }}
 
         # The interval of refreshing the list of watched files in seconds
         Refresh_Interval  ${input_refresh_interval_in_seconds}
         Skip_Long_Lines   ${input_skip_long_lines}
 
+        threaded          on
+  {{- end }}
+
+  {{- if has "syslog" .Values.outputs.inputLogTypes }}
   inputs-syslog.conf: |
     [INPUT]
         Name              systemd
         Tag               syslog.*
-        DB                ${input_database_path}/syslog.db
-        storage.type      {{ .Values.fluentbit.inputStorageTypes.syslog }}
+        DB                ${data_path}/syslog.db
+        storage.type      {{ .Values.fluentbit.buffering.syslog }}
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
+        threaded          on
+  {{- end }}
 
+  {{- if or (has "audit" .Values.outputs.inputLogTypes) (has "sshd" .Values.outputs.inputLogTypes) (has "execve" .Values.outputs.inputLogTypes) }}
   inputs-auditing.conf: |
     {{- if has "sshd" .Values.outputs.inputLogTypes }}
     # Get the sshd audit logs
     [INPUT]
         Name              systemd
         Tag               audit.ssh.sshd.*
-        DB                ${input_database_path}/audit_ssh.db
-        storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
+        DB                ${data_path}/audit_ssh.db
+        storage.type      {{ .Values.fluentbit.buffering.sshd }}
         Mem_Buf_Limit     ${input_memory_buffer_limit}
         Strip_Underscores on
         ## Filters journalctl logs either by syslog identifier or systemd unit name to ensure we only get SSH logs.
         Systemd_Filter    SYSLOG_IDENTIFIER=sshd
         Systemd_Filter    _SYSTEMD_UNIT=sshd.service
+        threaded          on
+    {{- end }}
 
+    {{- if has "execve" .Values.outputs.inputLogTypes }}
     # Get the auditd execve logs
     [INPUT]
-        Name              systemd
+        Name              exec
         Tag               audit.ssh.execve.*
-        DB                ${input_database_path}/audit_execve.db
-        storage.type      {{ .Values.fluentbit.inputStorageTypes.sshd }}
-        Mem_Buf_Limit     ${input_memory_buffer_limit}
-        Strip_Underscores on
-        Systemd_Filter    _AUDIT_FIELD_KEY="auditing"
+        storage.type      {{ .Values.fluentbit.buffering.sshd }}
+        Buf_Size          ${input_memory_buffer_limit}
+        Command           tail --follow=name --retry /var/log/audit/audit.log | ausearch -k auditing -i
+        threaded          on
     {{- end }}
 
     {{- if has "audit" .Values.outputs.inputLogTypes }}
@@ -111,8 +122,8 @@ data:
         Tag               audit.kubernetes.*
         Path              /var/log/apiserver/*.log
         Parser            json
-        DB                ${input_database_path}/audit_kubernetes.db
-        storage.type      {{ .Values.fluentbit.inputStorageTypes.audit }}
+        DB                ${data_path}/audit_kubernetes.db
+        storage.type      {{ .Values.fluentbit.buffering.audit }}
 
         # Buffering options
         Buffer_Max_Size   ${input_buffer_max_size}
@@ -122,13 +133,13 @@ data:
         Refresh_Interval  ${input_refresh_interval_in_seconds}
         Skip_Long_Lines   ${input_skip_long_lines}
     {{- end }}
+  {{- end }}
 
   filters.conf: |
-    {{- if .Values.extraFilters }}
-    ## extraFilters
-    {{- .Values.extraFilters | nindent 4 }}
-    ## end
+    {{- if .Values.extraFilters.preprocessing }}
+    {{- .Values.extraFilters.preprocessing | nindent 4 }}
     {{- end }}
+
     [FILTER]
         Name                kubernetes
         Match               kubernetes.*
@@ -146,15 +157,16 @@ data:
         Match  *
         Record cluster {{ .Values.clusterID }}
 
-    [FILTER]
-        Name   grep
-        Match  audit.ssh.execve.*
-        Exclude TTY (none)
-
+    {{- if has "execve" .Values.outputs.inputLogTypes }}
     [FILTER]
         Name   record_modifier
         Match  audit.ssh.execve.*
         Record host ${K8S_NODE_NAME}
+    {{- end }}
+
+    {{- if .Values.extraFilters.postprocessing }}
+    {{- .Values.extraFilters.postprocessing | nindent 4 }}
+    {{- end }}
 
   parsers.conf: |
     [PARSER]
@@ -202,24 +214,19 @@ data:
     {{- if .Values.outputs.elasticsearch.enabled }}
     @INCLUDE outputs-elasticsearch.conf
     {{- end }}
-    {{- if .Values.outputs.azure.logAnalytics.enabled }}
-    @INCLUDE outputs-azure-loganalytics.conf
-    {{- end }}
     {{- if .Values.outputs.aws.cloudWatch.enabled }}
     @INCLUDE outputs-aws-cloudwatch.conf
     {{- end }}
     {{- if .Values.outputs.aws.S3.enabled }}
     @INCLUDE outputs-aws-s3.conf
     {{- end }}
-    {{- if .Values.outputs.tcp.enabled }}
-    @INCLUDE outputs-tcp.conf
-    {{- end }}
     {{- if .Values.outputs.extraOutputConfig }}
     ## extraOutputConfig
     {{- .Values.outputs.extraOutputConfig | nindent 4 }}
     ## end
     {{- end }}
-    {{- if not (or .Values.outputs.elasticsearch.enabled .Values.outputs.azure.logAnalytics.enabled .Values.outputs.aws.cloudWatch.enabled .Values.outputs.aws.S3.enabled .Values.outputs.tcp.enabled .Values.outputs.extraOutputConfig) }}
+
+    {{- if not (or .Values.outputs.elasticsearch.enabled .Values.outputs.aws.cloudWatch.enabled .Values.outputs.aws.S3.enabled .Values.outputs.extraOutputConfig) }}
     {{- if has "syslog" .Values.outputs.inputLogTypes }}
     [OUTPUT]
         Name   stdout
@@ -231,6 +238,8 @@ data:
         Name   stdout
         Match  audit.ssh.sshd.**
         Format json
+    {{- end }}
+    {{- if has "execve" .Values.outputs.inputLogTypes }}
     [OUTPUT]
         Name   stdout
         Match  audit.ssh.execve.**
@@ -250,21 +259,6 @@ data:
     {{- end }}
     {{- end }}
 
-  {{- if .Values.outputs.tcp.enabled }}
-  outputs-tcp.conf: |
-  {{- if has "syslog" .Values.outputs.tcp.inputLogTypes }}
-    [OUTPUT]
-        Name tcp
-        Match syslog.**
-        Host {{ .Values.outputs.tcp.host }}
-        Port {{ .Values.outputs.tcp.port }}
-        Format {{ .Values.outputs.tcp.format }}
-        json_date_key {{ .Values.outputs.tcp.json_date_key }}
-        json_date_format {{ .Values.outputs.tcp.json_date_format }}
-        Retry_Limit  false
-  {{- end }}
-  {{- end }}
-
   {{- if .Values.outputs.elasticsearch.enabled }}
   outputs-elasticsearch.conf: |
   {{- if has "sshd" .Values.outputs.elasticsearch.inputLogTypes }}
@@ -283,11 +277,16 @@ data:
         Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.audit.ssh.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.config.audit.ssh.indexName }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+        {{- if .Values.outputs.elasticsearch.config.audit.ssh.suppressTypeName }}
+        Suppress_Type_Name On
+        {{- end }}
+    {{- end }}
+    {{- if has "execve" .Values.outputs.elasticsearch.inputLogTypes }}
     [OUTPUT]
         Name               es
         Match              audit.ssh.execve.**
@@ -303,11 +302,14 @@ data:
         Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.audit.ssh.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.config.audit.ssh.indexName }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+        {{- if .Values.outputs.elasticsearch.config.audit.ssh.suppressTypeName }}
+        Suppress_Type_Name On
+        {{- end }}
   {{- end }}
 
   {{- if has "syslog" .Values.outputs.elasticsearch.inputLogTypes }}
@@ -326,11 +328,14 @@ data:
         Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.syslog.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.config.syslog.indexName }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+        {{- if .Values.outputs.elasticsearch.config.syslog.suppressTypeName }}
+        Suppress_Type_Name On
+        {{- end }}
   {{- end }}
 
   {{- if has "containers" .Values.outputs.elasticsearch.inputLogTypes }}
@@ -349,11 +354,14 @@ data:
         Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.containers.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.config.containers.indexName }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
+        {{- if .Values.outputs.elasticsearch.config.containers.suppressTypeName }}
+        Suppress_Type_Name On
+        {{- end }}
   {{- end }}
 
   {{- if has "audit" .Values.outputs.elasticsearch.inputLogTypes }}
@@ -372,73 +380,27 @@ data:
         Path               {{ .Values.outputs.elasticsearch.path }}
         Type               _doc
         Logstash_Format    True
-        Logstash_Prefix    {{ .Values.outputs.elasticsearch.indices.audit.kubernetes.name }}
+        Logstash_Prefix    {{ .Values.outputs.elasticsearch.config.audit.kubernetes.indexName }}
         Include_Tag_Key    False
         Replace_Dots       True
         Trace_Output       False
         Current_Time_Index False
-  {{- end }}
-  {{- end }}
-
-  {{- if .Values.outputs.azure.logAnalytics.enabled }}
-  outputs-azure-loganalytics.conf: |
-  {{- if has "sshd" .Values.outputs.azure.logAnalytics.inputLogTypes }}
-    [OUTPUT]
-        Name         azure
-        Match        audit.ssh.sshd.**
-        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
-        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.ssh.name }}
-        Retry_Limit  false
-    [OUTPUT]
-        Name         azure
-        Match        audit.ssh.execve.**
-        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
-        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.ssh.name }}
-        Retry_Limit  false
-  {{- end }}
-
-  {{- if has "syslog" .Values.outputs.azure.logAnalytics.inputLogTypes }}
-    [OUTPUT]
-        Name         azure
-        Match        syslog.**
-        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
-        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.syslog.name }}
-        Retry_Limit  false
-  {{- end }}
-
-  {{- if has "containers" .Values.outputs.azure.logAnalytics.inputLogTypes }}
-    [OUTPUT]
-        Name         azure
-        Match        kubernetes.**
-        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
-        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.containers.name }}
-        Retry_Limit  false
-  {{- end }}
-
-  {{- if has "audit" .Values.outputs.azure.logAnalytics.inputLogTypes }}
-    [OUTPUT]
-        Name         azure
-        Match        audit.kubernetes.**
-        Customer_ID  ${FLUENT_AZURE_WORKSPACE_ID}
-        Shared_Key   ${FLUENT_AZURE_WORKSPACE_KEY}
-        Log_Type     {{ .Values.outputs.azure.logAnalytics.customLogs.audit.kubernetes.name }}
-        Retry_Limit  false
+        {{- if .Values.outputs.elasticsearch.config.audit.kubernetes.suppressTypeName }}
+        Suppress_Type_Name On
+        {{- end }}
   {{- end }}
   {{- end }}
 
   {{- if .Values.outputs.aws.S3.enabled }}
   outputs-aws-s3.conf: |
+    @SET s3_output_storage_path=/var/fluent-bit/data/outputs/s3
   {{- if has "sshd" .Values.outputs.aws.S3.inputLogTypes }}
     [OUTPUT]
         Name                         s3
         Match                        audit.ssh.sshd.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
         {{- if .Values.outputs.aws.role }}
-        role_arn                     {{ .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
@@ -453,14 +415,16 @@ data:
         s3_key_format                {{ printf "/ssh%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
-        store_dir                    ${storage_path}/S3/ssh/sshd
+        store_dir                    ${s3_output_storage_path}/audit/sshd
         send_content_md5             true
+  {{- end }}
+  {{- if has "execve" .Values.outputs.aws.S3.inputLogTypes }}
     [OUTPUT]
         Name                         s3
         Match                        audit.ssh.execve.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
         {{- if .Values.outputs.aws.role }}
-        role_arn                     {{ .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
@@ -475,7 +439,7 @@ data:
         s3_key_format                {{ printf "/ssh%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
-        store_dir                    ${storage_path}/S3/ssh/execve
+        store_dir                    ${s3_output_storage_path}/audit/execve
         send_content_md5             true
   {{- end }}
 
@@ -485,7 +449,7 @@ data:
         Match                        syslog.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
         {{- if .Values.outputs.aws.role }}
-        role_arn                     {{ .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
@@ -500,7 +464,7 @@ data:
         s3_key_format                {{ printf "/syslog%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
-        store_dir                    ${storage_path}/S3/syslog
+        store_dir                    ${s3_output_storage_path}/syslog
         send_content_md5             true
   {{- end }}
 
@@ -510,7 +474,7 @@ data:
         Match                        kubernetes.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
         {{- if .Values.outputs.aws.role }}
-        role_arn                     {{ .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
@@ -525,7 +489,7 @@ data:
         s3_key_format                {{ printf "/containers%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
-        store_dir                    ${storage_path}/S3/containers
+        store_dir                    ${s3_output_storage_path}/containers
         send_content_md5             true
   {{- end }}
 
@@ -535,7 +499,7 @@ data:
         Match                        audit.kubernetes.**
         bucket                       {{ .Values.outputs.aws.S3.bucketName }}
         {{- if .Values.outputs.aws.role }}
-        role_arn                     {{ .Values.outputs.aws.role }}
+        role_arn           {{ .Values.outputs.aws.role }}
         {{- end }}
         {{- if .Values.outputs.aws.region }}
         region                       {{ .Values.outputs.aws.region }}
@@ -550,7 +514,7 @@ data:
         s3_key_format                {{ printf "/k8s-audit%s" .Values.outputs.aws.S3.s3_object_key_format }}
         {{- end }}
         s3_key_format_tag_delimiters .-_
-        store_dir                    ${storage_path}/S3/k8s-audit
+        store_dir                    ${s3_output_storage_path}/audit/kubernetes
         send_content_md5             true
  {{- end }}
  {{- end }}
@@ -569,6 +533,8 @@ data:
         log_stream_name    {{ .Values.outputs.aws.cloudWatch.logStreamName }}-${K8S_NODE_NAME}-ssh
         log_retention_days {{ .Values.outputs.aws.cloudWatch.logRetentionDays }}
         auto_create_group  true
+  {{- end }}
+  {{- if has "execve" .Values.outputs.aws.cloudWatch.inputLogTypes }}
     [OUTPUT]
         Name               cloudwatch
         Match              audit.ssh.execve.**
