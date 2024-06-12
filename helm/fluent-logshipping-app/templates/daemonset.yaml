@@ -19,7 +19,7 @@ spec:
       labels:
         {{- include "labels.common" . | nindent 8 }}
     spec:
-      {{- if .Values.fluentbit.priorityClass.name }}
+      {{- if .Values.fluentbit.priorityClass.enabled }}
       priorityClassName: {{ .Values.fluentbit.priorityClass.name }}
       {{- end }}
       tolerations:

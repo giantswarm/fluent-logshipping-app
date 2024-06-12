@@ -1,4 +1,4 @@
-{{- if .Values.fluentbit.priorityClass.create }}
+{{- if and .Values.fluentbit.priorityClass.enabled .Values.fluentbit.priorityClass.create }}
 apiVersion: scheduling.k8s.io/v1
 description: High-priority class for fluentbit pods only.
 kind: PriorityClass
