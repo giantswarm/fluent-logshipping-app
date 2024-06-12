@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add priorityClass to the dameonset.
+
 ## [2.3.1] - 2023-06-27
 
 ### Fixed

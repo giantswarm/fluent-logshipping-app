@@ -57,6 +57,17 @@
                 "port": {
                     "type": "integer"
                 },
+                "priorityClass": {
+                    "type": "object",
+                    "properties": {
+                        "customEnabled": {
+                            "type": "boolean"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "protocol": {
                     "type": "string"
                 },
