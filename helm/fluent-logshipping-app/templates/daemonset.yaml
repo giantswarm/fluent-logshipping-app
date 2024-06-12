@@ -19,7 +19,9 @@ spec:
       labels:
         {{- include "labels.common" . | nindent 8 }}
     spec:
+      {{- if .Values.fluentbit.priorityClass.name }}
       priorityClassName: {{ .Values.fluentbit.priorityClass.name }}
+      {{- end }}
       tolerations:
       - key: node-role.kubernetes.io/control-plane
         operator: Exists
