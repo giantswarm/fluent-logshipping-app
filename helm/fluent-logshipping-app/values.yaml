@@ -8,6 +8,13 @@ registry:
   domain: gsoci.azurecr.io
 
 fluentbit:
+  priorityClass:
+    enabled: false
+    create: false
+    # The value is only relevant when using the custom priority class.
+    value: 200000000
+    name: fluentbit
+
   port: 5170
   protocol: TCP
 
