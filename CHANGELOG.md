@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [5.1.0] - 2024-06-12
+
 ### Added
 
 - Add priorityClass to the dameonset.
@@ -398,7 +400,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.0.0...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.1.0...HEAD
+[5.1.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.0.0...v5.1.0
 [5.0.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v4.2.0...v5.0.0
 [4.2.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v4.0.0...v4.1.0
