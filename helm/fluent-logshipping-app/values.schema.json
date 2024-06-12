@@ -101,11 +101,14 @@
                 "priorityClass": {
                     "type": "object",
                     "properties": {
-                        "customEnabled": {
+                        "create": {
                             "type": "boolean"
                         },
                         "name": {
                             "type": "string"
+                        },
+                        "value": {
+                            "type": "integer"
                         }
                     }
                 },

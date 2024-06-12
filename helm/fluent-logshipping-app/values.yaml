@@ -9,7 +9,9 @@ registry:
 
 fluentbit:
   priorityClass:
-    customEnabled: true
+    create: true
+    # The value is only relevant when using the custom priority class.
+    value: 200000000
     name: fluentbit
 
   port: 5170
