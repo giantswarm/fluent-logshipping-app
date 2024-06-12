@@ -12,6 +12,7 @@ fluentbit:
     create: true
     # The value is only relevant when using the custom priority class.
     value: 200000000
+    # -- name of the priority class, leave it empty if you do not want to specify a priority class
     name: fluentbit
 
   port: 5170
