@@ -7,11 +7,15 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Reduce minAllowed cpu from 200 to 50 millicores to avoid allocating unused cpu.
+
 ## [5.1.0] - 2024-06-12
 
 ### Added
 
-- Add priorityClass to the dameonset.
+- Add priorityClass to the daemonset.
 
 ## [5.0.0] - 2024-05-28
 

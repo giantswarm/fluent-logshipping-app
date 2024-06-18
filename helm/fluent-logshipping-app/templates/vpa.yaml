@@ -18,7 +18,7 @@ spec:
         memory: 500Mi
       minAllowed:
         memory: 100Mi
-        cpu: 200m
+        cpu: 50m
       mode: Auto
   targetRef:
     apiVersion: apps/v1
