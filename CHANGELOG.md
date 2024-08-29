@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Upgrade to fluent-bit 3.1.6 to fix some recent CVEs.
+
 ## [5.1.1] - 2024-06-18
 
 ### Fixed
