@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [5.2.1] - 2024-09-02
+
 ### Fixed
 
 - Fix some CVEs in the fluent-bit image.
@@ -416,7 +418,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.0...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.1...HEAD
+[5.2.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.0...v5.2.1
 [5.2.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.1.1...v5.2.0
 [5.1.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.1.0...v5.1.1
 [5.1.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.0.0...v5.1.0
