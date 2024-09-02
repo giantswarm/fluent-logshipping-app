@@ -9,7 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Fixed
 
-- Fix Nginx Parser.
+- Fix Nginx Parser based on the upstream parser.
 
 ## [5.2.1] - 2024-09-02
 
