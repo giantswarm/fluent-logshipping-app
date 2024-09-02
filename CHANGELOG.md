@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix some CVEs in the fluent-bit image.
+
 ## [5.2.0] - 2024-08-29
 
 ### Changed
