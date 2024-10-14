@@ -210,6 +210,10 @@ data:
         Time_Key time
         Time_Format %d/%b/%Y:%H:%M:%S %z
 
+    {{- if .Values.extraParsers }}
+    {{- .Values.extraParsers | nindent 4 }}
+    {{- end }}
+
   outputs.conf: |
     {{- if .Values.outputs.elasticsearch.enabled }}
     @INCLUDE outputs-elasticsearch.conf
