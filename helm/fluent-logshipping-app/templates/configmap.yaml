@@ -210,8 +210,12 @@ data:
         Time_Key time
         Time_Format %d/%b/%Y:%H:%M:%S %z
 
-    {{- if .Values.extraParsers }}
-    {{- .Values.extraParsers | nindent 4 }}
+    {{ if .Values.extraParsers -}}
+    # Extra parsers
+    {{- range .Values.extraParsers }}
+    [PARSER]
+        {{- . | nindent 8 }}
+    {{- end }}
     {{- end }}
 
   outputs.conf: |

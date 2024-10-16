@@ -17,7 +17,7 @@
             }
         },
         "extraParsers": {
-            "type": "string"
+            "type": "array"
         },
         "fluentbit": {
             "type": "object",
