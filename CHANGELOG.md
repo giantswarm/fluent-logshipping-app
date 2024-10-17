@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [5.3.0] - 2024-10-17
+
 ### Changed
 
 - Add a new extraParsers property to be able to add other parsers.
@@ -429,7 +431,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.2...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.3.0...HEAD
+[5.3.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.2...v5.3.0
 [5.2.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.1...v5.2.2
 [5.2.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.0...v5.2.1
 [5.2.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.1.1...v5.2.0
