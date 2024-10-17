@@ -28,8 +28,8 @@ fluentbit:
     # -- Overrides the image tag whose default is the chart's appVersion
     # We use a custom version here that is built here https://github.com/giantswarm/fluent-bit.
     # This version adds a shell in the container so we can use the exec plugin as well as install ausearch.
-    # It is based on version 3.1.6 of fluent-bit.
-    tag: "0.4.1"
+    # It is based on version 3.1.9 of fluent-bit.
+    tag: "0.4.2"
 
   logLevel: info
   flushFrequencyInSeconds: 5
@@ -119,6 +119,8 @@ outputs:
         # suppressTypeName: false
 
   extraOutputConfig: ""
+
+extraParsers: []
 
 extraFilters:
   preprocessing: ""

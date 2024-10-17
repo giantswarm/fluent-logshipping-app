@@ -16,6 +16,9 @@
                 }
             }
         },
+        "extraParsers": {
+            "type": "array"
+        },
         "fluentbit": {
             "type": "object",
             "properties": {

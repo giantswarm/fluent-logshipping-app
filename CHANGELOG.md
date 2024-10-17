@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Add a new extraParsers property to be able to add other parsers.
+- Upgrade from fluent-bit 3.1.6 to fluent-bit 3.1.9.
+
 ## [5.2.2] - 2024-09-25
 
 ### Fixed
