@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [5.3.1] - 2024-11-04
+
 ### Fixed
 
 - Fix fluent-bit image to add the missing auditd libs to be able to use ausearch.
@@ -435,7 +437,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.3.0...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.3.1...HEAD
+[5.3.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.3.0...v5.3.1
 [5.3.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.2...v5.3.0
 [5.2.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.1...v5.2.2
 [5.2.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.0...v5.2.1
