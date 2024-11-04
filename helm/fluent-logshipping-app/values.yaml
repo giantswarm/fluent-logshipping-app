@@ -29,7 +29,7 @@ fluentbit:
     # We use a custom version here that is built here https://github.com/giantswarm/fluent-bit.
     # This version adds a shell in the container so we can use the exec plugin as well as install ausearch.
     # It is based on version 3.1.9 of fluent-bit.
-    tag: "0.4.2"
+    tag: "0.4.3"
 
   logLevel: info
   flushFrequencyInSeconds: 5
