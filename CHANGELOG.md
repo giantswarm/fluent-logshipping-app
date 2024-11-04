@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix fluent-bit image to add the missing auditd libs to be able to use ausearch.
+
 ## [5.3.0] - 2024-10-17
 
 ### Changed
