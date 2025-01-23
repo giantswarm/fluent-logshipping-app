@@ -1,4 +1,5 @@
 clusterID: clusterID
+serviceType: managed
 
 global:
   podSecurityStandards:

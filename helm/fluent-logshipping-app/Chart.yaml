@@ -1,13 +1,15 @@
 apiVersion: v2
-appVersion: 3.1.9
+name: fluent-logshipping-app
 description: The Log Shipping App forwards cluster logs to storage backends
-engine: gotpl
+version: 0.0.1-dev
+appVersion: 0.0.1-dev
 home: https://github.com/giantswarm/fluent-logshipping-app
 icon: https://s.giantswarm.io/app-icons/1/png/fluent-logshipping-app-light.png
-name: fluent-logshipping-app
-sources:
-- https://github.com/giantswarm/fluent-logshipping-app
-version: [[ .Version ]]
 annotations:
   application.giantswarm.io/team: atlas
   config.giantswarm.io/version: 1.x.x
+  ui.giantswarm.io/logo: https://s.giantswarm.io/app-icons/1/png/fluent-logshipping-app-light.png
+restrictions:
+  clusterSingleton: true
+  fixedNamespace: kube-system
+  gpuInstances: false
