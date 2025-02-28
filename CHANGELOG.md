@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Allow to tune kube filter's buffer size
+
 ## [5.3.1] - 2024-11-04
 
 ### Fixed
