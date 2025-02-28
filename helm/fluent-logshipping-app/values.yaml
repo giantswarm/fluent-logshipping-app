@@ -53,6 +53,7 @@ fluentbit:
       sizeLimit: 1Gi
 
   storageMaxChunksUp: 128
+  kubeAPIBufferSize: "64KB"
 
   buffering:
     audit: "memory"
