@@ -15,11 +15,11 @@ workflows:
         filters:
           tags:
             only: /^v.*/
-
           branches:
             ignore:
             - main
             - master
+
     - architect/push-to-app-catalog:
         name: push-to-control-plane-catalog
         context: architect
@@ -29,24 +29,10 @@ workflows:
         filters:
           tags:
             only: /^v.*/
-
           branches:
             ignore:
             - main
             - master
-    - architect/push-to-app-collection:
-        name: push-to-aws-app-collection
-        context: architect
-        app_name: fluent-logshipping-app
-        app_namespace: monitoring
-        app_collection_repo: aws-app-collection
-        requires:
-        - push-to-control-plane-catalog
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v.*/
 
     - architect/push-to-app-collection:
         name: push-to-vsphere-app-collection
