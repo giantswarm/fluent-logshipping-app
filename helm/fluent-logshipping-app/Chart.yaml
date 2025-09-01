@@ -1,7 +1,6 @@
 apiVersion: v2
 appVersion: 3.1.9
 description: The Log Shipping App forwards cluster logs to storage backends
-engine: gotpl
 home: https://github.com/giantswarm/fluent-logshipping-app
 icon: https://s.giantswarm.io/app-icons/1/png/fluent-logshipping-app-light.png
 name: fluent-logshipping-app
