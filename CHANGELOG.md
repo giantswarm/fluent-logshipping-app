@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [5.5.0] - 2025-09-01
+
 ### Changed
 
 - Chart: Update Kyverno PolicyExceptions to v2.
@@ -447,7 +449,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.4.0...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.5.0...HEAD
+[5.5.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.4.0...v5.5.0
 [5.4.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.3.1...v5.4.0
 [5.3.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.3.0...v5.3.1
 [5.3.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.2.2...v5.3.0
