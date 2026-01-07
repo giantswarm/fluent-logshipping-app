@@ -1,0 +1,15 @@
+checks:
+  exclude:
+    # fluent-bit needs to run as root to access systemd logs
+    - "run-as-non-root"
+    # fluent-bit needs to access host paths to read logs
+    - "no-read-only-root-fs"
+    # fluent-bit needs privileged capabilities to read certain logs
+    - "privilege-escalation-container"
+    - "drop-net-raw-capability"
+    # fluent-bit needs writable paths for buffer storage
+    - "writable-host-mount"
+    # fluent-bit uses internal port 5170 for probes without exposing it as containerPort
+    - "liveness-port"
+    - "readiness-port"
+
