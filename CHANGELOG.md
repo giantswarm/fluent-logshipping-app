@@ -7,8 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
-### Changed
+## [5.5.1] - 2026-01-30
 
+### Changed
+- Build with up-to-date pipelines.
 - Migrate to App Build Suite (ABS).
 
 ## [5.5.0] - 2025-09-01
@@ -453,7 +455,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.5.0...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.5.1...HEAD
+[5.5.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.5.0...v5.5.1
 [5.5.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.4.0...v5.5.0
 [5.4.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.3.1...v5.4.0
 [5.3.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.3.0...v5.3.1
