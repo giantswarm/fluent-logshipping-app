@@ -6,7 +6,7 @@ icon: https://s.giantswarm.io/app-icons/1/png/fluent-logshipping-app-light.png
 name: fluent-logshipping-app
 sources:
   - https://github.com/giantswarm/fluent-logshipping-app
-version: 5.5.1
+version: 5.5.2
 annotations:
   io.giantswarm.application.team: atlas
   io.giantswarm.application.audience: all

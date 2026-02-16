@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [5.5.2] - 2026-02-16
+
 ### Added
 
 - Add Backstage audience annotations.
@@ -460,7 +462,8 @@ _Note: Jumping to next minor version as we are dropping fluentd_
 - Add CloudWatch and S3 plugin in Fluentd as storage backends.
 
 
-[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.5.1...HEAD
+[Unreleased]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.5.2...HEAD
+[5.5.2]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.5.1...v5.5.2
 [5.5.1]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.5.0...v5.5.1
 [5.5.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.4.0...v5.5.0
 [5.4.0]: https://github.com/giantswarm/fluent-logshipping-app/compare/v5.3.1...v5.4.0
