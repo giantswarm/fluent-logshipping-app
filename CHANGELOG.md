@@ -7,9 +7,14 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add Backstage audience annotations.
+
 ## [5.5.1] - 2026-01-30
 
 ### Changed
+
 - Build with up-to-date pipelines.
 - Migrate to App Build Suite (ABS).
 
