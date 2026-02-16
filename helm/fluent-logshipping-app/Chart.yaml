@@ -9,4 +9,5 @@ sources:
 version: 5.5.1
 annotations:
   io.giantswarm.application.team: atlas
-  config.giantswarm.io/version: 1.x.x
+  io.giantswarm.application.audience: all
+  io.giantswarm.application.managed: "true"
