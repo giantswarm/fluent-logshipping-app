@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Enable priority class by default to ensure fluentbit can preempt lower priority pods on overloaded nodes.
+
 ## [5.5.2] - 2026-02-16
 
 ### Added
