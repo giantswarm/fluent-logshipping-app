@@ -9,8 +9,8 @@ registry:
 
 fluentbit:
   priorityClass:
-    enabled: false
-    create: false
+    enabled: true
+    create: true
     # The value is only relevant when using the custom priority class.
     value: 200000000
     name: fluentbit
