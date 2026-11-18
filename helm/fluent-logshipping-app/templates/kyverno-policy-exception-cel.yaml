@@ -45,6 +45,6 @@ spec:
       request.kind.kind in ['DaemonSet', 'Pod', 'ServiceAccount'] &&
       request.namespace == '{{ .Release.Namespace }}' &&
       has(object.metadata.name) &&
-      object.metadata.name.startsWith('{{ include "resource.default.name" . }}')
+      (object.metadata.name == '{{ include "resource.default.name" . }}' || object.metadata.name.startsWith('{{ include "resource.default.name" . }}-'))
 {{- end }}
 {{- end }}
