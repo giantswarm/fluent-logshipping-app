@@ -14,6 +14,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
+- Move the PolicyExceptions from the `giantswarm` namespace to `kube-system` (`kyvernoPolicyExceptions.namespace`), as the `giantswarm` namespace is going away.
 - Update architect to v10.18.0 (giantswarm/fluent-logshipping-app#337)
 
 ### Fixed
