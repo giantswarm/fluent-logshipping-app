@@ -137,7 +137,10 @@ serviceMonitor:
 # Enable Kyverno PolicyException
 kyvernoPolicyExceptions:
   enabled: true
-  namespace: giantswarm
+  namespace: kube-system
+  legacy:
+    # Renders the kyverno.io/v2 PolicyException, which applies to ClusterPolicies only. Will be used as a global switch in a future release.
+    enabled: true
 
 # Tolerate all nodes with NoSchedule taints
 tolerations:
